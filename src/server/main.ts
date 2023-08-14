@@ -3,12 +3,14 @@ import { NestFactory } from '@nestjs/core';
 import { INestApplication } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { DocumentBuilder, OpenAPIObject, SwaggerModule } from '@nestjs/swagger';
+import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { HostConfig, ServerConfig } from '../shared/config/index.js';
 import { GlobalValidationPipe } from '../shared/validation/index.js';
 import { ServerModule } from './server.module.js';
 
 async function bootstrap(): Promise<void> {
     const app: INestApplication = await NestFactory.create(ServerModule);
+    app.useLogger(app.get(WINSTON_MODULE_NEST_PROVIDER));
     app.useGlobalPipes(new GlobalValidationPipe());
     const swagger: Omit<OpenAPIObject, 'paths'> = new DocumentBuilder()
         .setTitle('dBildungs IAM')

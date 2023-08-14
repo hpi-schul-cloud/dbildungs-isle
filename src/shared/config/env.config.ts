@@ -9,4 +9,8 @@ export enum NodeEnvType {
 export class EnvConfig {
     @IsEnum(NodeEnvType)
     public readonly NODE_ENV!: NodeEnvType;
+
+    public readonly NEST_LOG_LEVEL!: string;
+
+    [key: `${string}.LOG_LEVEL`]: string;
 }
