@@ -1,11 +1,9 @@
-import { Module } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { utilities, WinstonModule } from 'nest-winston';
+import { DynamicModule, Module } from '@nestjs/common';
+import { utilities } from 'nest-winston';
 import { LoggerOptions } from 'winston';
 import winston from 'winston';
-import { EnvConfig } from '../../shared/config/env.config.js';
-
-// TODO make this a dynamic module to provide ModuleLogger and ClassLogger for other Modules
+import { ClassLogger } from './class-logger.js';
+import { ModuleLogger } from './module-logger.js';
 
 export const defaultLoggerOptions: LoggerOptions = {
     levels: winston.config.syslog.levels,
@@ -19,20 +17,28 @@ export const defaultLoggerOptions: LoggerOptions = {
     handleRejections: true,
 };
 
+export const MODULE_NAME: string = 'MODULE_NAME';
+
 @Module({
-    imports: [
-        WinstonModule.forRootAsync({
-            useFactory: (configService: ConfigService<EnvConfig, true>) => {
-                return {
-                    ...defaultLoggerOptions,
-                    level: configService.get<string>('NEST_LOG_LEVEL'),
-                    transports: [new winston.transports.Console()],
-                };
-            },
-            inject: [ConfigService],
-        }),
-    ],
+    imports: [],
     providers: [],
     exports: [],
 })
-export class LoggerModule {}
+export class LoggerModule {
+    public static register(moduleName: string): DynamicModule {
+        return {
+            module: LoggerModule,
+            imports: [],
+            providers: [
+                {
+                    provide: MODULE_NAME,
+                    useValue: moduleName
+                },
+                ModuleLogger,
+                ClassLogger,
+            ],
+            exports: [ClassLogger],
+            global: false,
+        };
+    }
+}

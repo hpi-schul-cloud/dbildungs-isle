@@ -1,13 +1,24 @@
 import winston, { Logger } from 'winston';
 import { ConfigService } from '@nestjs/config';
-import { defaultLoggerOptions } from './logger.module.js';
 import { EnvConfig } from '../../shared/config/env.config.js';
+import { Inject } from '@nestjs/common';
+import { MODULE_NAME, defaultLoggerOptions } from './logger.module.js';
 
 export class ModuleLogger {
     private logger: Logger;
 
-    public constructor(moduleName: string, configService: ConfigService<EnvConfig>) {
+    private moduleNameInternal: string;
+
+    public constructor(@Inject(MODULE_NAME) moduleName: string, configService: ConfigService<EnvConfig>) {
+        this.moduleNameInternal = moduleName;
         let level: string | undefined = configService.get<string>(`${moduleName}.LOG_LEVEL`);
+        // TODO exchange this with correct config
+        if (moduleName === 'PersonApiModule') {
+            level = 'debug';
+        }
+        if (moduleName === 'PersonModule') {
+            level = 'notice';
+        }
         if (!level) {
             level = configService.get<string>('NEST_LOG_LEVEL', 'info');
         }
@@ -20,5 +31,9 @@ export class ModuleLogger {
 
     public getLogger(): Logger {
         return this.logger;
+    }
+
+    public get moduleName(): string {
+        return this.moduleNameInternal;
     }
 }

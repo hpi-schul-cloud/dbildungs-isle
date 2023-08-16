@@ -2,10 +2,11 @@ import { Module } from '@nestjs/common';
 import { PersonService } from './domain/person.service.js';
 import { PersonPersistenceMapperProfile } from './persistence/person-persistence.mapper.profile.js';
 import { PersonRepo } from './persistence/person.repo.js';
-import { moduleProviderFactory } from '../../core/logging/module-logger-factory.js';
+import { LoggerModule } from '../../core/logging/logger.module.js';
 
 @Module({
-    providers: [PersonPersistenceMapperProfile, PersonRepo, PersonService, moduleProviderFactory(PersonModule.name)],
+    imports: [LoggerModule.register(PersonModule.name)],
+    providers: [PersonPersistenceMapperProfile, PersonRepo, PersonService],
     exports: [PersonService],
 })
 export class PersonModule {}
