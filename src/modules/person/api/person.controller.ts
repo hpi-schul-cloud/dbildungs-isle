@@ -1,6 +1,6 @@
 import { Mapper } from '@automapper/core';
 import { getMapperToken } from '@automapper/nestjs';
-import { Body, Controller, Get, Inject, NotImplementedException, Post } from '@nestjs/common';
+import { Body, Controller, Get, Inject, NotImplementedException, Post, UseFilters } from '@nestjs/common';
 import {
     ApiBadRequestResponse,
     ApiCreatedResponse,
@@ -13,6 +13,7 @@ import { PersonUc } from '../api/person.uc.js';
 import { CreatePersonBodyParams } from './create-person.body.params.js';
 import { CreatePersonDto } from '../domain/create-person.dto.js';
 import { ClassLogger } from '../../../core/logging/class-logger.js';
+import { SchulConnexValidationErroFilter } from '../../../shared/error/schulconnex-validation-error.filter.js';
 
 @ApiTags('person')
 @Controller({ path: 'person' })
@@ -23,6 +24,7 @@ export class PersonController {
         private logger: ClassLogger,
     ) {}
 
+    @UseFilters(SchulConnexValidationErroFilter)
     @Post()
     @ApiCreatedResponse({ description: 'The person was successfully created.' })
     @ApiBadRequestResponse({ description: 'The person already exists.' })
