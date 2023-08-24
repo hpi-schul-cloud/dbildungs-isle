@@ -11,7 +11,7 @@ export class ModuleLogger {
 
     public constructor(@Inject(MODULE_NAME) moduleName: string, configService: ConfigService<EnvConfig>) {
         this.moduleNameInternal = moduleName;
-        let level: string | undefined = configService.get<string>(`${moduleName}.LOG_LEVEL`);
+        let level: Option<string> = configService.get<string>(`${moduleName}.LOG_LEVEL`);
         // TODO exchange this with correct config
         if (moduleName === 'PersonApiModule') {
             level = 'debug';

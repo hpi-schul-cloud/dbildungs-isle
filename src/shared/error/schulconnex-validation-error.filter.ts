@@ -13,7 +13,7 @@ export type SchulConnexError = {
 };
 
 @Catch(DetailedValidationError)
-export class SchulConnexValidationErroFilter implements ExceptionFilter<DetailedValidationError> {
+export class SchulConnexValidationErrorFilter implements ExceptionFilter<DetailedValidationError> {
     public constructor(private logger: ClassLogger) {}
 
     public catch(exception: DetailedValidationError, host: ArgumentsHost): void {

@@ -31,7 +31,6 @@ export class GlobalErrorFilter implements ExceptionFilter {
                 message: exception.message,
                 statusCode: httpStatus,
                 timestamp: new Date().toISOString(),
-                // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
                 path: httpAdapter.getRequestUrl(ctx.getRequest()),
             };
             httpAdapter.reply(ctx.getResponse(), responseBody, httpStatus);
@@ -41,7 +40,6 @@ export class GlobalErrorFilter implements ExceptionFilter {
                 message: 'an unknown exception occured',
                 statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
                 timestamp: new Date().toISOString(),
-                // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
                 path: httpAdapter.getRequestUrl(ctx.getRequest()),
             };
 
