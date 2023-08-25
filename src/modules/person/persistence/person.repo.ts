@@ -5,6 +5,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { PersonDo } from '../domain/person.do.js';
 import { PersonEntity } from './person.entity.js';
 import { Loaded } from '@mikro-orm/core';
+import { Specification } from '../specifications/spect.js';
 
 @Injectable()
 export class PersonRepo {
@@ -31,6 +32,11 @@ export class PersonRepo {
             return this.update(personDo);
         }
         return this.create(personDo);
+    }
+
+    public async findBy(spec: Specification<PersonEntity>): Promise<PersonEntity[]> {
+        const persons: Loaded<PersonEntity>[] = await this.em.find(PersonEntity, spec.query);
+        return persons;
     }
 
     public async deleteById(id: string): Promise<Option<PersonDo<false>>> {

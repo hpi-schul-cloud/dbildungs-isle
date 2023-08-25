@@ -2,6 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { DomainError, EntityNotFoundError, PersonAlreadyExistsError } from '../../../shared/error/index.js';
 import { PersonDo } from '../domain/person.do.js';
 import { PersonRepo } from '../persistence/person.repo.js';
+import { Specification, UserFirstNameSpecification, UserVisibilitySpecification } from '../specifications/spect.js';
+import { PersonEntity } from '../persistence/person.entity.js';
 
 @Injectable()
 export class PersonService {
@@ -24,5 +26,14 @@ export class PersonService {
             return { ok: true, value: person };
         }
         return { ok: false, error: new EntityNotFoundError(`Person with the following ID ${id} does not exist`) };
+    }
+
+    public async findPersonBy(): Promise<void> {
+        const spec: Specification<PersonEntity> = new UserVisibilitySpecification(true).and(
+            new UserFirstNameSpecification('John'),
+        );
+        const persons: PersonEntity[] = await this.personRepo.findBy(spec);
+        // eslint-disable-next-line no-console
+        console.log(persons);
     }
 }
