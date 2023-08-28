@@ -1,7 +1,7 @@
 import { Inject, Injectable, Scope } from '@nestjs/common';
 import { ModuleLogger } from './module-logger.js';
 import { Logger as LoggerWinston } from 'winston';
-import { Logger } from './abstract-logger.js';
+import { Logger } from './logger.js';
 import { INQUIRER } from '@nestjs/core';
 
 @Injectable({ scope: Scope.TRANSIENT })

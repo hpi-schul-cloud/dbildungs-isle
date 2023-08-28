@@ -5,7 +5,7 @@
 ### Domain Errors
 
 Domain errors should extend from an Nest Http Error. This allows Nest to understand
-directly the thrown errors a will translate them into the default http error response.
+directly the thrown errors and will translate them into the default http error response.
 
 ### Global Exception Filter
 
