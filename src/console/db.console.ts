@@ -1,6 +1,6 @@
 import { Command, CommandRunner } from 'nest-commander';
 import { DbInitConsole } from './db-init.console.js';
-import { LoggerService } from '../shared/logging/index.js';
+import { ClassLogger } from '../core/logging/class-logger.js';
 
 @Command({
     name: 'db',
@@ -9,7 +9,7 @@ import { LoggerService } from '../shared/logging/index.js';
     subCommands: [DbInitConsole],
 })
 export class DbConsole extends CommandRunner {
-    public constructor(private readonly logger: LoggerService) {
+    public constructor(private readonly logger: ClassLogger) {
         super();
     }
 
