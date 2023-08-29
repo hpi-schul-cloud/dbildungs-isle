@@ -2,7 +2,8 @@ import winston, { Logger } from 'winston';
 import { ConfigService } from '@nestjs/config';
 import { EnvConfig } from '../../shared/config/env.config.js';
 import { Inject } from '@nestjs/common';
-import { MODULE_NAME, defaultLoggerOptions } from './logger.module.js';
+import { MODULE_NAME } from './module-name.symbol.js';
+import { defaultLoggerOptions } from './default-logger-options.js';
 
 export class ModuleLogger {
     private logger: Logger;

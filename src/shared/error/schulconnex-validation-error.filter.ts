@@ -2,12 +2,11 @@ import { ArgumentsHost, Catch, ExceptionFilter } from '@nestjs/common';
 import { ClassLogger } from '../../core/logging/class-logger.js';
 import { Response } from 'express';
 import util from 'util';
-import { DetailedValidationError } from '../validation/detailed-validation.error.js';
+import { DetailedValidationError } from '../../core/validation/detailed-validation.error.js';
 import { ValidationError } from 'class-validator';
 import { HttpArgumentsHost } from '@nestjs/common/interfaces/index.js';
 import { SchulConnexError } from './schul-connex-error.js';
 
-// TODO make this part of the global filter
 @Catch(DetailedValidationError)
 export class SchulConnexValidationErrorFilter implements ExceptionFilter<DetailedValidationError> {
     public constructor(private logger: ClassLogger) {}

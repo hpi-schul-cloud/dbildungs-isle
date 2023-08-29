@@ -1,28 +1,13 @@
 import { DynamicModule, Module } from '@nestjs/common';
-import { utilities } from 'nest-winston';
-import { LoggerOptions } from 'winston';
-import winston from 'winston';
-import { ClassLogger } from './class-logger.js';
 import { ModuleLogger } from './module-logger.js';
-
-export const defaultLoggerOptions: LoggerOptions = {
-    levels: winston.config.syslog.levels,
-    exitOnError: false,
-    format: winston.format.combine(
-        winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss.SSS' }),
-        winston.format.ms(),
-        utilities.format.nestLike(),
-    ),
-    handleExceptions: true,
-    handleRejections: true,
-};
-
-export const MODULE_NAME: string = 'MODULE_NAME';
+import { ClassLogger } from './class-logger.js';
+import { MODULE_NAME } from './module-name.symbol.js';
+import { NestLogger } from './nest-logger.js';
 
 @Module({
     imports: [],
-    providers: [],
-    exports: [],
+    providers: [ModuleLogger, ClassLogger, NestLogger],
+    exports: [ClassLogger],
 })
 export class LoggerModule {
     public static register(moduleName: string): DynamicModule {
@@ -32,12 +17,10 @@ export class LoggerModule {
             providers: [
                 {
                     provide: MODULE_NAME,
-                    useValue: moduleName
+                    useValue: moduleName,
                 },
-                ModuleLogger,
-                ClassLogger,
             ],
-            exports: [ClassLogger],
+            exports: [],
             global: false,
         };
     }

@@ -1,9 +1,10 @@
 import { ExceptionFilter, Catch, ArgumentsHost, HttpException, HttpStatus } from '@nestjs/common';
-import { HttpArgumentsHost } from '@nestjs/common/interfaces';
+import { HttpArgumentsHost, ValidationError } from '@nestjs/common/interfaces';
 import { AbstractHttpAdapter, HttpAdapterHost } from '@nestjs/core';
 import util from 'util';
 import { ClassLogger } from '../../logging/class-logger.js';
 import { SchulConnexError } from '../../../shared/error/schul-connex-error.js';
+import { DetailedValidationError } from '../../validation/detailed-validation.error.js';
 
 type ErrorDescription = Omit<SchulConnexError, 'statusCode' | 'subcode'>;
 
@@ -40,7 +41,11 @@ export class GlobalErrorFilter implements ExceptionFilter {
 
         const ctx: HttpArgumentsHost = host.switchToHttp();
 
-        if (exception instanceof Error) {
+        if (exception instanceof DetailedValidationError) {
+            this.logger.error(exception.message, exception.stack);
+            const responseBody: SchulConnexError = this.handleValidationError(exception);
+            httpAdapter.reply(ctx.getResponse(), responseBody, responseBody.statusCode);
+        } else if (exception instanceof Error) {
             this.logger.error(exception.message, exception.stack);
             const httpStatus: number =
                 exception instanceof HttpException ? exception.getStatus() : HttpStatus.INTERNAL_SERVER_ERROR;
@@ -65,5 +70,41 @@ export class GlobalErrorFilter implements ExceptionFilter {
 
             httpAdapter.reply(ctx.getResponse(), responseBody, HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    private handleValidationError(validationError: DetailedValidationError): SchulConnexError {
+        const validationErrors: ValidationError[] = validationError.validationErrors;
+
+        if (validationErrors.length < 1 || !validationErrors[0])
+            return {
+                statusCode: 400,
+                subcode: '00',
+                title: 'Fehlerhafte Anfrage',
+                description: 'Die Anfrage ist fehlerhaft',
+            };
+
+        let currentError: ValidationError = validationErrors[0];
+        let propertyPath: string = currentError.property;
+        while (currentError?.children?.length && currentError.children[0]) {
+            currentError = currentError.children[0];
+            propertyPath = `${propertyPath}.${currentError.property}`;
+        }
+        if (currentError.constraints) {
+            // TODO handle other validation errors
+            if (currentError?.constraints['isDate']) {
+                return {
+                    statusCode: 400,
+                    subcode: '09',
+                    title: 'Datumsattribut hat einen ungültigen Wert',
+                    description: `Datumsformat von Attribut ${propertyPath} ist ungültig`,
+                };
+            }
+        }
+        return {
+            statusCode: 400,
+            subcode: '00',
+            title: 'Fehlerhafte Anfrage',
+            description: 'Die Anfrage ist fehlerhaft',
+        };
     }
 }
