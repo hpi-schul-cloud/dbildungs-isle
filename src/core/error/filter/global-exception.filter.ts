@@ -31,7 +31,7 @@ errorMessageMap.set(404, {
 errorMessageMap.set(500, internalServerErrorDescription);
 
 @Catch()
-export class GlobalErrorFilter implements ExceptionFilter {
+export class GlobalExceptionFilter implements ExceptionFilter {
     public constructor(private readonly httpAdapterHost: HttpAdapterHost, private logger: ClassLogger) {}
 
     public catch(exception: unknown, host: ArgumentsHost): void {
