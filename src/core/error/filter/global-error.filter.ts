@@ -46,10 +46,14 @@ export class GlobalErrorFilter implements ExceptionFilter {
             const responseBody: SchulConnexError = this.handleValidationError(exception);
             httpAdapter.reply(ctx.getResponse(), responseBody, responseBody.statusCode);
         } else if (exception instanceof Error) {
-            this.logger.error(exception.message, exception.stack);
             const httpStatus: number =
                 exception instanceof HttpException ? exception.getStatus() : HttpStatus.INTERNAL_SERVER_ERROR;
 
+            if (Math.floor(httpStatus / 100) === 4) {
+                this.logger.error(exception.message, exception.stack);
+            } else {
+                this.logger.crit(exception.message, exception.stack);
+            }
             const errorDescription: ErrorDescription = errorMessageMap.get(httpStatus) || {
                 title: 'Unbekannter Fehler',
                 description: 'Es ist ein unbekannter Fehler aufgetreten',
