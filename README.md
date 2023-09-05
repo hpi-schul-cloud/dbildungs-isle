@@ -16,8 +16,9 @@ We have the strategic goal SG-02 "stand-alone system". We want to succeed this g
 2. Start the required services from the `compose.yaml` file
    * db
 3. Create a `.env` file and set the required environment variables from `env.config.ts`
-4. Run `npm run start:debug` to start the server
-5. Server runs on the url printed in the console
+4. run `npm run setup` to initialize the DB
+5. Run `npm run start:debug` to start the server
+6. Server runs on the url printed in the console
 
 ## Scripts for Development
 
@@ -41,6 +42,7 @@ We have the strategic goal SG-02 "stand-alone system". We want to succeed this g
 | npm run lint             | Runs the linter                                 | Success is a merge requirement            |
 | npm run lint:fix         | Runs the linter and fixes auto fixable problems |                                           |
 | **Console Applications** |                                                 |                                           |
+| npm run setup            | Runs db:init to Initialize the DB               |                                           |
 | npm run db:init          | Initializes the database (applies SQL schema)   | `compose.yaml` can be used                |
 
 ## Developer Guides

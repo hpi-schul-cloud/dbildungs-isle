@@ -6,6 +6,9 @@ import { CreatePersonBodyParams } from './create-person.body.params.js';
 import { PersonApiMapperProfile } from './person-api.mapper.profile.js';
 import { PersonController } from './person.controller.js';
 import { PersonUc } from './person.uc.js';
+import { PersonByIdParams } from './person-by-id.param.js';
+import { PersonResponse } from './person.response.js';
+import { HttpException } from '@nestjs/common';
 
 describe('PersonController', () => {
     let module: TestingModule;
@@ -53,6 +56,33 @@ describe('PersonController', () => {
             };
             await expect(personController.createPerson(params)).resolves.not.toThrow();
             expect(personUcMock.createPerson).toHaveBeenCalledTimes(1);
+        });
+    });
+
+    describe('when getting a person', () => {
+        const params: PersonByIdParams = {
+            personId: faker.string.uuid(),
+        };
+
+        it('should get a person', async () => {
+            const response: PersonResponse = {
+                id: faker.string.uuid(),
+                name: {
+                    lastName: faker.person.lastName(),
+                    firstName: faker.person.firstName(),
+                },
+                client: '',
+            };
+            personUcMock.findPersonById.mockResolvedValue(response);
+            await expect(personController.findPersonById(params)).resolves.not.toThrow();
+            expect(personUcMock.findPersonById).toHaveBeenCalledTimes(1);
+        });
+
+        it('should throw an Http not found exception', async () => {
+            const mockError: Error = new Error('person does not exist.');
+            personUcMock.findPersonById.mockRejectedValue(mockError);
+            await expect(personController.findPersonById(params)).resolves.toThrow(HttpException);
+            expect(personUcMock.findPersonById).toHaveBeenCalledTimes(1);
         });
     });
 });

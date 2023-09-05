@@ -12,13 +12,11 @@ The tests should be as simple to read and understand as possible. They should be
 - avoid complex logic
 - cover only one case per test
 - only use clearly named and widely used helper functions
-- stick to blackbox testing: think about the unit from the outside, not its inner workings.
-- its okay to duplicate code for each test
 
 ### Naming Convention
 
 When a test fails, the name of the test is the first hint to the developer (or any other person) to what went wrong where. (along with the "describe" blocks the test is in).
-Thus, your describe structure and testcase names should be designed to enable a person unfamiliar with the code to identify the problem as fast as possible. It should tell him:
+Thus, your describe structure and test case names should be designed to enable a person unfamiliar with the code to identify the problem as fast as possible. It should tell him:
 
 - what component is being tested
 - under what condition
@@ -31,10 +29,8 @@ To facilitate this, your tests should be wrapped in at least two describe levels
 describe("PersonService", (() => {
  // method that is called
  describe('createPerson', () => {
-     // a "when..." sentence
-  describe("when person not exists", (() => {
    // a "should..." sentence
-    it("should create person", async () => {
+    it("should create person if a person does not exist", async () => {
      ...
     });
   });
@@ -48,7 +44,7 @@ Each test should be able to run alone, as well as together with any other tests.
 
 - Each test should generate the data it needs, and ensure that its data is deleted afterwards. (this is usually done via Jest's "afterAll" function).
 - When you create objects with fields that have to be globally unique, like the account username, you must ensure the name you choose is unique. This can be done by including a timestamp.
-- Never use seeddata.
+- Never use seed data.
 
 ### Test Structure
 
@@ -60,40 +56,28 @@ Your test should be structured in three separate areas, each distinguished by at
 
 this is known as the AAA-pattern.
 
-The tests for a unit should cover as much scenarios as possible. Parameters and the combination of parameters can often take numerous values. Therefore it largely differs from case to case what a sufficient amount of scenarios would be. Parameter values that contradict the typescript type definition should be ignored as a test case.
-The test coverage report already enforces scenarios that test every possible if/else result in the code. But still some scenarios are not covered by the report and must be tested:
+The tests for a unit should cover as much scenarios as possible. Parameters and the combination of parameters can often take numerous values.
+The test coverage report already enforces scenarios that test every possible if/else result in the code, but don't rely on code coverage alone. Think about different real world scenarios and cover them even if coverage is reached with only a few of them.
+Pay particular attention to error scenarios.
 
-- All error scenarios: That means one describe block for every call that can reject.
-
-We use different levels of describe blocks to structure the tests in a way, that the tested scenarios could easily be recognized. The outer describe would be the function call itself. Every scenario is added as another describe inside the outer describe.
-
-All of the data and mock preparation should happen in a setup function. Every describe scenario only contains one setup function and is called in every test. No further data or mock preparation should be added to the test. Often there will be only one test in every describe scenario, this is perfectly fine with our desired structure.
+Test preparation which is shared over multiple tests can be done in before(...) or beforeEach(...) blocks. Try to avoid too many before/beforeEach blocks in nested describes, since that makes it more difficult to understand what test preparations were made for a specific test.
 
 ```TypeScript
 describe('[method]', () => {
- describe('when [scenario description that is prepared in setup]', () => {
-  const setup = () => {
-   // prepare the data and mocks for this scenario
-  };
-
-  it('...', () => {
-   const { } = setup();
+  before(() => {
+    // prepare stuff globally
   });
 
-  it('...', () => {
-   const { } = setup();
-  });
- });          
+    beforeEach(() => {
+        // prepare stuff for describe block
+    });
 
- describe('when [scenario description that is prepared in setup]', () => {
-  const setup = () => {
-   // prepare the data and mocks for this scenario
-  };
+    it('...', () => {
+        // prepare stuff for this particular test
+    });
 
-  it('...', () => {
-   const { } = setup();
-  });
- });
+    it('...', () => {
+    });
 });
 ```
 
@@ -113,83 +97,6 @@ When assigning a value to an expect, separate the function call from the expecta
   expect(result).to... // here we can simply debug
  })
 
-```
-
-### Promises and Timeouts in tests
-
-When using asynchronous functions and/or promises, results must be awaited within of an async test function instead of using promise chains. While for expecting error conditions it might be helpful to use catch for extracting a value from an expected error, in every case avoid writing long promise chains.
-
-- Instead of using done callback, use async test functions.
-- Use await instead of (long) promise chains
-- never manually set a timeout
-
-```TypeScript
- // doSomethingCrazy : Promise<retValue>
- it('bad async sample', async function (done) => {
-  this.timeout(10000);
-  return doSomethingCrazy(x,y,z).then(result=>{
-   expect(result).to...
-   done() // expected done
-  }).catch(()=>{
-   logger.info(`Could not ... ${error}`);
-   done() // unexpected done, test will always succeed which is wrong
-  })
- })
- it('good async sample', async () => {
-  // no timeout set
-  const result = await doSomethingCrazy(x,y,z)
-  expect(result).to...
- })
-```
-
-> Timeouts must not be used, when async handling is correctly defined!
-
-### Expecting errors in tests
-
-When expecting an error, you might take values from an error, test for the error type thrown and must care of promises.
-
-```TypeScript
- // doSomethingCrazy : Promise<retValue>
- it('bad async sample expecting an error', () => {
-  expect(doSomethingCrazy(x,y,z)).to...
- })
- it('good async sample expecting an error value', async () => {
-  const code = await doSomethingCrazy(x,y,z).catch(err => err.code)
-  expect(code).to...
- })
- it('good sample expecting an error type from a sync function', () => {
-  expect(() => doSomethingCrazySync(wrong, param)).toThrow(BadRequestException);
- })
- it('good sample expecting an error type from an async function', async () => {
-  await expect(doSomethingCrazySync(wrong, param)).rejects.toThrow(BadRequestException);
- })
-```
-
-## Testing Utilities
-
-NestJS:
-
-- provides default tooling (such as test runner that builds an isolated module/application loader)
-- provides integration with **Jest** and **Supertest** out of the box
-- makes the Nest dependency injection system available in the testing environment for mocking components
-
-The `@nestjs/testing.Test` class provides an execution context that mocks the full Nest runtime, but gives
-hooks that can help to manage class instances, including mocking and overriding.
-
-The method `Test.createTestingModule()` takes module metadata as argument it returns `TestingModule` instance.
-The `TestingModule` instance provides method `compile()` which bootstraps a module with its dependencies.
-Every provider can be overwritten with custom provider implementation for testing purposes.
-
-```Typescript
-  beforeAll(async () => {
-      const moduleRef = await Test.createTestingModule({
-          controllers: [SampleController],
-          providers: [SampleService],
-        }).compile();
-
-      sampleService = moduleRef.get<SampleService>(SampleService);
-      sampleController = moduleRef.get<SampleController>(CatsController);
-    });
 ```
 
 ## Mocking
@@ -228,35 +135,9 @@ afterEach(() => {
 
 The resulting mock has all the functions of the original `Class`, replaced with jest spies. This gives you code completion and type safety, combined with all the features of spies.
 
-`createTestingModule` should only be calld in `beforeAll` and not in `beforeEach` to keep the setup and teardown for each test as simple as possible. Therefore `module.close` should only be called in `afterAll` and not in `afterEach`.
+`createTestingModule` should only be called in `beforeAll` and not in `beforeEach` to keep the setup and teardown for each test as simple as possible. Therefore `module.close` should only be called in `afterAll` and not in `afterEach`.
 
-To generally reset specific mock implementation after each test `jest.resetAllMocks` can be used in afterEach. `jest.restoreAllMocks` should not be used, because in some cases it will not properly restore mocks created by ts-jest.
-
-```Typescript
-describe('somefunction', () => {
- describe('when service returns user', () => {
-  const setup = () => {
-   const resultUser = userFactory.buildWithId();
-
-   mockService.getUser.mockReturnValueOnce(resultUser);
-
-   return { resultUser };
-  };
-
-  it('should call service', async () => {
-   setup();
-   await fut.somefunction();
-   expect(mockService.getUser).toHaveBeenCalled();
-  });
-
-  it('should return user passed by service', async () => {
-   const { resultUser } = setup();
-   const result = await fut.somefunction();
-   expect(result).toEqual(resultUser);
-  });
- });
-});
-```
+To generally reset specific mock implementation after each test `jest.resetAllMocks` can be used in afterEach. Please be aware of the difference between [mockClear](https://jestjs.io/docs/mock-function-api#mockfnmockclear), [mockReset](https://jestjs.io/docs/mock-function-api#mockfnmockreset) and [mockRestore](https://jestjs.io/docs/mock-function-api#mockfnmockrestore).
 
 For creating specific mock implementations the helper functions which only mock the implementation once, must be used (e.g. mockReturnValueOnce). With that approach more control over mocked functions can be achieved.
 
@@ -279,8 +160,6 @@ For the data access layer, integration tests are highly recommended, but not a m
 Integration tests are desirable for external systems, but difficult to achieve if no test system is available. The result of the integration test depends on the validity and correctness of the test system. So integration tests can fail (temporarily) without any bug on our side.
 
 Integration tests can help finding bugs due to a change of the external systems API.
-
-For Queries care DRY principle, they should be tested very carefully.
 
 > Highly recommended, but they not a must if there is no test system or not enough.
 <!-- -->
@@ -366,15 +245,13 @@ Since a usecase only contains orchestration, its tests should be decoupled from 
 <!-- TODO -->
 Currently, controllers are covered only by unit tests. But in the near future, the following will apply:
 
-Controllers will be tested with contract tests based on [pact.js](https://docs.pact.io/implementation_guides/javascript/readme). These are mandatory for every endpoint because the main deliverable that other projects can use is the API provided by dBilungdsIAM.
+Controllers will be tested with contract tests based on [pact.js](https://docs.pact.io/implementation_guides/javascript/readme). These are mandatory for every endpoint because the main deliverable that other projects can use is the API provided by dBildungsIAM.
 
-Pact.js does not provide any measure of coverage out of the box to check for completeness automatically. Reviews will have to be sufficient to enforce this.
-
-Contract tests should be located in the folder `?` and  named `*.?.ts`.
+// TODO -> Contract tests should be located in the folder `?` and  named `*.?.ts`.
 
 The job of API tests is to make sure all components that interact to fulfill a specific API endpoint are wired up correctly, and fulfil the expectation set up in the documentation.
 
-They should call the endpoint like a external entity would, treating it like a blackbox. It should try all parameters available on the API, users with different roles, as well as relevant error cases.
+They should call the endpoint like an external entity would, treating it like a blackbox. It should try all parameters available on the API, users with different roles, as well as relevant error cases.
 
 During the API test, all components that are part of the server, or controlled by the server, should be available.
 

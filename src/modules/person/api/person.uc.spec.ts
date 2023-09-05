@@ -1,11 +1,12 @@
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { PersonAlreadyExistsError } from '../../../shared/error/index.js';
+import { EntityNotFoundError, PersonAlreadyExistsError } from '../../../shared/error/index.js';
 import { DoFactory, MapperTestModule } from '../../../../test/utils/index.js';
 import { CreatePersonDto } from '../domain/create-person.dto.js';
 import { PersonService } from '../domain/person.service.js';
 import { PersonApiMapperProfile } from './person-api.mapper.profile.js';
 import { PersonUc } from './person.uc.js';
+import { faker } from '@faker-js/faker';
 
 describe('PersonUc', () => {
     let module: TestingModule;
@@ -60,6 +61,30 @@ describe('PersonUc', () => {
                 await expect(personUc.createPerson({} as CreatePersonDto)).rejects.toThrowError(
                     PersonAlreadyExistsError,
                 );
+            });
+        });
+    });
+
+    describe('findPersonById', () => {
+        const id: string = faker.string.uuid();
+
+        describe('when person exists', () => {
+            it('should find a person by an ID', async () => {
+                personServiceMock.findPersonById.mockResolvedValue({
+                    ok: true,
+                    value: DoFactory.createPerson(true),
+                });
+                await expect(personUc.findPersonById(id)).resolves.not.toThrow();
+            });
+        });
+
+        describe('when person does not exist', () => {
+            it('should throw a person does not exist exception', async () => {
+                personServiceMock.findPersonById.mockResolvedValue({
+                    ok: false,
+                    error: new EntityNotFoundError(''),
+                });
+                await expect(personUc.findPersonById(id)).rejects.toThrowError(EntityNotFoundError);
             });
         });
     });

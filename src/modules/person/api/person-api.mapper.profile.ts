@@ -6,6 +6,7 @@ import { PersonDo } from '../domain/person.do.js';
 import { Gender, TrustLevel } from '../domain/person.enums.js';
 import { CreatePersonBodyParams } from './create-person.body.params.js';
 import { PersonGender, PersonTrustLevel } from './person.enums.js';
+import { PersonResponse } from './person.response.js';
 
 export const personGenderToGenderConverter: Converter<PersonGender, Gender> = {
     convert(source: PersonGender): Gender {
@@ -82,6 +83,51 @@ export class PersonApiMapperProfile extends AutomapperProfile {
                 ),
             );
             createMap(mapper, CreatePersonDto, PersonDo);
+            createMap(
+                mapper,
+                PersonDo,
+                PersonResponse,
+                forMember(
+                    (dest: PersonResponse) => dest.id,
+                    mapFrom((src: PersonDo<true>) => src.id),
+                ),
+                forMember(
+                    (dest: PersonResponse) => dest.name.firstName,
+                    mapFrom((src: PersonDo<true>) => src.firstName),
+                ),
+                forMember(
+                    (dest: PersonResponse) => dest.name.lastName,
+                    mapFrom((src: PersonDo<true>) => src.lastName),
+                ),
+                forMember(
+                    (dest: PersonResponse) => dest.name.initialsFirstName,
+                    mapFrom((src: PersonDo<true>) => src.initialsFirstName),
+                ),
+                forMember(
+                    (dest: PersonResponse) => dest.name.initialsLastName,
+                    mapFrom((src: PersonDo<true>) => src.initialsLastName),
+                ),
+                forMember(
+                    (dest: PersonResponse) => dest.name.sortIndex,
+                    mapFrom((src: PersonDo<true>) => src.nameSortIndex),
+                ),
+                forMember(
+                    (dest: PersonResponse) => dest.name.nickName,
+                    mapFrom((src: PersonDo<true>) => src.nickName),
+                ),
+                forMember(
+                    (dest: PersonResponse) => dest.name.title,
+                    mapFrom((src: PersonDo<true>) => src.nameTitle),
+                ),
+                forMember(
+                    (dest: PersonResponse) => dest.name.salutation,
+                    mapFrom((src: PersonDo<true>) => src.nameSalutation),
+                ),
+                forMember(
+                    (dest: PersonResponse) => dest.name.suffix,
+                    mapFrom((src: PersonDo<true>) => src.nameSuffix),
+                ),
+            );
         };
     }
 }

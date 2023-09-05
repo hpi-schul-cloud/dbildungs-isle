@@ -24,7 +24,8 @@
         "lint": "eslint \"./{src,test}/**/*.ts\" --ignore-path .gitignore --max-warnings=0",
         "lint:fix": "eslint \"./{src,test}/**/*.ts\" --fix --ignore-path .gitignore",
         "start:console": "nest start console --",
-        "db:init": "npm run start:console -- db init"
+        "db:init": "npm run start:console -- db init",
+        "setup": "npm run db:init"
     },
     "dependencies": {
         "@automapper/classes": "^8.7.7",
