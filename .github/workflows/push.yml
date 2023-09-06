@@ -6,6 +6,7 @@ on:
 
 env:
   NODE_VERSION: '18'
+  DEPLOY_STAGE: 'dev'
 
 jobs:
   nest_test_cov:
@@ -16,6 +17,12 @@ jobs:
         uses: actions/checkout@v3
       - name: Docker check
         run: docker --version
+      - name: Inject Secrets
+        uses: timheuer/base64-to-file@v1.2
+        with:
+          fileName: 'secrets.json'
+          fileDir: './config/'
+          encodedString: ewogICAgIkRCIjogewogICAgICAgICJTRUNSRVQiOiAiVmVyeSBoaWRkZW4gc2VjcmV0IgogICAgfQp9
       - name: Setup node
         uses: actions/setup-node@v3
         with:

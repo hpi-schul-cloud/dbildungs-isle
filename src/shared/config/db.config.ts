@@ -8,4 +8,8 @@ export class DbConfig {
     @IsString()
     @IsNotEmpty()
     public readonly DB_NAME!: string;
+
+    @IsString()
+    @IsNotEmpty()
+    public readonly SECRET?: string;
 }

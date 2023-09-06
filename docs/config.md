@@ -6,26 +6,89 @@
 > package which is also documented on the [nestjs](https://docs.nestjs.com/techniques/configuration)
 > documentation site.
 
-## Usage
+## Overview
+
+### General Configuration
+All Configuration is passed trough JSON-Files located in the following place
+
+```bash
+./config/config.{STAGE}.json
+{STAGE} refers to the deployment stage this instance is running.
+```
+
+Currently we are planning to create the following stages:
+- DEV
+- TESTING
+- PROD
+
+The config file contains all static, non-secret information we need to start and run dBildung-iam-server.
+
+#### Data Model
+```json
+{
+  "HOST": {
+    "PORT": <this is the server port>
+  },
+  "DB": {
+    "CLIENT_URL": "<here goes your connection string>",
+    "DB_NAME": "<here goes your db name>"
+  }
+}
+```
+
+### Secrets Configuration
+Secrets are provided inside the application in the same way as the static configuration.
+```bash
+./config/secrets.json
+```
+
+There are however a few special rules applied to them:
+
+- This file is NEVER checked-in into the repository
+- This file is created by the CI/CD pipeline with appropriate information for the given stage
+
+#### Data Model
+```json
+{
+    "DB": {
+        "SECRET": "<here goes your secret>"
+    }
+}
+```
+
+## Developer Guide
 
 The nest configuration package provides a module which must be imported to use the `ConfigService`.
 We are using the config module as a global module, which makes the `ConfigService` globally available.
 Here comes an example:
 
+### Initialization
+The ConfigModule is initialized in the ServerModule and can be used globally from there by injecting the ConfigService and loading the needed part of the configuration
+
+```ts
+ConfigModule.forRoot({
+  isGlobal: true,
+  validate: loadEnvConfig, //NestJs loads this first and is the only place it loads ENV-variables. We use this to load the current stage
+  load: [loadConfig],
+});
+```
+
+### Usage
 ```ts
 class MyClass {
     public constructor(private readonly configService: ServerConfig<ServerConfig, true>) {}
 
     public myFunction(): void {
         // the config keys are compile time checked
-        const env: NodeEnvType = this.configService.getOrThrow<NodeEnvType>('NODE_ENV');
+        const env: DeployStage = this.configService.getOrThrow<DeployStage>('DEPLOY_STAGE');
         const dbConfig: DbConfig = this.configService.getOrThrow<DbConfig>('DB');
+        const dbName: string = dbConfig.DB_NAME;
         // ...
     }
 }
 ```
 
-## Structure
+### Structure
 
 ![Configuration Composition Structure](./img/config-structure.svg)
 
@@ -39,7 +102,7 @@ class MyClass {
   * Should be used as the generic parameter e.g. `ConfigService<ServerConfig, true>`
 * **EnvConfig**
   * Is loaded from environment variables and .env file
-  * Should be used for secrets or api keys
+  * This is used to determine the correct deployment environment
 * **JsonConfig**
   * Is loaded form an environment specific json file
   * Json files can be found in the `config` folder in the repository root

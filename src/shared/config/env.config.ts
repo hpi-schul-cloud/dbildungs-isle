@@ -1,14 +1,14 @@
 import { IsEnum } from 'class-validator';
 
-export enum NodeEnvType {
+export enum DeployStage {
     TEST = 'test',
     DEV = 'dev',
     PROD = 'prod',
 }
 
 export class EnvConfig {
-    @IsEnum(NodeEnvType)
-    public readonly NODE_ENV!: NodeEnvType;
+    @IsEnum(DeployStage)
+    public readonly DEPLOY_STAGE!: DeployStage;
 
     public readonly NEST_LOG_LEVEL!: string;
 

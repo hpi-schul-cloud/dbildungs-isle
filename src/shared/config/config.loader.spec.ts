@@ -1,26 +1,26 @@
 import 'reflect-metadata'; // some decorators use reflect-metadata in the background
 import fs from 'fs';
-import { EnvConfig, JsonConfig, NodeEnvType, loadConfig, validateConfig } from '../config/index.js';
+import { EnvConfig, JsonConfig, DeployStage, loadConfigFiles, loadEnvConfig } from './index.js';
 
-describe('helpers', () => {
-    describe('validateConfig', () => {
+describe('configloader', () => {
+    describe('loadEnvConfig', () => {
         describe('when config is valid', () => {
             it('should return validated EnvConfig', () => {
-                const config: Record<string, unknown> = { NODE_ENV: NodeEnvType.DEV };
-                const validatedConfig: EnvConfig = validateConfig(config);
+                const config: Record<string, unknown> = { DEPLOY_STAGE: DeployStage.DEV };
+                const validatedConfig: EnvConfig = loadEnvConfig(config);
                 expect(validatedConfig).toBeInstanceOf(EnvConfig);
             });
         });
 
         describe('when config is invalid', () => {
             it('should throw', () => {
-                const config: Record<string, unknown> = { NODE_ENV: '' };
-                expect(() => validateConfig(config)).toThrow();
+                const config: Record<string, unknown> = { DEPLOY_STAGE: '' };
+                expect(() => loadEnvConfig(config)).toThrow();
             });
         });
     });
 
-    describe('loadConfig', () => {
+    describe('loadConfigFiles', () => {
         describe('when config is valid', () => {
             let readFileSyncSpy: jest.SpyInstance;
 
@@ -34,8 +34,11 @@ describe('helpers', () => {
                 },
             };
 
+            const secrets: string = '{"DB": {"SECRET": "SuperSecretSecret"}}';
+
             beforeAll(() => {
-                readFileSyncSpy = jest.spyOn(fs, 'readFileSync').mockReturnValue(JSON.stringify(config));
+                readFileSyncSpy = jest.spyOn(fs, 'readFileSync').mockReturnValueOnce(JSON.stringify(config));
+                readFileSyncSpy = jest.spyOn(fs, 'readFileSync').mockReturnValueOnce(secrets);
             });
 
             afterAll(() => {
@@ -43,9 +46,9 @@ describe('helpers', () => {
             });
 
             it('should return validated JsonConfig', () => {
-                const validatedConfig: JsonConfig = loadConfig();
+                const validatedConfig: JsonConfig = loadConfigFiles();
                 expect(validatedConfig).toBeInstanceOf(JsonConfig);
-                expect(readFileSyncSpy).toBeCalledTimes(1);
+                expect(readFileSyncSpy).toBeCalledTimes(2);
             });
         });
 
@@ -71,8 +74,8 @@ describe('helpers', () => {
             });
 
             it('should throw', () => {
-                expect(() => loadConfig()).toThrow();
-                expect(readFileSyncSpy).toBeCalledTimes(1);
+                expect(() => loadConfigFiles()).toThrow();
+                expect(readFileSyncSpy).toBeCalledTimes(2);
             });
         });
     });
