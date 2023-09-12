@@ -8,8 +8,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { DbConfig, loadConfig, validateConfig, ServerConfig } from '../shared/config/index.js';
 import { mappingErrorHandler } from '../shared/error/index.js';
 import { PersonApiModule } from '../modules/person/person-api.module.js';
-import { NestLoggerModule } from '../core/logging/nest-logger.module.js';
 import { ErrorModule } from '../core/error/error.module.js';
+import { LoggerModule } from '../core/logging/logger.module.js';
 
 @Module({
     imports: [
@@ -36,7 +36,7 @@ import { ErrorModule } from '../core/error/error.module.js';
             inject: [ConfigService],
         }),
         PersonApiModule,
-        NestLoggerModule,
+        LoggerModule.register(ServerModule.name),
         ErrorModule,
     ],
 })

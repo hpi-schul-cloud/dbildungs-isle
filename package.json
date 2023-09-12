@@ -24,7 +24,8 @@
         "lint": "eslint \"./{src,test}/**/*.ts\" --ignore-path .gitignore --max-warnings=0",
         "lint:fix": "eslint \"./{src,test}/**/*.ts\" --fix --ignore-path .gitignore",
         "start:console": "nest start console --",
-        "db:init": "npm run start:console -- db init"
+        "db:init": "npm run start:console -- db init",
+        "setup": "npm run db:init"
     },
     "dependencies": {
         "@automapper/classes": "^8.7.7",
@@ -43,7 +44,6 @@
         "class-validator": "^0.14.0",
         "express": "^4.18.2",
         "nest-commander": "^3.9.0",
-        "nest-winston": "^1.9.3",
         "reflect-metadata": "^0.1.13",
         "rxjs": "^7.2.0",
         "winston": "^3.10.0"

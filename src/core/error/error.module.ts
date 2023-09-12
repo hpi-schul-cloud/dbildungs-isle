@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { APP_FILTER } from '@nestjs/core';
-import { GlobalErrorFilter } from './filter/global-error.filter.js';
+import { GlobalExceptionFilter } from './filter/global-exception.filter.js';
 import { LoggerModule } from '../logging/logger.module.js';
 
 /**
@@ -11,7 +11,7 @@ import { LoggerModule } from '../logging/logger.module.js';
     providers: [
         {
             provide: APP_FILTER,
-            useClass: GlobalErrorFilter,
+            useClass: GlobalExceptionFilter,
         },
     ],
 })

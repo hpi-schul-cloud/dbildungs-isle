@@ -2,15 +2,10 @@ import { ArgumentsHost, Catch, ExceptionFilter } from '@nestjs/common';
 import { ClassLogger } from '../../core/logging/class-logger.js';
 import { Response } from 'express';
 import util from 'util';
-import { DetailedValidationError } from '../validation/detailed-validation.error.js';
+import { DetailedValidationError } from '../../core/validation/detailed-validation.error.js';
 import { ValidationError } from 'class-validator';
 import { HttpArgumentsHost } from '@nestjs/common/interfaces/index.js';
-
-export type SchulConnexError = {
-    subcode: string;
-    title: string;
-    description: string;
-};
+import { SchulConnexError } from './schul-connex-error.js';
 
 @Catch(DetailedValidationError)
 export class SchulConnexValidationErrorFilter implements ExceptionFilter<DetailedValidationError> {
@@ -22,7 +17,7 @@ export class SchulConnexValidationErrorFilter implements ExceptionFilter<Detaile
         const ctx: HttpArgumentsHost = host.switchToHttp();
         const response: Response = ctx.getResponse<Response>();
 
-        const schulConnexError: SchulConnexError = this.handleValidationError(exception);
+        const schulConnexError: Omit<SchulConnexError, 'statusCode'> = this.handleValidationError(exception);
 
         response.status(400).json({
             statusCode: 400,
@@ -30,7 +25,7 @@ export class SchulConnexValidationErrorFilter implements ExceptionFilter<Detaile
         });
     }
 
-    private handleValidationError(validationError: DetailedValidationError): SchulConnexError {
+    private handleValidationError(validationError: DetailedValidationError): Omit<SchulConnexError, 'statusCode'> {
         const validationErrors: ValidationError[] = validationError.validationErrors;
 
         if (validationErrors.length < 1 || !validationErrors[0])
