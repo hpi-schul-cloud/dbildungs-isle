@@ -1,7 +1,5 @@
 import { DynamicModule, Module } from '@nestjs/common';
-import { utilities } from 'nest-winston';
-import { LoggerOptions } from 'winston';
-import winston from 'winston';
+import winston, { LoggerOptions } from 'winston';
 import { ClassLogger } from './class-logger.js';
 import { ModuleLogger } from './module-logger.js';
 
@@ -11,7 +9,8 @@ export const defaultLoggerOptions: LoggerOptions = {
     format: winston.format.combine(
         winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss.SSS' }),
         winston.format.ms(),
-        utilities.format.nestLike(),
+        winston.format.uncolorize(),
+        winston.format.json(),
     ),
     handleExceptions: true,
     handleRejections: true,
@@ -32,7 +31,7 @@ export class LoggerModule {
             providers: [
                 {
                     provide: MODULE_NAME,
-                    useValue: moduleName
+                    useValue: moduleName,
                 },
                 ModuleLogger,
                 ClassLogger,
