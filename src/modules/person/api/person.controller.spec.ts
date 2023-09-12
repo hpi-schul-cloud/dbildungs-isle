@@ -1,5 +1,5 @@
 import { faker } from '@faker-js/faker';
-import { DeepMocked, createMock } from '@golevelup/ts-jest';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MapperTestModule } from '../../../../test/utils/index.js';
 import { CreatePersonBodyParams } from './create-person.body.params.js';
@@ -9,6 +9,7 @@ import { PersonUc } from './person.uc.js';
 import { PersonByIdParams } from './person-by-id.param.js';
 import { PersonResponse } from './person.response.js';
 import { HttpException } from '@nestjs/common';
+import { ClassLogger } from '../../../core/logging/class-logger.js';
 
 describe('PersonController', () => {
     let module: TestingModule;
@@ -24,6 +25,10 @@ describe('PersonController', () => {
                 {
                     provide: PersonUc,
                     useValue: createMock<PersonUc>(),
+                },
+                {
+                    provide: ClassLogger,
+                    useValue: createMock<ClassLogger>(),
                 },
             ],
         }).compile();
