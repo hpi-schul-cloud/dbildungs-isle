@@ -1,5 +1,5 @@
 import { faker } from '@faker-js/faker';
-import { DeepMocked, createMock } from '@golevelup/ts-jest';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MapperTestModule } from '../../../../test/utils/index.js';
 import { CreatePersonBodyParams } from './create-person.body.params.js';
@@ -13,6 +13,7 @@ import { PersonenQueryParam } from './personen-query.param.js';
 import { PersonBirthParams } from './person-birth.params.js';
 import { TrustLevel } from '../domain/person.enums.js';
 import { PersonenDatensatz } from './personendatensatz.js';
+import { ClassLogger } from '../../../core/logging/class-logger.js';
 
 describe('PersonController', () => {
     let module: TestingModule;
@@ -32,6 +33,10 @@ describe('PersonController', () => {
                 {
                     provide: PersonUc,
                     useValue: createMock<PersonUc>(),
+                },
+                {
+                    provide: ClassLogger,
+                    useValue: createMock<ClassLogger>(),
                 },
             ],
         }).compile();

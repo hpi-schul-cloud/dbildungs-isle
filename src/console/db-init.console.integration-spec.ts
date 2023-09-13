@@ -4,6 +4,8 @@ import { ConfigTestModule, DatabaseTestModule, LoggingTestModule } from '../../t
 import { DbInitConsole } from './db-init.console.js';
 import { ConfigService } from '@nestjs/config';
 import { DbConfig, ServerConfig } from '../shared/config/index.js';
+import { ClassLogger } from '../core/logging/class-logger.js';
+import { createMock } from '@golevelup/ts-jest';
 
 describe('DbInitConsole', () => {
     let module: TestingModule;
@@ -14,7 +16,13 @@ describe('DbInitConsole', () => {
     beforeAll(async () => {
         module = await Test.createTestingModule({
             imports: [ConfigTestModule, DatabaseTestModule.forRoot({ isDatabaseRequired: true }), LoggingTestModule],
-            providers: [DbInitConsole],
+            providers: [
+                DbInitConsole,
+                {
+                    provide: ClassLogger,
+                    useValue: createMock<ClassLogger>(),
+                },
+            ],
         }).compile();
         sut = module.get(DbInitConsole);
         orm = module.get(MikroORM);
