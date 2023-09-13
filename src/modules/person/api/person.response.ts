@@ -2,7 +2,9 @@ import { AutoMap } from '@automapper/classes';
 import { PersonNameParams } from './person-name.params.js';
 import { IsOptional, IsString, IsUUID, ValidateNested } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { Expose, Type } from 'class-transformer';
+import { Type } from 'class-transformer';
+import { PersonBirthParams } from './person-birth.params.js';
+import { TrustLevel } from '../domain/person.enums.js';
 
 export class PersonResponse {
     @AutoMap()
@@ -21,13 +23,42 @@ export class PersonResponse {
     @IsOptional()
     @IsString()
     @IsUUID()
-    @Expose({ name: 'mandant' })
     @ApiProperty({ name: 'mandant', required: true })
-    public client: string = '';
+    public mandant: string = '';
 
     @AutoMap(() => PersonNameParams)
     @ValidateNested()
     @Type(() => PersonNameParams)
-    @ApiProperty({ type: PersonNameParams, required: true })
+    @ApiProperty({ name: 'name', type: PersonNameParams, required: true })
     public name!: PersonNameParams;
+
+    @AutoMap()
+    @ValidateNested()
+    @Type(() => PersonBirthParams)
+    @ApiProperty({ name: 'geburt', type: PersonBirthParams, required: true })
+    public geburt!: PersonBirthParams;
+
+    @AutoMap()
+    @IsOptional()
+    @IsString()
+    @ApiProperty({ name: 'stammorganisation', required: false })
+    public readonly stammorganisation?: string;
+
+    @AutoMap()
+    @IsOptional()
+    @IsString()
+    @ApiProperty({ name: 'geschlecht', required: true })
+    public geschlecht!: string;
+
+    @AutoMap()
+    @IsOptional()
+    @IsString()
+    @ApiProperty({ name: 'lokalisierung', required: true })
+    public lokalisierung!: string;
+
+    @AutoMap()
+    @IsOptional()
+    @IsString()
+    @ApiProperty({ name: 'vertrauensstufe', required: true })
+    public vertrauensstufe!: TrustLevel;
 }

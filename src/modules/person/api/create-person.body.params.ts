@@ -1,6 +1,6 @@
 import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
-import { Expose, Type } from 'class-transformer';
+import { Type } from 'class-transformer';
 import { IsBoolean, IsEnum, IsOptional, IsString, IsUUID, ValidateNested } from 'class-validator';
 import { PersonBirthParams } from './person-birth.params.js';
 import { PersonNameParams } from './person-name.params.js';
@@ -17,16 +17,14 @@ export class CreatePersonBodyParams {
     @IsOptional()
     @IsString()
     @IsUUID()
-    @Expose({ name: 'mandant' })
     @ApiProperty({ name: 'mandant', required: true })
-    public readonly client!: string;
+    public readonly mandant!: string;
 
     @AutoMap()
     @IsOptional()
     @IsString()
-    @Expose({ name: 'stammorganisation' })
     @ApiProperty({ name: 'stammorganisation', required: false })
-    public readonly mainOrganization?: string;
+    public readonly stammorganisation?: string;
 
     @AutoMap(() => PersonNameParams)
     @ValidateNested()
@@ -36,38 +34,33 @@ export class CreatePersonBodyParams {
 
     @AutoMap(() => PersonBirthParams)
     @ValidateNested()
-    @Expose({ name: 'geburt' })
     @Type(() => PersonBirthParams)
     @ApiProperty({ name: 'geburt', required: true })
-    public readonly birth!: PersonBirthParams;
+    public readonly geburt!: PersonBirthParams;
 
     @AutoMap()
     @IsOptional()
     @IsString()
     @IsEnum(PersonGender)
-    @Expose({ name: 'geschlecht' })
     @ApiProperty({ name: 'geschlecht', enum: PersonGender, required: false })
-    public readonly gender?: PersonGender;
+    public readonly geschlecht?: PersonGender;
 
     @AutoMap()
     @IsOptional()
     @IsString()
-    @Expose({ name: 'lokalisierung' })
     @ApiProperty({ name: 'lokalisierung', default: 'de-DE', required: false })
-    public readonly localization?: string = 'de-DE';
+    public readonly lokalisierung?: string = 'de-DE';
 
     @AutoMap()
     @IsOptional()
     @IsString()
     @IsEnum(PersonTrustLevel)
-    @Expose({ name: 'vertrauensstufe' })
     @ApiProperty({ name: 'vertrauensstufe', enum: PersonTrustLevel, required: false })
-    public readonly trustLevel?: PersonTrustLevel;
+    public readonly vertrauensstufe?: PersonTrustLevel;
 
     @AutoMap()
     @IsOptional()
     @IsBoolean()
-    @Expose({ name: 'auskunftssperre' })
     @ApiProperty({ name: 'auskunftssperre', required: false })
-    public readonly isInformationBlocked?: boolean;
+    public readonly auskunftssperre?: boolean;
 }

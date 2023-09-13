@@ -29,6 +29,18 @@ export class PersonPersistenceMapperProfile extends AutomapperProfile {
                     (dest: PersonDo<boolean>) => dest.updatedAt,
                     mapFrom((src: PersonEntity) => src.updatedAt),
                 ),
+                forMember(
+                    (dest: PersonDo<boolean>) => dest.nameSalutation,
+                    mapFrom((src: PersonEntity) => src.nameSalutation),
+                ),
+                forMember(
+                    (dest: PersonDo<boolean>) => dest.namePrefix,
+                    mapFrom((src: PersonEntity) => src.namePrefix),
+                ),
+                forMember(
+                    (dest: PersonDo<boolean>) => dest.nameSuffix,
+                    mapFrom((src: PersonEntity) => src.nameSuffix),
+                ),
             );
         };
     }

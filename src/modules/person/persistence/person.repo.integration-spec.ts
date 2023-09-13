@@ -130,4 +130,33 @@ describe('PersonRepo', () => {
             });
         });
     });
+
+    describe('findAll', () => {
+        it('should find all persons from database', async () => {
+            const props: Partial<PersonDo<false>> = {
+                referrer: 'referrer_value',
+                firstName: 'first name',
+                lastName: 'last name',
+                isInformationBlocked: false,
+            };
+            const personDo1: PersonDo<false> = DoFactory.createPerson(false, props);
+            const personDo2: PersonDo<false> = DoFactory.createPerson(false, props);
+            await em.persistAndFlush(mapper.map(personDo1, PersonDo, PersonEntity));
+            await em.persistAndFlush(mapper.map(personDo2, PersonDo, PersonEntity));
+            const personDoFromQueryParam: PersonDo<false> = DoFactory.createPerson(false, props);
+            const result: PersonDo<true>[] = await sut.findAll(personDoFromQueryParam);
+            expect(result).not.toBeNull();
+            expect(result).toHaveLength(2);
+            await expect(em.find(PersonEntity, {})).resolves.toHaveLength(2);
+        });
+
+        it('should return an empty list', async () => {
+            const props: Partial<PersonDo<false>> = {};
+            const personDoFromQueryParam: PersonDo<false> = DoFactory.createPerson(false, props);
+            const result: PersonDo<true>[] = await sut.findAll(personDoFromQueryParam);
+            expect(result).not.toBeNull();
+            expect(result).toHaveLength(0);
+            await expect(em.find(PersonEntity, {})).resolves.toHaveLength(0);
+        });
+    });
 });

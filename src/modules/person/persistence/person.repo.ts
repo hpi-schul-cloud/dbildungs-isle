@@ -5,7 +5,6 @@ import { Inject, Injectable } from '@nestjs/common';
 import { PersonDo } from '../domain/person.do.js';
 import { PersonEntity } from './person.entity.js';
 import { Loaded } from '@mikro-orm/core';
-
 @Injectable()
 export class PersonRepo {
     public constructor(private readonly em: EntityManager, @Inject(getMapperToken()) private readonly mapper: Mapper) {}
@@ -57,5 +56,23 @@ export class PersonRepo {
         }
         await this.em.persistAndFlush(person);
         return this.mapper.map(person, PersonEntity, PersonDo);
+    }
+
+    public async findAll(personDo: PersonDo<false>): Promise<PersonDo<true>[]> {
+        const query: Record<string, unknown> = {};
+
+        if (personDo.firstName) {
+            query['firstName'] = { $ilike: personDo.firstName };
+        }
+
+        if (personDo.lastName) {
+            query['lastName'] = { $ilike: personDo.lastName };
+        }
+
+        if (personDo.referrer) {
+            query['referrer'] = personDo.referrer;
+        }
+        const result: PersonEntity[] = await this.em.find(PersonEntity, query);
+        return result.map((person: PersonEntity) => this.mapper.map(person, PersonEntity, PersonDo));
     }
 }

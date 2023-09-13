@@ -6,7 +6,10 @@ import { CreatePersonDto } from '../domain/create-person.dto.js';
 import { PersonService } from '../domain/person.service.js';
 import { PersonApiMapperProfile } from './person-api.mapper.profile.js';
 import { PersonUc } from './person.uc.js';
+import { FindPersonDatensatzDTO } from './finde-persondatensatz-dto.js';
 import { faker } from '@faker-js/faker';
+import { PersonDo } from '../domain/person.do.js';
+import { PersonenDatensatz } from './personendatensatz.js';
 
 describe('PersonUc', () => {
     let module: TestingModule;
@@ -86,6 +89,34 @@ describe('PersonUc', () => {
                 });
                 await expect(personUc.findPersonById(id)).rejects.toThrowError(EntityNotFoundError);
             });
+        });
+    });
+
+    describe('findAll', () => {
+        const personDTO: FindPersonDatensatzDTO = {
+            referrer: '',
+            familienname: '',
+            vorname: '',
+        };
+
+        it('should find all persons that match with query param', async () => {
+            const firstPerson: PersonDo<true> = DoFactory.createPerson(true);
+            const secondPerson: PersonDo<true> = DoFactory.createPerson(true);
+            const persons: PersonDo<true>[] = [firstPerson, secondPerson];
+            personServiceMock.findAllPersons.mockResolvedValue(persons);
+            const result: PersonenDatensatz[] = await personUc.findAll(personDTO);
+            expect(result).toHaveLength(2);
+            expect(result.at(0)?.person.name.vorname).toEqual(firstPerson.firstName);
+            expect(result.at(0)?.person.name.familienname).toEqual(firstPerson.lastName);
+            expect(result.at(1)?.person.name.vorname).toEqual(secondPerson.firstName);
+            expect(result.at(1)?.person.name.familienname).toEqual(secondPerson.lastName);
+        });
+
+        it('should return an empty array when no matching persons are found', async () => {
+            const emptyResult: PersonDo<true>[] = [];
+            personServiceMock.findAllPersons.mockResolvedValue(emptyResult);
+            const result: PersonenDatensatz[] = await personUc.findAll(personDTO);
+            expect(result).toEqual([]);
         });
     });
 });

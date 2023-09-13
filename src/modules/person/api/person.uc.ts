@@ -4,7 +4,8 @@ import { Inject, Injectable } from '@nestjs/common';
 import { CreatePersonDto } from '../domain/create-person.dto.js';
 import { PersonService } from '../domain/person.service.js';
 import { PersonDo } from '../domain/person.do.js';
-import { PersonResponse } from './person.response.js';
+import { FindPersonDatensatzDTO } from './finde-persondatensatz-dto.js';
+import { PersonenDatensatz } from './personendatensatz.js';
 
 @Injectable()
 export class PersonUc {
@@ -22,12 +23,24 @@ export class PersonUc {
         throw result.error;
     }
 
-    public async findPersonById(id: string): Promise<PersonResponse> {
+    public async findPersonById(id: string): Promise<PersonenDatensatz> {
         const result: Result<PersonDo<true>> = await this.personService.findPersonById(id);
         if (result.ok) {
-            const person: PersonResponse = this.mapper.map(result.value, PersonDo, PersonResponse);
+            const person: PersonenDatensatz = this.mapper.map(result.value, PersonDo, PersonenDatensatz);
             return person;
         }
         throw result.error;
+    }
+
+    public async findAll(personDto: FindPersonDatensatzDTO): Promise<PersonenDatensatz[]> {
+        const personDo: PersonDo<false> = this.mapper.map(personDto, FindPersonDatensatzDTO, PersonDo);
+        const result: PersonDo<true>[] = await this.personService.findAllPersons(personDo);
+        if (result.length !== 0) {
+            const persons: PersonenDatensatz[] = result.map((person: PersonDo<true>) =>
+                this.mapper.map(person, PersonDo, PersonenDatensatz),
+            );
+            return persons;
+        }
+        return [];
     }
 }

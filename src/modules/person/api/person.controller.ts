@@ -1,6 +1,6 @@
 import { Mapper } from '@automapper/core';
 import { getMapperToken } from '@automapper/nestjs';
-import { Body, Controller, Get, Inject, Post, Param, HttpException, HttpStatus } from '@nestjs/common';
+import { Body, Controller, Get, Inject, Post, Param, HttpException, HttpStatus, Query } from '@nestjs/common';
 import {
     ApiBadRequestResponse,
     ApiCreatedResponse,
@@ -15,7 +15,9 @@ import { CreatePersonBodyParams } from './create-person.body.params.js';
 import { CreatePersonDto } from '../domain/create-person.dto.js';
 import { ClassLogger } from '../../../core/logging/class-logger.js';
 import { PersonByIdParams } from './person-by-id.param.js';
-import { PersonResponse } from './person.response.js';
+import { PersonenQueryParam } from './personen-query.param.js';
+import { FindPersonDatensatzDTO } from './finde-persondatensatz-dto.js';
+import { PersonenDatensatz } from './personendatensatz.js';
 
 @ApiTags('person')
 @Controller({ path: 'person' })
@@ -47,12 +49,27 @@ export class PersonController {
     @ApiNotFoundResponse({ description: 'The person does not exist.' })
     @ApiForbiddenResponse({ description: 'Insufficient permissions to get the person.' })
     @ApiInternalServerErrorResponse({ description: 'Internal server error while getting the person.' })
-    public async findPersonById(@Param() params: PersonByIdParams): Promise<PersonResponse | HttpException> {
+    public async findPersonById(@Param() params: PersonByIdParams): Promise<PersonenDatensatz | HttpException> {
         try {
-            const person: PersonResponse = await this.uc.findPersonById(params.personId);
+            const person: PersonenDatensatz = await this.uc.findPersonById(params.personId);
             return person;
         } catch (error) {
             return new HttpException('Requested entity does not exist', HttpStatus.NOT_FOUND);
         }
+    }
+
+    @Get()
+    @ApiCreatedResponse({ description: 'The persons were successfully pulled.' })
+    @ApiUnauthorizedResponse({ description: 'Not authorized to get persons.' })
+    @ApiForbiddenResponse({ description: 'Insufficient permissions to get persons.' })
+    @ApiInternalServerErrorResponse({ description: 'Internal server error while getting all persons.' })
+    public async findPersons(@Query() queryParams: PersonenQueryParam): Promise<PersonenDatensatz[]> {
+        const persondatensatzDTO: FindPersonDatensatzDTO = this.mapper.map(
+            queryParams,
+            PersonenQueryParam,
+            FindPersonDatensatzDTO,
+        );
+        const persons: PersonenDatensatz[] = await this.uc.findAll(persondatensatzDTO);
+        return persons;
     }
 }

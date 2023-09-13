@@ -1,67 +1,63 @@
 import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
-import { Expose } from 'class-transformer';
 import { IsArray, IsOptional, IsString } from 'class-validator';
 
 export class PersonNameParams {
     @AutoMap()
     @IsString()
-    @Expose({ name: 'familienname' })
     @ApiProperty({ name: 'familienname', required: true })
-    public readonly lastName!: string;
+    public readonly familienname!: string;
 
     @AutoMap()
     @IsString()
-    @Expose({ name: 'vorname' })
     @ApiProperty({ name: 'vorname', required: true })
-    public readonly firstName!: string;
+    public readonly vorname!: string;
 
     @AutoMap()
     @IsOptional()
     @IsString()
-    @Expose({ name: 'initialenfamilienname' })
     @ApiProperty({ name: 'initialenfamilienname', required: false })
-    public readonly initialsLastName?: string;
+    public readonly initialenfamilienname?: string;
 
     @AutoMap()
     @IsOptional()
     @IsString()
-    @Expose({ name: 'initialenvorname' })
     @ApiProperty({ name: 'initialenvorname', required: false })
-    public readonly initialsFirstName?: string;
+    public readonly initialenvorname?: string;
 
     @AutoMap()
     @IsOptional()
     @IsString()
-    @Expose({ name: 'rufname' })
     @ApiProperty({ name: 'rufname', required: false })
-    public readonly nickName?: string;
+    public readonly rufname?: string;
 
     @AutoMap()
     @IsOptional()
     @IsString()
-    @Expose({ name: 'titel' })
     @ApiProperty({ name: 'titel', required: false })
     public readonly title?: string;
 
     @AutoMap()
     @IsOptional()
     @IsArray()
-    @Expose({ name: 'anrede' })
     @ApiProperty({ name: 'anrede', required: false })
-    public readonly salutation?: string[];
+    public readonly anrede?: string[];
 
     @AutoMap()
     @IsOptional()
     @IsArray()
-    @Expose({ name: 'namenssuffix' })
     @ApiProperty({ name: 'namenssuffix', required: false })
-    public readonly suffix?: string[];
+    public readonly namenssuffix?: string[];
+
+    @AutoMap()
+    @IsOptional()
+    @IsArray()
+    @ApiProperty({ name: 'namenspraefix' })
+    public readonly namenspraefix?: string[];
 
     @AutoMap()
     @IsOptional()
     @IsString()
-    @Expose({ name: 'sortierindex' })
     @ApiProperty({ name: 'sortierindex', required: false })
-    public readonly sortIndex?: string;
+    public readonly sortierindex?: string;
 }
