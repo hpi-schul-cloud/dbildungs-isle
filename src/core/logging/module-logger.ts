@@ -1,4 +1,4 @@
-import winston, { Logger, format } from 'winston';
+import winston, { format, Logger } from 'winston';
 import { ConfigService } from '@nestjs/config';
 import { Inject } from '@nestjs/common';
 import util from 'util';
@@ -29,6 +29,7 @@ export const localFormatter: (info: winston.Logform.TransformableInfo) => string
     }
     return `${info.level}\t ${timestamp} (${ms})\t \x1b[33m[${context}]\x1b[39m - ${message}${trace}`;
 };
+
 export class ModuleLogger {
     private logger: Logger;
 
@@ -47,22 +48,13 @@ export class ModuleLogger {
         if (!level) {
             level = configService.get<string>('NEST_LOG_LEVEL', 'info');
         }
-        const localDevelopment: boolean = true; // TODO readFrom config and document how to configure
-        let loggerFormat: winston.Logform.Format = format.combine(
+
+        const loggerFormat = format.combine(
             format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss.SSS' }),
             winston.format.ms(),
-            format.printf((info: winston.Logform.TransformableInfo) => {
-                return util.inspect(info, { breakLength: Infinity });
-            }),
+            format.colorize(),
+            format.printf(localFormatter),
         );
-        if (localDevelopment) {
-            loggerFormat = format.combine(
-                format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss.SSS' }),
-                winston.format.ms(),
-                format.colorize(),
-                format.printf(localFormatter),
-            );
-        }
         this.logger = winston.createLogger({
             level,
             format: loggerFormat,
