@@ -1,6 +1,6 @@
 import { Mapper } from '@automapper/core';
 import { getMapperToken } from '@automapper/nestjs';
-import { Body, Controller, Get, Inject, Post, Param, HttpException, HttpStatus, Query } from '@nestjs/common';
+import { Body, Controller, Get, Inject, Post, Param, HttpException, Query } from '@nestjs/common';
 import {
     ApiBadRequestResponse,
     ApiCreatedResponse,
@@ -18,6 +18,8 @@ import { PersonByIdParams } from './person-by-id.param.js';
 import { PersonenQueryParam } from './personen-query.param.js';
 import { FindPersonDatensatzDTO } from './finde-persondatensatz-dto.js';
 import { PersonenDatensatz } from './personendatensatz.js';
+import { SchulConnexErrorMapper } from '../../../shared/error/schul-connex-error.mapper.js';
+import { SchulConnexError } from '../../../shared/error/schul-connex-error.js';
 
 @ApiTags('person')
 @Controller({ path: 'person' })
@@ -50,12 +52,12 @@ export class PersonController {
     @ApiForbiddenResponse({ description: 'Insufficient permissions to get the person.' })
     @ApiInternalServerErrorResponse({ description: 'Internal server error while getting the person.' })
     public async findPersonById(@Param() params: PersonByIdParams): Promise<PersonenDatensatz | HttpException> {
-        try {
-            const person: PersonenDatensatz = await this.uc.findPersonById(params.personId);
-            return person;
-        } catch (error) {
-            return new HttpException('Requested entity does not exist', HttpStatus.NOT_FOUND);
-        }
+            const result: PersonenDatensatz|SchulConnexError = await this.uc.findPersonById(params.personId);
+            if ( result instanceof PersonenDatensatz) {
+                return result
+            }
+            const error: HttpException = SchulConnexErrorMapper.mapSchulConnexErrorToHttpExcetion(result);
+            return error;
     }
 
     @Get()
