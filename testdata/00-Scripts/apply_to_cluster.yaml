@@ -1,7 +1,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: 'service-provider-static-data-job'
+  name: 'insert-test-data-job'
 spec:
   template:
     spec:
@@ -58,7 +58,7 @@ spec:
       volumes:
         - name: data
           configMap:
-            name: service-provider-static-data-cm-files
+            name: test-data-config-map
         - name: config
           secret:
             secretName: spsh-config
