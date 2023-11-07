@@ -1,0 +1,66 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: 'service-provider-static-data-job'
+spec:
+  template:
+    spec:
+      initContainers:
+        - name: db-setup
+          image: ghcr.io/dbildungsplattform/dbildungs-iam-server:latest
+          command: ['node', 'dist/src/console/main.js']
+          imagePullPolicy: Always
+          args:
+            - db
+            - init
+          env:
+            - name: NODE_ENV
+              value: 'prod'
+            - name: DEPLOY_STAGE
+              value: 'prod'
+          volumeMounts:
+            - mountPath: /app/config/
+              name: config
+              readOnly: true
+      containers:
+        - name: psql-client
+          image: alpine:latest
+          command: ["/bin/sh"]
+          args:
+            - -c
+            - 'apk add --no-cache postgresql15-client; psql -h $DB_HOST -p $DB_PORT -U $DB_USER --no-password -d $DB_NAME -f /data/script.sql'
+          env:
+            - name: DB_HOST
+              valueFrom:
+                secretKeyRef:
+                  key: db-host
+                  name: db-params
+            - name: DB_PORT
+              valueFrom:
+                secretKeyRef:
+                  key: db-port
+                  name: db-params
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  key: db-user
+                  name: db-params
+            - name: PGPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: db-pwd
+                  name: db-params
+            - name: DB_NAME
+              value: 'developer'
+          volumeMounts:
+            - mountPath: /data
+              name: data
+      volumes:
+        - name: data
+          configMap:
+            name: service-provider-static-data-cm-files
+        - name: config
+          secret:
+            secretName: spsh-config
+      restartPolicy: Never
+  backoffLimit: 0
