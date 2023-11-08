@@ -1,8 +1,8 @@
 import { AutoMap } from '@automapper/classes';
 import { ArrayType, DateTimeType, Entity, Enum, ManyToOne, Property } from '@mikro-orm/core';
-import { Gender, TrustLevel } from '../domain/person.enums.js';
 import { TimestampedEntity } from '../../../persistence/timestamped.entity.js';
 import { DataProviderEntity } from '../../../persistence/data-provider.entity.js';
+import { Geschlecht, Vertrauensstufe } from '../domain/person.enums.js';
 
 @Entity({ tableName: 'person' })
 export class PersonEntity extends TimestampedEntity<PersonEntity, 'id'> {
@@ -23,75 +23,75 @@ export class PersonEntity extends TimestampedEntity<PersonEntity, 'id'> {
 
     @AutoMap()
     @Property()
-    public client!: string;
+    public mandant!: string;
 
     @AutoMap()
     @Property({ nullable: true })
-    public readonly mainOrganization?: string;
+    public readonly stammorganisation?: string;
 
     @AutoMap()
     @Property()
-    public lastName!: string;
+    public familienname!: string;
 
     @AutoMap()
     @Property()
-    public firstName!: string;
+    public vorname!: string;
 
     @AutoMap()
     @Property({ nullable: true })
-    public initialsLastName?: string;
+    public initialenFamilienname?: string;
 
     @AutoMap()
     @Property({ nullable: true })
-    public initialsFirstName?: string;
+    public initialenVorname?: string;
 
     @AutoMap()
     @Property({ nullable: true })
-    public nickName?: string;
+    public rufname?: string;
 
     @AutoMap()
     @Property({ nullable: true })
-    public nameTitle?: string;
+    public nameTitel?: string;
 
-    @AutoMap()
+    @AutoMap(() => [String])
     @Property({ nullable: true, type: ArrayType })
-    public nameSalutation?: string[];
+    public nameAnrede?: string[];
 
-    @AutoMap()
+    @AutoMap(() => [String])
     @Property({ nullable: true, type: ArrayType })
-    public namePrefix?: string[];
+    public namePraefix?: string[];
 
-    @AutoMap()
+    @AutoMap(() => [String])
     @Property({ nullable: true, type: ArrayType })
     public nameSuffix?: string[];
 
     @AutoMap()
     @Property({ nullable: true })
-    public nameSortIndex?: string;
+    public nameSortierindex?: string;
 
     @AutoMap()
     @Property({ nullable: true, type: DateTimeType })
-    public birthDate?: Date;
+    public geburtsdatum?: Date;
 
     @AutoMap()
     @Property({ nullable: true })
-    public birthPlace?: string;
+    public geburtsort?: string;
 
-    @AutoMap()
-    @Enum({ items: () => Gender, nullable: true })
-    public gender?: Gender;
-
-    @AutoMap()
-    @Property({ nullable: true })
-    public localization?: string = 'de-DE';
-
-    @AutoMap()
-    @Enum({ items: () => TrustLevel, nullable: true })
-    public trustLevel?: TrustLevel;
+    @AutoMap(() => String)
+    @Enum({ items: () => Geschlecht, nullable: true })
+    public geschlecht?: Geschlecht;
 
     @AutoMap()
     @Property({ nullable: true })
-    public isInformationBlocked?: boolean;
+    public lokalisierung?: string = 'de-DE';
+
+    @AutoMap(() => String)
+    @Enum({ items: () => Vertrauensstufe, nullable: true })
+    public vertrauensstufe?: Vertrauensstufe;
+
+    @AutoMap()
+    @Property({ nullable: true })
+    public auskunftssperre?: boolean;
 
     @ManyToOne({ nullable: true })
     public dataProvider?: DataProviderEntity;

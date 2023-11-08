@@ -30,7 +30,7 @@ export class PersonenkontextDto {
     public readonly sichtfreigabe?: SichtfreigabeType;
 
     @AutoMap(() => LoeschungDto)
-    public readonly loeschung!: LoeschungDto;
+    public readonly loeschung?: LoeschungDto;
 
     @AutoMap()
     public readonly revision!: string;

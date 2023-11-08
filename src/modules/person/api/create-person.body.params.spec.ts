@@ -1,8 +1,8 @@
 import 'reflect-metadata';
 import { faker } from '@faker-js/faker';
 import { plainToInstance } from 'class-transformer';
-import { PersonGender, PersonTrustLevel } from './person.enums.js';
 import { CreatePersonBodyParams } from './create-person.body.params.js';
+import { Geschlecht, Vertrauensstufe } from '../domain/person.enums.js';
 
 describe('CreatePersonBodyParams', () => {
     const referenceParams: CreatePersonBodyParams = {
@@ -16,7 +16,7 @@ describe('CreatePersonBodyParams', () => {
             initialenvorname: faker.person.prefix(),
             initialenfamilienname: faker.person.suffix(),
             rufname: faker.person.fullName(),
-            title: faker.person.jobTitle(),
+            titel: faker.person.jobTitle(),
             anrede: [faker.person.jobTitle()],
             namenssuffix: [faker.person.suffix()],
             sortierindex: faker.person.bio(),
@@ -25,9 +25,9 @@ describe('CreatePersonBodyParams', () => {
             datum: faker.date.birthdate(),
             geburtsort: faker.location.city(),
         },
-        geschlecht: PersonGender.UNKNOWN,
+        geschlecht: Geschlecht.X,
         lokalisierung: faker.location.zipCode(),
-        vertrauensstufe: PersonTrustLevel.UNKNOWN,
+        vertrauensstufe: Vertrauensstufe.UNBE,
         auskunftssperre: false,
     };
 
@@ -43,14 +43,14 @@ describe('CreatePersonBodyParams', () => {
                 initialenvorname: referenceParams.name.initialenvorname,
                 initialenfamilienname: referenceParams.name.initialenfamilienname,
                 rufname: referenceParams.name.rufname,
-                title: referenceParams.name.title,
+                titel: referenceParams.name.titel,
                 anrede: referenceParams.name.anrede,
                 namenssuffix: referenceParams.name.namenssuffix,
                 sortierindex: referenceParams.name.sortierindex,
             },
             geburt: {
-                datum: referenceParams.geburt.datum,
-                geburtsort: referenceParams.geburt.geburtsort,
+                datum: referenceParams.geburt?.datum,
+                geburtsort: referenceParams.geburt?.geburtsort,
             },
             geschlecht: referenceParams.geschlecht,
             lokalisierung: referenceParams.lokalisierung,

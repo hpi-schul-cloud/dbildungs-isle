@@ -1,10 +1,29 @@
-import { IsBoolean, IsInt, IsNotEmpty, IsPositive, IsString, Max, Min } from 'class-validator';
+import {
+    IsBoolean,
+    IsInt,
+    IsNotEmpty,
+    IsOptional,
+    IsPositive,
+    IsString,
+    Max,
+    Min,
+    isBoolean,
+    isInt,
+    isString,
+} from 'class-validator';
+
+import { OneOf } from '../util/one-of.validator.decorator.js';
 
 export class FrontendConfig {
     @IsInt()
     @Min(1024)
     @Max(10000)
     public readonly PORT!: number;
+
+    @IsOptional()
+    @OneOf(isString, isInt, isBoolean)
+    // Refer to https://expressjs.com/en/guide/behind-proxies.html for more info
+    public readonly TRUST_PROXY?: string | number | boolean;
 
     @IsBoolean()
     @IsNotEmpty()

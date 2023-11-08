@@ -17,7 +17,7 @@ export class PersonNameDto {
     public rufname?: string;
 
     @AutoMap()
-    public title?: string;
+    public titel?: string;
 
     @AutoMap(() => [String])
     public anrede?: string[];

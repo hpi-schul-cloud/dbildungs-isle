@@ -36,11 +36,11 @@ export class PersonService {
     ): Promise<Paged<PersonDo<true>>> {
         const scope: PersonScope = new PersonScope()
             .findBy({
-                firstName: personDo.firstName,
-                lastName: personDo.lastName,
-                birthDate: personDo.birthDate,
+                vorname: personDo.vorname,
+                familienname: personDo.familienname,
+                geburtsdatum: personDo.geburtsdatum,
             })
-            .sortBy('firstName', ScopeOrder.ASC)
+            .sortBy('vorname', ScopeOrder.ASC)
             .paged(offset, limit);
         const [persons, total]: Counted<PersonDo<true>> = await this.personRepo.findBy(scope);
 

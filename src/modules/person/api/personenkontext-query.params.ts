@@ -9,7 +9,6 @@ export class PersonenkontextQueryParams {
     @IsOptional()
     @IsString()
     @ApiProperty({
-        name: 'referrer',
         required: false,
         nullable: true,
     })
@@ -19,7 +18,6 @@ export class PersonenkontextQueryParams {
     @IsOptional()
     @IsEnum(Rolle)
     @ApiProperty({
-        name: 'rolle',
         required: false,
         nullable: true,
     })
@@ -29,7 +27,6 @@ export class PersonenkontextQueryParams {
     @IsOptional()
     @IsEnum(Personenstatus)
     @ApiProperty({
-        name: 'personenstatus',
         required: false,
         nullable: true,
     })
@@ -39,7 +36,6 @@ export class PersonenkontextQueryParams {
     @IsOptional()
     @IsEnum(SichtfreigabeType)
     @ApiProperty({
-        name: 'sichtfreigabe',
         enum: SichtfreigabeType,
         default: SichtfreigabeType.NEIN,
         required: false,

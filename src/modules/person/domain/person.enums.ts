@@ -1,13 +1,13 @@
-export enum Gender {
-    MALE = 'male',
-    FEMALE = 'female',
-    DIVERSE = 'diverse',
-    UNKNOWN = 'unknown',
+export enum Vertrauensstufe {
+    KEIN = 'KEIN',
+    UNBE = 'UNBE',
+    TEIL = 'TEIL',
+    VOLL = 'VOLL',
 }
 
-export enum TrustLevel {
-    NONE = 'none',
-    UNKNOWN = 'unknown',
-    TRUSTED = 'trusted',
-    VERIFIED = 'verified',
+export enum Geschlecht {
+    M = 'm',
+    W = 'w',
+    D = 'd',
+    X = 'x',
 }

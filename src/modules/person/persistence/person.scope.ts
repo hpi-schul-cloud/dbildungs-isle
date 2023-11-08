@@ -3,9 +3,9 @@ import { ScopeBase, ScopeOperator } from '../../../shared/persistence/index.js';
 import { PersonEntity } from './person.entity.js';
 
 type FindProps = {
-    firstName: string;
-    lastName: string;
-    birthDate: Date;
+    vorname: string;
+    familienname: string;
+    geburtsdatum: Date;
 };
 
 export class PersonScope extends ScopeBase<PersonEntity> {
@@ -16,9 +16,9 @@ export class PersonScope extends ScopeBase<PersonEntity> {
     public findBy(findProps: Findable<FindProps>, operator: ScopeOperator = ScopeOperator.AND): this {
         this.findByInternal(
             {
-                firstName: findProps.firstName,
-                lastName: findProps.lastName,
-                birthDate: findProps.birthDate,
+                vorname: findProps.vorname,
+                familienname: findProps.familienname,
+                geburtsdatum: findProps.geburtsdatum,
             },
             operator,
         );

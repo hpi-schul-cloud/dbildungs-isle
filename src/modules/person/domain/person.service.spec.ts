@@ -56,9 +56,9 @@ describe('PersonService', () => {
                 mapperMock.map.mockReturnValue(person as unknown as Dictionary<unknown>);
                 const result: Result<PersonDo<true>> = await personService.createPerson({
                     keycloakUserId: person.keycloakUserId,
-                    firstName: person.firstName,
-                    lastName: person.lastName,
-                    client: faker.string.uuid(),
+                    vorname: person.vorname,
+                    familienname: person.familienname,
+                    mandant: faker.string.uuid(),
                     id: undefined,
                     createdAt: undefined,
                     updatedAt: undefined,
@@ -76,9 +76,9 @@ describe('PersonService', () => {
                 personRepoMock.findByReferrer.mockResolvedValue(person);
                 const result: Result<PersonDo<true>> = await personService.createPerson({
                     keycloakUserId: person.keycloakUserId,
-                    firstName: person.firstName,
-                    lastName: person.lastName,
-                    client: person.client,
+                    vorname: person.vorname,
+                    familienname: person.familienname,
+                    mandant: person.mandant,
                     referrer: person.referrer as string,
                     id: undefined,
                     createdAt: undefined,

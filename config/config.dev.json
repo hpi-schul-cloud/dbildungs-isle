@@ -4,6 +4,7 @@
     },
     "FRONTEND": {
         "PORT": 9091,
+        "TRUST_PROXY": false,
         "SECURE_COOKIE": false,
         "SESSION_SECRET": "SessionSecretForDevelopment",
         "SESSION_TTL_MS": 3600000,

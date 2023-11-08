@@ -1,5 +1,5 @@
 import { AutoMap } from '@automapper/classes';
-import { Gender, TrustLevel } from '../domain/person.enums.js';
+import { Geschlecht, Vertrauensstufe } from '../domain/person.enums.js';
 import { PersonNameDto } from './person-name.dto.js';
 import { PersonGeburtDto } from './person-geburt.dto.js';
 
@@ -32,14 +32,14 @@ export class PersonDto {
     public geburt!: PersonGeburtDto;
 
     @AutoMap(() => String)
-    public geschlecht?: string | Gender;
+    public geschlecht?: Geschlecht;
 
     @AutoMap()
     public lokalisierung?: string = 'de-DE';
 
     @AutoMap(() => String)
-    public vertrauensstufe?: TrustLevel;
+    public vertrauensstufe?: Vertrauensstufe;
 
     @AutoMap()
-    public isInformationBlocked?: boolean;
+    public auskunftssperre?: boolean;
 }

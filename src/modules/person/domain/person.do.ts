@@ -1,6 +1,6 @@
 import { AutoMap } from '@automapper/classes';
 import { DoBase } from '../../../shared/types/index.js';
-import { Gender, TrustLevel } from './person.enums.js';
+import { Geschlecht, Vertrauensstufe } from './person.enums.js';
 
 export class PersonDo<WasPersisted extends boolean> implements DoBase<WasPersisted> {
     /**
@@ -25,56 +25,56 @@ export class PersonDo<WasPersisted extends boolean> implements DoBase<WasPersist
     public referrer?: string;
 
     @AutoMap()
-    public client: string = '';
+    public mandant: string = '';
 
     @AutoMap()
-    public readonly mainOrganization?: string;
+    public readonly stammorganisation?: string;
 
     @AutoMap()
-    public lastName: string = '';
+    public familienname: string = '';
 
     @AutoMap()
-    public firstName: string = '';
+    public vorname: string = '';
 
     @AutoMap()
-    public initialsLastName?: string;
+    public initialenFamilienname?: string;
 
     @AutoMap()
-    public initialsFirstName?: string;
+    public initialenVorname?: string;
 
     @AutoMap()
-    public nickName?: string;
+    public rufname?: string;
 
     @AutoMap()
-    public nameTitle?: string;
+    public nameTitel?: string;
 
     @AutoMap(() => [String])
-    public nameSalutation?: string[];
+    public nameAnrede?: string[];
 
     @AutoMap(() => [String])
-    public namePrefix?: string[];
+    public namePraefix?: string[];
 
     @AutoMap(() => [String])
     public nameSuffix?: string[];
 
     @AutoMap()
-    public nameSortIndex?: string;
+    public nameSortierindex?: string;
 
     @AutoMap(() => Date)
-    public birthDate?: Date;
+    public geburtsdatum?: Date;
 
     @AutoMap()
-    public birthPlace?: string;
+    public geburtsort?: string;
 
     @AutoMap(() => String)
-    public gender?: Gender;
+    public geschlecht?: Geschlecht;
 
     @AutoMap()
-    public localization?: string = 'de-DE';
+    public lokalisierung?: string = 'de-DE';
 
     @AutoMap(() => String)
-    public trustLevel?: TrustLevel;
+    public vertrauensstufe?: Vertrauensstufe;
 
     @AutoMap()
-    public isInformationBlocked?: boolean;
+    public auskunftssperre?: boolean;
 }

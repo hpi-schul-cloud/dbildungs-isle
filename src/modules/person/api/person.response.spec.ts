@@ -1,6 +1,6 @@
 import { faker } from '@faker-js/faker';
 import { PersonResponse } from './person.response.js';
-import { TrustLevel } from '../domain/person.enums.js';
+import { Vertrauensstufe } from '../domain/person.enums.js';
 import { plainToInstance } from 'class-transformer';
 
 describe('PersonResponse', () => {
@@ -12,7 +12,7 @@ describe('PersonResponse', () => {
             initialenfamilienname: faker.person.lastName(),
             initialenvorname: faker.person.firstName(),
             rufname: faker.person.middleName(),
-            title: faker.string.alpha(),
+            titel: faker.string.alpha(),
             anrede: [faker.string.alpha(), faker.string.alpha()],
             namenssuffix: [],
             namenspraefix: [],
@@ -26,10 +26,10 @@ describe('PersonResponse', () => {
         },
         geschlecht: faker.person.gender(),
         lokalisierung: faker.location.country(),
-        vertrauensstufe: TrustLevel.TRUSTED,
+        vertrauensstufe: Vertrauensstufe.VOLL,
     };
 
-    it('should convert plain object of person resopne to a class of person response', () => {
+    it('should convert plain object of person response to a class of person response', () => {
         const person: object = {
             id: personResponse.id,
             name: personResponse.name,

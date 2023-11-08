@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
-import { INestApplication } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
+import { NestExpressApplication } from '@nestjs/platform-express';
 import { DocumentBuilder, OpenAPIObject, SwaggerModule } from '@nestjs/swagger';
 import RedisStore from 'connect-redis';
 import session from 'express-session';
@@ -13,7 +13,8 @@ import { GlobalValidationPipe } from '../shared/validation/index.js';
 import { BackendForFrontendModule } from './backend-for-frontend.module.js';
 
 async function bootstrap(): Promise<void> {
-    const app: INestApplication = await NestFactory.create(BackendForFrontendModule);
+    const app: NestExpressApplication = await NestFactory.create<NestExpressApplication>(BackendForFrontendModule);
+
     app.useGlobalPipes(new GlobalValidationPipe());
     const swagger: Omit<OpenAPIObject, 'paths'> = new DocumentBuilder()
         .setTitle('dBildungs IAM')
@@ -29,6 +30,10 @@ async function bootstrap(): Promise<void> {
     const configService: ConfigService<ServerConfig, true> = app.get(ConfigService<ServerConfig, true>);
     const frontendConfig: FrontendConfig = configService.getOrThrow<FrontendConfig>('FRONTEND');
     const redisConfig: RedisConfig = configService.getOrThrow<RedisConfig>('REDIS');
+
+    if (frontendConfig.TRUST_PROXY !== undefined) {
+        app.set('trust proxy', frontendConfig.TRUST_PROXY);
+    }
 
     const redisClient: RedisClientType = createClient({
         username: redisConfig.USERNAME,

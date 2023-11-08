@@ -46,7 +46,7 @@ describe('PersonScope', () => {
         describe('when filtering for persons', () => {
             beforeEach(async () => {
                 const persons: PersonEntity[] = Array.from({ length: 110 }, (_v: unknown, i: number) =>
-                    mapper.map(DoFactory.createPerson(false, { firstName: `John #${i}` }), PersonDo, PersonEntity),
+                    mapper.map(DoFactory.createPerson(false, { vorname: `John #${i}` }), PersonDo, PersonEntity),
                 );
 
                 await em.persistAndFlush(persons);
@@ -54,8 +54,8 @@ describe('PersonScope', () => {
 
             it('should return found persons', async () => {
                 const scope: PersonScope = new PersonScope()
-                    .findBy({ firstName: new RegExp('John #1') })
-                    .sortBy('firstName', ScopeOrder.ASC)
+                    .findBy({ vorname: new RegExp('John #1') })
+                    .sortBy('vorname', ScopeOrder.ASC)
                     .paged(10, 10);
                 const [persons, total]: Counted<PersonEntity> = await scope.executeQuery(em);
 

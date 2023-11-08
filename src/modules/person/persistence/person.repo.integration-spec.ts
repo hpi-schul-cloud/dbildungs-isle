@@ -162,9 +162,9 @@ describe('PersonRepo', () => {
             it('should return all matching persons', async () => {
                 const props: Partial<PersonDo<false>> = {
                     referrer: 'referrer_value',
-                    firstName: 'first name',
-                    lastName: 'last name',
-                    isInformationBlocked: false,
+                    vorname: 'first name',
+                    familienname: 'last name',
+                    auskunftssperre: false,
                 };
                 const personDo1: PersonDo<false> = DoFactory.createPerson(false, props);
                 const personDo2: PersonDo<false> = DoFactory.createPerson(false, props);
@@ -175,8 +175,8 @@ describe('PersonRepo', () => {
                 const [result]: Counted<PersonDo<true>> = await sut.findBy(
                     new PersonScope().findBy(
                         {
-                            firstName: props.firstName,
-                            lastName: props.lastName,
+                            vorname: props.vorname,
+                            familienname: props.familienname,
                         },
                         ScopeOperator.AND,
                     ),

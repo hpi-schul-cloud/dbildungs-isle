@@ -5,59 +5,59 @@ import { IsArray, IsOptional, IsString } from 'class-validator';
 export class PersonNameParams {
     @AutoMap()
     @IsString()
-    @ApiProperty({ name: 'familienname', required: true })
+    @ApiProperty({ required: true })
     public readonly familienname!: string;
 
     @AutoMap()
     @IsString()
-    @ApiProperty({ name: 'vorname', required: true })
+    @ApiProperty({ required: true })
     public readonly vorname!: string;
 
     @AutoMap()
     @IsOptional()
     @IsString()
-    @ApiProperty({ name: 'initialenfamilienname', required: false })
+    @ApiProperty({ required: false })
     public readonly initialenfamilienname?: string;
 
     @AutoMap()
     @IsOptional()
     @IsString()
-    @ApiProperty({ name: 'initialenvorname', required: false })
+    @ApiProperty({ required: false })
     public readonly initialenvorname?: string;
 
     @AutoMap()
     @IsOptional()
     @IsString()
-    @ApiProperty({ name: 'rufname', required: false })
+    @ApiProperty({ required: false })
     public readonly rufname?: string;
 
     @AutoMap()
     @IsOptional()
     @IsString()
-    @ApiProperty({ name: 'titel', required: false })
-    public readonly title?: string;
+    @ApiProperty({ required: false })
+    public readonly titel?: string;
 
-    @AutoMap()
+    @AutoMap(() => [String])
     @IsOptional()
     @IsArray()
-    @ApiProperty({ name: 'anrede', required: false })
+    @ApiProperty({ type: [String], required: false })
     public readonly anrede?: string[];
 
-    @AutoMap()
+    @AutoMap(() => [String])
     @IsOptional()
     @IsArray()
-    @ApiProperty({ name: 'namenssuffix', required: false })
+    @ApiProperty({ type: [String], required: false })
     public readonly namenssuffix?: string[];
 
-    @AutoMap()
+    @AutoMap(() => [String])
     @IsOptional()
     @IsArray()
-    @ApiProperty({ name: 'namenspraefix' })
+    @ApiProperty({ type: [String], required: false })
     public readonly namenspraefix?: string[];
 
     @AutoMap()
     @IsOptional()
     @IsString()
-    @ApiProperty({ name: 'sortierindex', required: false })
+    @ApiProperty({ required: false })
     public readonly sortierindex?: string;
 }

@@ -28,7 +28,7 @@ import {
 import { Public } from 'nest-keycloak-connect';
 import { Paged, PagedResponse, PagingHeadersObject } from '../../../shared/paging/index.js';
 import { PersonUc } from '../api/person.uc.js';
-import { CreatePersonDto } from '../domain/create-person.dto.js';
+import { CreatePersonDto } from './create-person.dto.js';
 import { CreatePersonBodyParams } from './create-person.body.params.js';
 import { CreatePersonenkontextBodyParams } from './create-personenkontext.body.params.js';
 import { CreatePersonenkontextDto } from './create-personenkontext.dto.js';

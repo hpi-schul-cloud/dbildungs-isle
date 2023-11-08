@@ -22,7 +22,6 @@ export class PersonenQueryParams extends PagedQueryParams {
     @IsOptional()
     @IsString()
     @ApiProperty({
-        name: 'familienname',
         required: false,
         nullable: true,
     })
@@ -32,7 +31,6 @@ export class PersonenQueryParams extends PagedQueryParams {
     @IsOptional()
     @IsString()
     @ApiProperty({
-        name: 'vorname',
         required: false,
         nullable: true,
     })
@@ -42,7 +40,6 @@ export class PersonenQueryParams extends PagedQueryParams {
     @IsOptional()
     @IsEnum(SichtfreigabeType)
     @ApiProperty({
-        name: 'sichtfreigabe',
         enum: SichtfreigabeType,
         default: SichtfreigabeType.NEIN,
         required: false,
