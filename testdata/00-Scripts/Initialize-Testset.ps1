@@ -48,7 +48,7 @@ try
     $jobName = (kubectl apply -f apply_to_cluster.yaml -o 'template={{.metadata.name}}')
     try
     {
-        if (kubectl wait job $jobName --for 'condition=complete' --timeout=30s)
+        if (kubectl wait job $jobName --for 'condition=complete' --timeout=60s)
         {
             kubectl logs --all-containers --prefix --selector "job-name=$jobName" --tail=-1 | Write-Error
             throw "Job did not complete in 30 seconds"
