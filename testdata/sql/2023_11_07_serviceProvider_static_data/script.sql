@@ -1,3 +1,5 @@
+-- noinspection SqlNoDataSourceInspectionForFile
+
 INSERT INTO service_provider (id, created_at, updated_at, name, url, provided_on_schulstrukturknoten)
 VALUES (1, NOW(), NOW(), 'Email', 'https://de.wikipedia.org/wiki/E-Mail', 1);
 
@@ -30,4 +32,4 @@ VALUES (1, NOW(), NOW());
 
 INSERT INTO person (id, created_at, updated_at, keycloak_user_id, referrer, mandant, stammorganisation, familienname, vorname, initialen_familienname, initialen_vorname, rufname, name_titel, name_anrede, name_praefix, name_suffix, name_sortierindex, geburtsdatum, geburtsort, geschlecht, lokalisierung, vertrauensstufe, auskunftssperre, data_provider_id)
 VALUES (1, NOW(), NOW(),
-'abb791f5-c0cb-4a4f-b9da-1135dbb974ed', null, 'client', null, 'Experimentus', 'Testus', null, null, 'test-user', null, null, null, null, null, NOW(), 'Hamburg', 'w', 'de', 'KEIN', false, 1);
+'22207262-196f-4995-8011-6830091ebdca', null, 'client', null, 'Experimentus', 'Testus', null, null, 'test-user', null, null, null, null, null, NOW(), 'Hamburg', 'w', 'de', 'KEIN', false, 1);
