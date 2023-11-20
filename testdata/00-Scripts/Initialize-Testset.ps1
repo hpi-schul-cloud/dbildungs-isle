@@ -45,13 +45,13 @@ try
 
 
     kubectl create configmap test-data-config-map --from-file $DBScriptPath | Out-Null
-    $jobName = (kubectl apply -f apply_to_cluster.yaml -o 'template={{.metadata.name}}')
+    $jobName = (kubectl apply -f $PSScriptRoot\apply_to_cluster.yaml -o 'template={{.metadata.name}}')
     try
     {
-        if (kubectl wait job $jobName --for 'condition=complete' --timeout=60s)
+        if (kubectl wait job $jobName --for 'condition=complete' --timeout=120s)
         {
             kubectl logs --all-containers --prefix --selector "job-name=$jobName" --tail=-1 | Write-Error
-            throw "Job did not complete in 30 seconds"
+            throw "Job did not complete in 120 seconds"
         }
         kubectl logs --all-containers --prefix --selector job-name=$jobName | Out-Host
     }
