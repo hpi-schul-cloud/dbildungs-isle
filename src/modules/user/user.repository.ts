@@ -27,4 +27,10 @@ export class UserRepository {
             throw loadedKcUser.error;
         }
     }
+
+    public async deleteUser(user: User): Promise<void> {
+        if (!user.new) {
+            await this.kcUserService.delete(user.id);
+        }
+    }
 }

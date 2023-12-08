@@ -132,4 +132,29 @@ describe('A User', () => {
             );
         });
     });
+
+    describe('when being deleted', () => {
+        let userBergbaum: User;
+        let userHerberg: User;
+
+        beforeAll(() => {
+            userBergbaum = new User('abcdefg', 'mbergbaum', '');
+            userHerberg = new User('dkapcda', 'kherberg', '');
+        });
+
+        it('should call the keycloak service with its id', async () => {
+            await userRepository.deleteUser(userBergbaum);
+            expect(kcUserService.delete).toBeCalledWith('abcdefg');
+
+            await userRepository.deleteUser(userHerberg);
+            expect(kcUserService.delete).toBeCalledWith('dkapcda');
+        });
+
+        it('should silently ignore deletion of new users', async () => {
+            const newUser: User = new User('', 'uneumann', '');
+            await userRepository.deleteUser(newUser);
+
+            expect(kcUserService.delete).not.toHaveBeenCalled();
+        });
+    });
 });
