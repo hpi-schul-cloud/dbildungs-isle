@@ -10,7 +10,7 @@
 
 ### General Configuration
 
-There is a general configuration which is used for local development and testing purposes. This configuration is passed trough JSON-Files located in the following place
+There is a general configuration which is used for local development and testing purposes. This configuration is passed through JSON-Files located in the following place
 
 ```bash
 ./config/config.json
@@ -72,7 +72,7 @@ Secrets are provided inside the application in the same way as the static config
 There are however a few special rules applied to them:
 
 -   This file is NEVER checked-in into the repository
--   There is a secrets.json.template file however from which a secrets file can be derrived
+-   There is a secrets.json.template file however from which a secrets file can be derived
 -   This file is created by the CI/CD pipeline with appropriate information for the given stage
 
 ### Environment Configuration
@@ -83,7 +83,7 @@ The way this works is: Within the configuration load (`config.loader.ts`) a file
 parameters from the Environment.
 
 If you want to override/set something in the kubernetes-deployment do the following:
-1. Extend the loading mechanism for Env-Loading by the parameter you wish to set. (Typescript derrived types should be used for safety reasons, Partial<> is your friend)
+1. Extend the loading mechanism for Env-Loading by the parameter you wish to set. (Typescript derived types should be used for safety reasons, Partial<> is your friend)
 2. Set the environment variable that you just used in the kubernetes-deployment to come from a secret or possibly a configmap based on its confidentiality
 3. If it comes from a secret make sure that this secret is set
 
@@ -174,12 +174,12 @@ class MyClass {
 ## How to expand the configuration?
 
 -   Where to put the new config value?
-    -   If it's something like a feature flag, than put it into the `JsonConfig`
+    -   If it's something like a feature flag, then put it into the `JsonConfig`
         -   Annotate the new property with the desired decorators
--   Do I want to expand an existing config class like `DbConfig`? If yes, than do the following steps:
+-   Do I want to expand an existing config class like `DbConfig`? If yes, then do the following steps:
     -   Put the new configuration value in the desired class
     -   Annotate the new property with the desired decorators
--   I wan to add configuration for a new feature
+-   I want to add configuration for a new feature
     -   Use the `DbConfig` as reference
         -   [ ] Create a new class in the `src/shared/config` folder
         -   [ ] Annotate the properties with the desired decorators
