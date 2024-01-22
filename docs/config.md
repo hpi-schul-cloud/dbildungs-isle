@@ -29,7 +29,7 @@ There are effectively three layers to the configuration
 ```json
 {
   "HOST": {
-    "PORT": <this is the server port>
+    "PORT": "<this is the server port>"
   },
   "DB": {
     "CLIENT_URL": "<here goes your connection string>",
@@ -40,23 +40,23 @@ There are effectively three layers to the configuration
     "ADMIN_REALM_NAME": "<name of the admin realm>",
     "ADMIN_CLIENT_ID": "<id of the admin client>",
     "REALM_NAME": "<name of the client realm>",
-    "CLIENT_ID": "<id of the client>",
+    "CLIENT_ID": "<id of the client>"
   },
   "FRONTEND": {
     "PORT": "<this is the bff port>",
     "TRUST_PROXY": "<optional, see https://expressjs.com/en/guide/behind-proxies.html>",
-    "SECURE_COOKIE": <Enables/Disables HTTPS for cookie>,
+    "SECURE_COOKIE": "<Enables/Disables HTTPS for cookie>",
     "BACKEND_ADDRESS": "<address of backend server>",
-    "SESSION_TTL_MS": <Time in milliseconds after which the session expires>,
+    "SESSION_TTL_MS": "<Time in milliseconds after which the session expires>",
     "OIDC_CALLBACK_URL": "<callback that is passed to keycloak>",
     "DEFAULT_LOGIN_REDIRECT": "<default redirect after auth is complete>",
     "LOGOUT_REDIRECT": "<where to redirect user after logout"
   },
   "REDIS": {
     "HOST": "<host of the redis server>",
-    "PORT": <port of the redis server>,
+    "PORT": "<port of the redis server>",
     "USERNAME": "<redis username>",
-    "USE_TLS": <use TLS for connection>
+    "USE_TLS": "<use TLS for connection>"
   }
 }
 ```
