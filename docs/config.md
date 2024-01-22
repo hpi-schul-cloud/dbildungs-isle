@@ -91,14 +91,14 @@ Please always **remember** that anything that can be overridden in the environme
 
 at the moment of writing those are:
 
-|Environment Variable Name|Purpose|Needs to come from a Kubernetes Secret|
-| ----------------------- | ------|--------------------------------------|
-|DB_NAME|Name of the Database to use (everything else is configured as fix in the deployment|No|
-|DB_SECRET|Database Password|Yes|
-|DB_CLIENT_URL|Everything for the DB connection which is neither Name nor Password|No|
-|KC_ADMIN_SECRET|Admin Secret for Keycloak|Yes|
-|KC_CLIENT_SECRET|Client Secret for Keycloak|Yes|
-|FRONTEND_SESSION_SECRET|Encryption secret for session handling in the frontend|Yes|
+| Environment Variable Name | Purpose                                                                             | Needs to come from a Kubernetes Secret |
+|---------------------------|-------------------------------------------------------------------------------------|----------------------------------------|
+| DB_NAME                   | Name of the Database to use (everything else is configured as fix in the deployment | No                                     |
+| DB_SECRET                 | Database Password                                                                   | Yes                                    |
+| DB_CLIENT_URL             | Everything for the DB connection which is neither Name nor Password                 | No                                     |
+| KC_ADMIN_SECRET           | Admin Secret for Keycloak                                                           | Yes                                    |
+| KC_CLIENT_SECRET          | Client Secret for Keycloak                                                          | Yes                                    |
+| FRONTEND_SESSION_SECRET   | Encryption secret for session handling in the frontend                              | Yes                                    |
 
 #### Data Model
 
