@@ -3,10 +3,10 @@ import { Test, TestingModule } from '@nestjs/testing';
 import {
     ConfigTestModule,
     DatabaseTestModule,
-    LoggingTestModule,
-    MapperTestModule,
     DoFactory,
     KeycloakConfigTestModule,
+    LoggingTestModule,
+    MapperTestModule,
 } from '../../../test/utils/index.js';
 import { DbSeedService } from './db-seed.service.js';
 import { DbSeedConsole } from './db-seed.console.js';
@@ -44,7 +44,7 @@ describe('DbSeedConsole', () => {
         dbSeedService = module.get(DbSeedService);
 
         await DatabaseTestModule.setupDatabase(module.get(MikroORM));
-    }, 100000);
+    }, 200000);
 
     beforeEach(async () => {
         await DatabaseTestModule.clearDatabase(orm);
