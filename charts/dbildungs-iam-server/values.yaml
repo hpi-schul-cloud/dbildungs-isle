@@ -153,7 +153,7 @@ redis:
   extraVolumes: []
   extraVolumeMounts: []
 redis-cluster:
-  enabled: false
+  enabled: true
   cluster:
       ## Number of Redis&reg; nodes to be deployed
       ##
