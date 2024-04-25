@@ -152,6 +152,7 @@ redis:
   extraEnvVars: []
   extraVolumes: []
   extraVolumeMounts: []
+
 redis-cluster:
   enabled: true
   cluster:
@@ -170,3 +171,7 @@ redis-cluster:
       ## 1 means that we want a replica for every master created
       ##
       replicas: 1
+  networkPolicy:
+    ## @param networkPolicy.enabled Enable creation of NetworkPolicy resources
+    ##
+    enabled: false
