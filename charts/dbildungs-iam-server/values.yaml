@@ -175,3 +175,7 @@ redis-cluster:
     ## @param networkPolicy.enabled Enable creation of NetworkPolicy resources
     ##
     enabled: false
+  serviceAccount:
+  ## @param serviceAccount.create Specifies whether a ServiceAccount should be created
+  ##
+  create: false
