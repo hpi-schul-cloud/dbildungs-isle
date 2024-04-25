@@ -178,4 +178,4 @@ redis-cluster:
   serviceAccount:
   ## @param serviceAccount.create Specifies whether a ServiceAccount should be created
   ##
-  create: false
+    create: false
