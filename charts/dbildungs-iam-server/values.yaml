@@ -179,5 +179,18 @@ redis-cluster:
   ## @param serviceAccount.create Specifies whether a ServiceAccount should be created
   ##
     create: false
-  configmap: "dbildungs-iam-server-redis-tls-data"
-            
+  statefulset:
+    volumes:
+      - name: tls-data
+        configMap:
+          name: dbildungs-iam-server-redis-tls-data
+    spec:
+      selector:
+        matchLabels: server-redis
+      serviceName: dbildungs-iam-server-redis
+      template:
+        metadata:
+          labels: server-redis
+  service:
+    spec:
+      selector: server-redis
