@@ -183,14 +183,4 @@ redis-cluster:
     volumes:
       - name: tls-data
         configMap:
-          name: dbildungs-iam-server-redis-tls-data
-    spec:
-      selector:
-        matchLabels: server-redis
-      serviceName: dbildungs-iam-server-redis
-      template:
-        metadata:
-          labels: server-redis
-  service:
-    spec:
-      selector: server-redis
+          name: "dbildungs-iam-server-redis-tls-data"
