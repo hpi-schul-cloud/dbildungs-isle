@@ -59,7 +59,7 @@ generate_cert redis "Generic-cert"
 
 NUM_NODES=6 
 for ((i=0; i<$NUM_NODES; i++)); do
-    generate_cert "tls_cluster/redis-$i" "Redis-$i" ""
+    generate_cert "tls/redis-$i" "Redis-$i" ""
 done
 
 [ -f tls/redis.dh ] || openssl dhparam -out tls/redis.dh 2048
