@@ -195,8 +195,8 @@ redis-cluster:
     extraVolumeMounts:
     - name: redis-tls-data
       mountPath: /tls
-    #podLabels:
-    #  app.kubernetes.io/component: server-redis
+    podLabels:
+      app.kubernetes.io/component: server-redis
   #commonLabels:
     #app.kubernetes.io/name: dbildungs-iam-server
       
