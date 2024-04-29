@@ -180,6 +180,5 @@ redis-cluster:
   ##
     create: false
   redis:
-    configmap: "dbildungs-iam-server-redis-tls-data"
-    #extraEnvVarsCM: "dbildungs-iam-server-redis-tls-data"
-    defaultConfigOverride: "dbildungs-iam-server-redis-tls-data"
+    configmap: dbildungs-iam-server-redis-tls-data
+    
