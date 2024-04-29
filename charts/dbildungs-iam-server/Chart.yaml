@@ -9,4 +9,6 @@ dependencies:
   repository: https://charts.bitnami.com/bitnami
   version: 10.0.2
   condition: redis-cluster.enabled
-  import-values: redis-values.yaml
+  import-values:
+    - child: configmap.dbildungs-iam-server-redis-tls-data
+      parent: redis.configmap
