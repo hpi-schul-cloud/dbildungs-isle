@@ -181,4 +181,5 @@ redis-cluster:
     create: false
   redis:
     configmap: dbildungs-iam-server-redis-tls-data
+    extraVolumes: dbildungs-iam-server-redis-tls-data
     
