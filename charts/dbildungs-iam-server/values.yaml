@@ -192,4 +192,11 @@ redis-cluster:
               path: copy-tls.sh
             - key: redis.conf
               path: redis.conf
+    extraVolumeMounts:
+    - name: redis-tls-data
+      mountPath: /tls
+    podLabels:
+      app.kubernetes.io/component: server-redis
+  commonLabels:
+    app.kubernetes.io/name: dbildungs-iam-server
       
