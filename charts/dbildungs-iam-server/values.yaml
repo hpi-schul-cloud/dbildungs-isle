@@ -181,8 +181,15 @@ redis-cluster:
     create: false
   redis:
     configmap: dbildungs-iam-server-redis-tls-data
-    extraVolumes: 
-      - name: tls-data
+    extraVolumes:
+      - name: redis-tls-data
         configMap:
           name: dbildungs-iam-server-redis-tls-data
-    
+          items:
+            - key: gencert.sh
+              path: gencert.sh
+            - key: copy-tls.sh
+              path: copy-tls.sh
+            - key: redis.conf
+              path: redis.conf
+      
