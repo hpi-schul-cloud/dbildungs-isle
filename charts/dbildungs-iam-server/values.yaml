@@ -170,8 +170,7 @@ redis-cluster:
       ## Parameter to be passed as --cluster-replicas to the redis-cli --cluster create
       ## 1 means that we want a replica for every master created
       ##
-      replicas: 1
-      serviceName: dbildungs-iam-server-redis   
+      replicas: 1   
   networkPolicy:
     ## @param networkPolicy.enabled Enable creation of NetworkPolicy resources
     ##
@@ -198,5 +197,4 @@ redis-cluster:
     podLabels:
       app.kubernetes.io/component: server-redis
   commonLabels:
-    app.kubernetes.io/name: dbildungs-iam-server
-  serviceName: dbildungs-iam-server-redis   
+    app.kubernetes.io/name: dbildungs-iam-server 
