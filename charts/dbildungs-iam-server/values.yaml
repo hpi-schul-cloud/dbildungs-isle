@@ -180,7 +180,7 @@ redis-cluster:
   ##
     create: false
   redis:
-    configmap: dbildungs-iam-server-redis-tls-data
+    #configmap: dbildungs-iam-server-redis-tls-data
     extraVolumes:
       - name: redis-tls-data
         configMap:
@@ -197,6 +197,6 @@ redis-cluster:
       mountPath: /tls
     podLabels:
       app.kubernetes.io/component: server-redis
-  #commonLabels:
-    #app.kubernetes.io/name: dbildungs-iam-server
+  commonLabels:
+    app.kubernetes.io/name: dbildungs-iam-server
       

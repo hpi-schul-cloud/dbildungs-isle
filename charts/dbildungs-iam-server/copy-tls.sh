@@ -21,10 +21,10 @@ cp -v tls/redis.crt tls/redis.key tls/ca.crt $CONFIG_DIR
 cp -v $MOUNTED_FILES_DIR/redis.conf $CONFIG_DIR
 
 # Copy certificates for Redis cluster nodes
-NUM_NODES=6 
-for ((i=0; i<$NUM_NODES; i++)); do
-    cp -v tls/redis-$i.crt tls_cluster/redis-$i.key $CONFIG_DIR
-done
+#NUM_NODES=6 
+#for ((i=0; i<$NUM_NODES; i++)); do
+#    cp -v tls/redis-$i.crt tls_cluster/redis-$i.key $CONFIG_DIR
+#done
 # End Bracket
 popd || exit 1
 
