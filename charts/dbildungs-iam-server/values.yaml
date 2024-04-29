@@ -171,6 +171,7 @@ redis-cluster:
       ## 1 means that we want a replica for every master created
       ##
       replicas: 1
+      serviceName: dbildungs-iam-server-redis   
   networkPolicy:
     ## @param networkPolicy.enabled Enable creation of NetworkPolicy resources
     ##
