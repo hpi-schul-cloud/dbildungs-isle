@@ -155,7 +155,7 @@ redis:
 
 redis-cluster:
   enabled: true
-  
+  password: "password"
   cluster:
       ## Number of Redis&reg; nodes to be deployed
       ##
@@ -182,6 +182,7 @@ redis-cluster:
     create: false
 
   redis:
+    usePassword: false
     username: "default"
     password: "password"
     extraVolumes:
