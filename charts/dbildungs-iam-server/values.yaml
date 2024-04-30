@@ -155,6 +155,7 @@ redis:
 
 redis-cluster:
   enabled: true
+  
   cluster:
       ## Number of Redis&reg; nodes to be deployed
       ##
@@ -181,8 +182,8 @@ redis-cluster:
     create: false
 
   redis:
-    usePassword: false
     username: "default"
+    password: "password"
     extraVolumes:
       - name: redis-tls-data
         configMap:
