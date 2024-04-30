@@ -155,6 +155,7 @@ redis:
 
 redis-cluster:
   enabled: true
+  password: "password"
   cluster:
       ## Number of Redis&reg; nodes to be deployed
       ##
@@ -180,6 +181,9 @@ redis-cluster:
   ##
     create: false
   redis:
+  redis:
+    usePassword: false
+    username: "default"
     extraVolumes:
       - name: redis-tls-data
         configMap:
@@ -194,6 +198,7 @@ redis-cluster:
     extraVolumeMounts:
     - name: redis-tls-data
       mountPath: /tls
+
     podLabels:
       app.kubernetes.io/component: server-redis
   commonLabels:
