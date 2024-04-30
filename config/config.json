@@ -28,7 +28,7 @@
         "ADMIN_SECRET": "44abDqJk2qgwRbpGfO0VZx7DpXeFsm7R"
     },
     "REDIS": {
-        "HOST": "dbildungs-iam-server-redis-cluster",
+        "HOST": "localhost",
         "PORT": 6379,
         "USERNAME": "default",
         "PASSWORD": "password",
