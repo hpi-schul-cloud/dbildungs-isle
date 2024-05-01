@@ -171,7 +171,7 @@ describe('OrganisationRepo', () => {
         });
     });
 
-    describe('findChildOrgasById', () => {
+    describe('findChildOrgasByIds', () => {
         describe('when not root', () => {
             it('should return found childs for root', async () => {
                 const organisationRootDo: OrganisationDo<false> = DoFactory.createOrganisation(false);
@@ -196,9 +196,9 @@ describe('OrganisationRepo', () => {
                 organisationChild1Level2Do.administriertVon = organisationChild1Level1.id;
                 await sut.save(organisationChild1Level2Do);
 
-                const foundOrganisations: Option<OrganisationDo<true>[]> = await sut.findChildOrgasForId(
+                const foundOrganisations: Option<OrganisationDo<true>[]> = await sut.findChildOrgasForIds([
                     organisationChild1Level1.id,
-                );
+                ]);
                 expect(foundOrganisations).toBeInstanceOf(Array);
                 expect(foundOrganisations).toHaveLength(1);
             });
@@ -229,19 +229,26 @@ describe('OrganisationRepo', () => {
                 organisationChild1Level2Do.administriertVon = organisationChild1Level1.id;
                 await sut.save(organisationChild1Level2Do);
 
-                const foundOrganisations: Option<OrganisationDo<true>[]> = await sut.findChildOrgasForId(
+                const foundOrganisations: Option<OrganisationDo<true>[]> = await sut.findChildOrgasForIds([
                     organisationRoot.id,
-                );
+                ]);
                 expect(foundOrganisations).toBeInstanceOf(Array);
                 expect(foundOrganisations).toHaveLength(3);
             });
         });
 
+        describe('empty input', () => {
+            it('should return null', async () => {
+                const foundOrganisations: Option<OrganisationDo<true>[]> = await sut.findChildOrgasForIds([]);
+                expect(foundOrganisations).toEqual([]);
+            });
+        });
+
         describe('does not exist', () => {
             it('should return null', async () => {
-                const foundOrganisations: Option<OrganisationDo<true>[]> = await sut.findChildOrgasForId(
+                const foundOrganisations: Option<OrganisationDo<true>[]> = await sut.findChildOrgasForIds([
                     faker.string.uuid(),
-                );
+                ]);
                 expect(foundOrganisations).toEqual([]);
             });
         });

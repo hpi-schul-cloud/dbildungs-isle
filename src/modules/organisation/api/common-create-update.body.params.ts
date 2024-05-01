@@ -1,7 +1,12 @@
 import { AutoMap } from '@automapper/classes';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsEnum, IsOptional, IsString, IsUUID } from 'class-validator';
-import { OrganisationsTyp, Traegerschaft } from '../domain/organisation.enums.js';
+import {
+    OrganisationsTyp,
+    OrganisationsTypName,
+    Traegerschaft,
+    TraegerschaftTypName,
+} from '../domain/organisation.enums.js';
 
 export class CommonCreateUpdateOrganisationBodyParams {
     @AutoMap()
@@ -41,12 +46,12 @@ export class CommonCreateUpdateOrganisationBodyParams {
 
     @AutoMap(() => String)
     @IsEnum(OrganisationsTyp)
-    @ApiProperty({ enum: OrganisationsTyp, required: true })
+    @ApiProperty({ enum: OrganisationsTyp, enumName: OrganisationsTypName, required: true })
     public readonly typ!: OrganisationsTyp;
 
     @AutoMap(() => String)
     @IsEnum(Traegerschaft)
-    @ApiProperty({ enum: Traegerschaft, required: false })
+    @ApiProperty({ enum: Traegerschaft, enumName: TraegerschaftTypName, required: false })
     @IsOptional()
     public traegerschaft?: Traegerschaft;
 }

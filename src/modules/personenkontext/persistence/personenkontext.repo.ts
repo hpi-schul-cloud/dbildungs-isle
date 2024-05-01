@@ -23,7 +23,9 @@ export class PersonenkontextRepo {
 
     public async findBy(scope: PersonenkontextScope): Promise<Counted<PersonenkontextDo<true>>> {
         const [entities, total]: Counted<PersonenkontextEntity> = await scope.executeQuery(this.em);
-        const dos: PersonenkontextDo<true>[] = this.mapper.mapArray(entities, PersonenkontextEntity, PersonenkontextDo);
+        const dos: PersonenkontextDo<true>[] = entities.map((e: PersonenkontextEntity) =>
+            this.mapper.map(e, PersonenkontextEntity, PersonenkontextDo),
+        );
 
         return [dos, total];
     }

@@ -3,6 +3,7 @@ import {
     ApiBearerAuth,
     ApiForbiddenResponse,
     ApiInternalServerErrorResponse,
+    ApiOAuth2,
     ApiOkResponse,
     ApiTags,
     ApiUnauthorizedResponse,
@@ -24,19 +25,31 @@ import { OrganisationRepo } from '../../../organisation/persistence/organisation
 import { OrganisationDo } from '../../../organisation/domain/organisation.do.js';
 import { ApiOkResponsePaginated, PagedResponse, PagingHeadersObject } from '../../../../shared/paging/index.js';
 import { PersonenuebersichtQueryParams } from './personenuebersicht-query.params.js';
-import { DbiamPersonenuebersichtScope } from '../../persistence/dbiam-personenuebersicht-scope.js';
+import { Permissions } from '../../../authentication/api/permissions.decorator.js';
+import { PersonPermissions } from '../../../authentication/domain/person-permissions.js';
+import { PersonScope } from '../../persistence/person.scope.js';
+import { ScopeOrder } from '../../../../shared/persistence/scope.enums.js';
+import { ConfigService } from '@nestjs/config';
+import { ServerConfig, DataConfig } from '../../../../shared/config/index.js';
+import { RollenSystemRecht } from '../../../rolle/domain/rolle.enums.js';
 
 @UseFilters(SchulConnexValidationErrorFilter)
 @ApiTags('dbiam-personenuebersicht')
 @ApiBearerAuth()
+@ApiOAuth2(['openid'])
 @Controller({ path: 'dbiam/personenuebersicht' })
 export class DBiamPersonenuebersichtController {
+    public readonly ROOT_ORGANISATION_ID: string;
+
     public constructor(
         private readonly personRepository: PersonRepository,
         private readonly dbiamPersonenkontextRepo: DBiamPersonenkontextRepo,
         private readonly rolleRepository: RolleRepo,
         private readonly organisationRepository: OrganisationRepo,
-    ) {}
+        config: ConfigService<ServerConfig>,
+    ) {
+        this.ROOT_ORGANISATION_ID = config.getOrThrow<DataConfig>('DATA').ROOT_ORGANISATION_ID;
+    }
 
     @Get('')
     @ApiOkResponsePaginated(DBiamPersonenuebersichtResponse, {
@@ -48,14 +61,28 @@ export class DBiamPersonenuebersichtController {
     @ApiInternalServerErrorResponse({ description: 'Internal server error while getting personenuebersichten.' })
     public async findPersonenuebersichten(
         @Query() queryParams: PersonenuebersichtQueryParams,
+        @Permissions() permissions: PersonPermissions,
     ): Promise<PagedResponse<DBiamPersonenuebersichtResponse>> {
-        const items: DBiamPersonenuebersichtResponse[] = [];
+        // Find all organisations where user has permission
+        let organisationIDs: OrganisationID[] | undefined = await permissions.getOrgIdsWithSystemrecht(
+            [RollenSystemRecht.PERSONEN_VERWALTEN],
+            true,
+        );
 
-        const scope: DbiamPersonenuebersichtScope = new DbiamPersonenuebersichtScope()
-            .findBy({}) //no filtering in ticket spsh-488
+        // Check if user has permission on root organisation
+        if (organisationIDs?.includes(this.ROOT_ORGANISATION_ID)) {
+            organisationIDs = undefined;
+        }
+
+        // Find all Personen on child-orgas (+root orgas)
+        const scope: PersonScope = new PersonScope()
+            .findBy({ organisationen: organisationIDs })
+            .sortBy('vorname', ScopeOrder.ASC)
             .paged(queryParams.offset, queryParams.limit);
 
         const [persons, total]: Counted<Person<true>> = await this.personRepository.findBy(scope);
+
+        const items: DBiamPersonenuebersichtResponse[] = [];
         if (total > 0) {
             const allPersonIds: PersonID[] = persons.map((person: Person<true>) => person.id);
             const allPersonenKontexte: Map<PersonID, Personenkontext<true>[]> =

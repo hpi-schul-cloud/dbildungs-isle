@@ -1,8 +1,8 @@
 import { AutoMap } from '@automapper/classes';
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsString, IsOptional, ValidateNested, IsEnum, IsBoolean } from 'class-validator';
-import { Geschlecht, Vertrauensstufe } from '../domain/person.enums.js';
+import { IsBoolean, IsEnum, IsOptional, IsString, ValidateNested } from 'class-validator';
+import { Geschlecht, GeschlechtTypName, Vertrauensstufe, VertrauensstufeTypName } from '../domain/person.enums.js';
 import { PersonBirthParams } from './person-birth.params.js';
 import { PersonNameParams } from './person-name.params.js';
 
@@ -36,7 +36,7 @@ export class UpdatePersonBodyParams {
     @IsOptional()
     @IsString()
     @IsEnum(Geschlecht)
-    @ApiProperty({ enum: Geschlecht, required: false })
+    @ApiProperty({ enum: Geschlecht, enumName: GeschlechtTypName, required: false })
     public readonly geschlecht?: Geschlecht;
 
     @AutoMap()
@@ -49,7 +49,7 @@ export class UpdatePersonBodyParams {
     @IsOptional()
     @IsString()
     @IsEnum(Vertrauensstufe)
-    @ApiProperty({ enum: Vertrauensstufe, required: false })
+    @ApiProperty({ enum: Vertrauensstufe, enumName: VertrauensstufeTypName, required: false })
     public readonly vertrauensstufe?: Vertrauensstufe;
 
     @AutoMap()

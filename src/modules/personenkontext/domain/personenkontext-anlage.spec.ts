@@ -139,7 +139,7 @@ describe('PersonenkontextAnlage', () => {
                 organisationRepoMock.findByNameOrKennung.mockResolvedValue(foundByName);
                 rolleRepoMock.findById.mockResolvedValueOnce(rolle);
                 organisationRepoMock.findById.mockResolvedValue(parent); //mock call to find parent in findSchulstrukturknoten
-                organisationRepoMock.findChildOrgasForId.mockResolvedValueOnce([parent, child, subchild]);
+                organisationRepoMock.findChildOrgasForIds.mockResolvedValueOnce([parent, child, subchild]);
 
                 const result: OrganisationDo<true>[] = await anlage.findSchulstrukturknoten(
                     rolle.id,
@@ -161,7 +161,7 @@ describe('PersonenkontextAnlage', () => {
                 organisationRepoMock.findByNameOrKennung.mockResolvedValue([child, childOfChild]);
                 rolleRepoMock.findById.mockResolvedValueOnce(rolle);
                 organisationRepoMock.findById.mockResolvedValue(parent); //mock call to find parent in findSchulstrukturknoten
-                organisationRepoMock.findChildOrgasForId.mockResolvedValueOnce([parent, child, childOfChild]);
+                organisationRepoMock.findChildOrgasForIds.mockResolvedValueOnce([parent, child, childOfChild]);
 
                 const result: OrganisationDo<true>[] = await anlage.findSchulstrukturknoten(
                     rolle.id,
@@ -287,7 +287,7 @@ describe('PersonenkontextAnlage', () => {
                 rolleRepoMock.findById.mockResolvedValue(rolle);
                 organisationRepoMock.findById.mockResolvedValueOnce(childOrganisation); //find organisation from aggregate
                 organisationRepoMock.findById.mockResolvedValueOnce(parentOrganisation); //find organisation from rolle.administeredBySchulstrukturknoten
-                organisationRepoMock.findChildOrgasForId.mockResolvedValueOnce([childOrganisation]); // find child organisations
+                organisationRepoMock.findChildOrgasForIds.mockResolvedValueOnce([childOrganisation]); // find child organisations
 
                 expect(await anlage.validieren()).toEqual({ ok: true, value: true });
             });
@@ -305,7 +305,7 @@ describe('PersonenkontextAnlage', () => {
                 rolleRepoMock.findById.mockResolvedValue(rolle);
                 organisationRepoMock.findById.mockResolvedValueOnce(childOrganisation); //find organisation from aggregate
                 organisationRepoMock.findById.mockResolvedValueOnce(parentOrganisation); //find organisation from rolle.administeredBySchulstrukturknoten
-                organisationRepoMock.findChildOrgasForId.mockResolvedValueOnce([]); // find child organisations
+                organisationRepoMock.findChildOrgasForIds.mockResolvedValueOnce([]); // find child organisations
 
                 expect(await anlage.validieren()).toEqual({ ok: false, error: new EntityNotFoundError() });
             });

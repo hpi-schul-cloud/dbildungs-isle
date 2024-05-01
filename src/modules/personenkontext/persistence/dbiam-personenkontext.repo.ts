@@ -1,10 +1,11 @@
-import { Loaded, RequiredEntityData } from '@mikro-orm/core';
+import { Loaded, RequiredEntityData, rel } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/postgresql';
 import { Injectable } from '@nestjs/common';
 import { OrganisationID, PersonID, RolleID } from '../../../shared/types/index.js';
 import { Rolle } from '../domain/personenkontext.enums.js';
 import { Personenkontext } from '../domain/personenkontext.js';
 import { PersonenkontextEntity } from './personenkontext.entity.js';
+import { PersonEntity } from '../../person/persistence/person.entity.js';
 
 export function mapAggregateToData(
     personenKontext: Personenkontext<boolean>,
@@ -12,7 +13,7 @@ export function mapAggregateToData(
     return {
         // Don't assign createdAt and updatedAt, they are auto-generated!
         id: personenKontext.id,
-        personId: personenKontext.personId,
+        personId: rel(PersonEntity, personenKontext.personId),
         organisationId: personenKontext.organisationId,
         rolleId: personenKontext.rolleId,
         rolle: Rolle.LERNENDER, // Placeholder, until rolle is removed from entity
@@ -24,7 +25,7 @@ function mapEntityToAggregate(entity: PersonenkontextEntity): Personenkontext<bo
         entity.id,
         entity.createdAt,
         entity.updatedAt,
-        entity.personId,
+        entity.personId.id,
         entity.organisationId,
         entity.rolleId,
     );
@@ -51,10 +52,10 @@ export class DBiamPersonenkontextRepo {
 
         personenKontextEntities.forEach((entity: PersonenkontextEntity) => {
             const aggregate: Personenkontext<true> = mapEntityToAggregate(entity);
-            if (!personenKontextMap.has(entity.personId)) {
-                personenKontextMap.set(entity.personId, []);
+            if (!personenKontextMap.has(entity.personId.id)) {
+                personenKontextMap.set(entity.personId.id, []);
             }
-            personenKontextMap.get(entity.personId)!.push(aggregate);
+            personenKontextMap.get(entity.personId.id)!.push(aggregate);
         });
 
         return personenKontextMap;

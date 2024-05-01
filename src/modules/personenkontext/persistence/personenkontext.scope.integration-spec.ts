@@ -15,6 +15,8 @@ import { PersonenkontextDo } from '../domain/personenkontext.do.js';
 import { PersonPersistenceMapperProfile } from '../../person/persistence/person-persistence.mapper.profile.js';
 import { PersonenkontextEntity } from './personenkontext.entity.js';
 import { PersonenkontextScope } from './personenkontext.scope.js';
+import { PersonDo } from '../../person/domain/person.do.js';
+import { PersonEntity } from '../../person/persistence/person.entity.js';
 
 describe('PersonenkontextScope', () => {
     let module: TestingModule;
@@ -46,13 +48,22 @@ describe('PersonenkontextScope', () => {
     describe('findBy', () => {
         describe('when filtering for personenkontexte', () => {
             beforeEach(async () => {
-                const dos: PersonenkontextDo<false>[] = DoFactory.createMany(
+                const person: PersonDo<true> = DoFactory.createPerson(true);
+                await em.persistAndFlush(mapper.map(person, PersonDo, PersonEntity));
+
+                const dos: PersonenkontextDo<false>[] = DoFactory.createMany<PersonenkontextDo<false>>(
                     30,
                     false,
                     DoFactory.createPersonenkontext,
+                    { personId: person.id },
                 );
 
-                await em.persistAndFlush(mapper.mapArray(dos, PersonenkontextDo, PersonenkontextEntity));
+                await em.persistAndFlush(
+                    // Don't use mapArray, because beforeMap does not get called
+                    dos.map((pkDo: PersonenkontextDo<false>) =>
+                        mapper.map(pkDo, PersonenkontextDo, PersonenkontextEntity),
+                    ),
+                );
             });
 
             it('should return found personenkontexte', async () => {

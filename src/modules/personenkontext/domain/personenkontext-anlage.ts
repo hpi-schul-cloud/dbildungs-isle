@@ -47,9 +47,9 @@ export class PersonenkontextAnlage {
         if (!parentOrganisation) return [];
         allOrganisations.push(parentOrganisation);
 
-        const childOrganisations: OrganisationDo<true>[] = await this.organisationRepo.findChildOrgasForId(
+        const childOrganisations: OrganisationDo<true>[] = await this.organisationRepo.findChildOrgasForIds([
             rolleResult.administeredBySchulstrukturknoten,
-        );
+        ]);
         allOrganisations.push(...childOrganisations);
 
         const orgas: OrganisationDo<true>[] = ssks.filter((ssk: OrganisationDo<true>) =>
@@ -102,7 +102,7 @@ export class PersonenkontextAnlage {
             };
         if (organisation.id == rolleSSK.id) return { ok: true, value: true };
 
-        const children: OrganisationDo<true>[] = await this.organisationRepo.findChildOrgasForId(rolleSSK.id);
+        const children: OrganisationDo<true>[] = await this.organisationRepo.findChildOrgasForIds([rolleSSK.id]);
         if (children.some((c: OrganisationDo<true>) => c.id == organisation.id)) {
             return { ok: true, value: true };
         } else {

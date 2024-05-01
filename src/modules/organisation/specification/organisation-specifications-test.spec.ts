@@ -15,6 +15,8 @@ import { NurKlasseKursUnterSchule } from './nur-klasse-kurs-unter-schule.js';
 import { SchuleUnterTraeger } from './schule-unter-traeger.js';
 import { TraegerInTraeger } from './traeger-in-traeger.js';
 import { ZyklusInOrganisationen } from './zyklus-in-organisationen.js';
+import { KlasseNurVonSchuleAdministriert } from './klasse-nur-von-schule-administriert.js';
+import { KlassenNameAnSchuleEindeutig } from './klassen-name-an-schule-eindeutig.js';
 
 describe('OrganisationSpecificationTests', () => {
     let module: TestingModule;
@@ -229,6 +231,64 @@ describe('OrganisationSpecificationTests', () => {
             });
             const nurKlasseKursUnterSchule: NurKlasseKursUnterSchule = new NurKlasseKursUnterSchule(repo);
             expect(await nurKlasseKursUnterSchule.isSatisfiedBy(sonstige)).toBeTruthy();
+        });
+    });
+
+    describe('klasse-nur-von-schule-administriert', () => {
+        it('should be satisfied when typ is not KLASSE', async () => {
+            const keineKlasseDo: OrganisationDo<false> = DoFactory.createOrganisation(false, {
+                name: 'KeineKlasse',
+                typ: undefined,
+                administriertVon: traeger1.id,
+                zugehoerigZu: traeger1.id,
+            });
+            const keineKlasse: OrganisationDo<true> = await repo.save(keineKlasseDo);
+            const klasseNurVonSchuleAdministriert: KlasseNurVonSchuleAdministriert =
+                new KlasseNurVonSchuleAdministriert(repo);
+            expect(await klasseNurVonSchuleAdministriert.isSatisfiedBy(keineKlasse)).toBeTruthy();
+        });
+        it('should NOT be satisfied when typ is KLASSE and administriertVon is undefined/null', async () => {
+            const klasse: OrganisationDo<true> = DoFactory.createOrganisation(true, {
+                typ: OrganisationsTyp.KLASSE,
+                administriertVon: undefined,
+                zugehoerigZu: schule1.id,
+            });
+            const klasseNurVonSchuleAdministriert: KlasseNurVonSchuleAdministriert =
+                new KlasseNurVonSchuleAdministriert(repo);
+            expect(await klasseNurVonSchuleAdministriert.isSatisfiedBy(klasse)).toBeFalsy();
+        });
+        it('should NOT be satisfied when typ is KLASSE and zugehoerigZu is undefined/null', async () => {
+            const klasse: OrganisationDo<true> = DoFactory.createOrganisation(true, {
+                typ: OrganisationsTyp.KLASSE,
+                administriertVon: schule1.id,
+                zugehoerigZu: undefined,
+            });
+            const klasseNurVonSchuleAdministriert: KlasseNurVonSchuleAdministriert =
+                new KlasseNurVonSchuleAdministriert(repo);
+            expect(await klasseNurVonSchuleAdministriert.isSatisfiedBy(klasse)).toBeFalsy();
+        });
+    });
+
+    describe('klassen-name-an-schule-eindeutig', () => {
+        it('should be satisfied when typ is not KLASSE', async () => {
+            const keineKlasseDo: OrganisationDo<false> = DoFactory.createOrganisation(false, {
+                name: 'KeineKlasse',
+                typ: undefined,
+                administriertVon: traeger1.id,
+                zugehoerigZu: traeger1.id,
+            });
+            const keineKlasse: OrganisationDo<true> = await repo.save(keineKlasseDo);
+            const klassenNameAnSchuleEindeutig: KlassenNameAnSchuleEindeutig = new KlassenNameAnSchuleEindeutig(repo);
+            expect(await klassenNameAnSchuleEindeutig.isSatisfiedBy(keineKlasse)).toBeTruthy();
+        });
+        it('should NOT be satisfied when typ is KLASSE and administriertVon is undefined/null', async () => {
+            const klasse: OrganisationDo<true> = DoFactory.createOrganisation(true, {
+                typ: OrganisationsTyp.KLASSE,
+                administriertVon: undefined,
+                zugehoerigZu: schule1.id,
+            });
+            const klassenNameAnSchuleEindeutig: KlassenNameAnSchuleEindeutig = new KlassenNameAnSchuleEindeutig(repo);
+            expect(await klassenNameAnSchuleEindeutig.isSatisfiedBy(klasse)).toBeFalsy();
         });
     });
 });

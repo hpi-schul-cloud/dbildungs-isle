@@ -1,7 +1,7 @@
 import { faker } from '@faker-js/faker';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { MapperTestModule } from '../../../../test/utils/index.js';
+import { ConfigTestModule, MapperTestModule } from '../../../../test/utils/index.js';
 import { SichtfreigabeType } from '../../personenkontext/domain/personenkontext.enums.js';
 import { PersonApiMapperProfile } from './person-api.mapper.profile.js';
 import { PersonFrontendController } from './person.frontend.controller.js';
@@ -10,6 +10,7 @@ import { Person } from '../domain/person.js';
 import { PersonRepository } from '../persistence/person.repository.js';
 import { PagedResponse } from '../../../shared/paging/index.js';
 import { PersonendatensatzResponse } from './personendatensatz.response.js';
+import { PersonPermissions } from '../../authentication/domain/person-permissions.js';
 
 describe('PersonFrontendController', () => {
     let module: TestingModule;
@@ -18,7 +19,7 @@ describe('PersonFrontendController', () => {
 
     beforeAll(async () => {
         module = await Test.createTestingModule({
-            imports: [MapperTestModule],
+            imports: [MapperTestModule, ConfigTestModule],
             providers: [
                 PersonFrontendController,
                 PersonApiMapperProfile,
@@ -59,6 +60,7 @@ describe('PersonFrontendController', () => {
             familienname: options.lastName,
             vorname: options.firstName,
             sichtfreigabe: SichtfreigabeType.NEIN,
+            suchFilter: '',
         };
         const person1: Person<true> = Person.construct(
             faker.string.uuid(),
@@ -84,9 +86,15 @@ describe('PersonFrontendController', () => {
         );
 
         it('should get all persons', async () => {
+            const personPermissions: DeepMocked<PersonPermissions> = createMock();
+            personPermissions.getOrgIdsWithSystemrecht.mockResolvedValueOnce([personController.ROOT_ORGANISATION_ID]);
+
             personRepositoryMock.findBy.mockResolvedValue([[person1, person2], 2]);
 
-            const result: PagedResponse<PersonendatensatzResponse> = await personController.findPersons(queryParams);
+            const result: PagedResponse<PersonendatensatzResponse> = await personController.findPersons(
+                queryParams,
+                personPermissions,
+            );
             expect(personRepositoryMock.findBy).toHaveBeenCalledTimes(1);
             expect(result.total).toEqual(2);
             expect(result.limit).toEqual(2);

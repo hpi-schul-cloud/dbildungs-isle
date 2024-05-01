@@ -1,3 +1,8 @@
+export const PersonenstatusTypName: string = 'Personenstatus';
+export const JahrgangsstufeTypName: string = 'Jahrgangsstufe';
+export const RolleTypName: string = 'Rolle';
+export const SichtfreigabeTypName: string = 'Sichtfreigabe';
+
 export enum Personenstatus {
     AKTIV = 'AKTIV',
 }

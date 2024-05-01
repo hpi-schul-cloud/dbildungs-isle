@@ -22,6 +22,8 @@ import { PersonPermissions } from '../domain/person-permissions.js';
 import { DBiamPersonenkontextRepo } from '../../personenkontext/persistence/dbiam-personenkontext.repo.js';
 import { Person } from '../../person/domain/person.js';
 import { ServiceProviderModule } from '../../service-provider/service-provider.module.js';
+import { OrganisationRepo } from '../../organisation/persistence/organisation.repo.js';
+import { RolleRepo } from '../../rolle/repo/rolle.repo.js';
 
 describe('AuthenticationController', () => {
     let module: TestingModule;
@@ -30,6 +32,8 @@ describe('AuthenticationController', () => {
     let frontendConfig: FrontendConfig;
     let personPermissionsRepoMock: DeepMocked<PersonPermissionsRepo>;
     let dbiamPersonenkontextRepoMock: DeepMocked<DBiamPersonenkontextRepo>;
+    let organisationRepoMock: DeepMocked<OrganisationRepo>;
+    let rolleRepoMock: DeepMocked<RolleRepo>;
 
     beforeAll(async () => {
         module = await Test.createTestingModule({
@@ -53,6 +57,14 @@ describe('AuthenticationController', () => {
                     useValue: createMock<DBiamPersonenkontextRepo>(),
                 },
                 {
+                    provide: OrganisationRepo,
+                    useValue: createMock<OrganisationRepo>(),
+                },
+                {
+                    provide: RolleRepo,
+                    useValue: createMock<RolleRepo>(),
+                },
+                {
                     provide: OIDC_CLIENT,
                     useValue: createMock<Client>(),
                 },
@@ -66,6 +78,8 @@ describe('AuthenticationController', () => {
         frontendConfig = module.get(ConfigService).getOrThrow<FrontendConfig>('FRONTEND');
         personPermissionsRepoMock = module.get(PersonPermissionsRepo);
         dbiamPersonenkontextRepoMock = module.get(DBiamPersonenkontextRepo);
+        organisationRepoMock = module.get(OrganisationRepo);
+        rolleRepoMock = module.get(RolleRepo);
     });
 
     afterEach(() => {
@@ -209,7 +223,13 @@ describe('AuthenticationController', () => {
                 faker.string.uuid(),
             );
             person.geburtsdatum = faker.date.past();
-            const personPermissions: PersonPermissions = new PersonPermissions(dbiamPersonenkontextRepoMock, person);
+
+            const personPermissions: PersonPermissions = new PersonPermissions(
+                dbiamPersonenkontextRepoMock,
+                organisationRepoMock,
+                rolleRepoMock,
+                person,
+            );
             personPermissionsRepoMock.loadPersonPermissions.mockResolvedValueOnce(personPermissions);
 
             const permissions: PersonPermissions = createMock<PersonPermissions>({

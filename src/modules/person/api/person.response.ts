@@ -1,6 +1,6 @@
 import { PersonNameParams } from './person-name.params.js';
 import { PersonBirthParams } from './person-birth.params.js';
-import { Vertrauensstufe } from '../domain/person.enums.js';
+import { Vertrauensstufe, VertrauensstufeTypName } from '../domain/person.enums.js';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class PersonResponse {
@@ -28,7 +28,7 @@ export class PersonResponse {
     @ApiProperty({ nullable: true })
     public lokalisierung?: string;
 
-    @ApiProperty({ enum: Vertrauensstufe, nullable: true })
+    @ApiProperty({ enum: Vertrauensstufe, enumName: VertrauensstufeTypName, nullable: true })
     public vertrauensstufe?: Vertrauensstufe;
 
     @ApiProperty()

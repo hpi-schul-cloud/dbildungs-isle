@@ -13,7 +13,7 @@ const commonConfig = {
             {
                 useESM: true,
             },
-        ],        
+        ],
     },
 };
 

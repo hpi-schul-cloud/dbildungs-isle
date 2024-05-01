@@ -64,5 +64,26 @@ describe('PersonScope', () => {
                 expect(persons).toHaveLength(10);
             });
         });
+
+        describe('when filtering for organisations', () => {
+            beforeEach(async () => {
+                const persons: PersonEntity[] = Array.from({ length: 110 }, () =>
+                    mapper.map(DoFactory.createPerson(false), PersonDo, PersonEntity),
+                );
+
+                await em.persistAndFlush(persons);
+            });
+
+            it('should return found persons', async () => {
+                const scope: PersonScope = new PersonScope()
+                    .findBy({ organisationen: [] })
+                    .sortBy('vorname', ScopeOrder.ASC)
+                    .paged(10, 10);
+                const [persons, total]: Counted<PersonEntity> = await scope.executeQuery(em);
+
+                expect(total).toBe(0);
+                expect(persons).toHaveLength(0);
+            });
+        });
     });
 });

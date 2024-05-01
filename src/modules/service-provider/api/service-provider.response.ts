@@ -1,6 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-import { ServiceProviderKategorie, ServiceProviderTarget } from '../domain/service-provider.enum.js';
+import {
+    ServiceProviderKategorie,
+    ServiceProviderKategorieTypName,
+    ServiceProviderTarget,
+    ServiceProviderTargetTypName,
+} from '../domain/service-provider.enum.js';
 import { ServiceProvider } from '../domain/service-provider.js';
 
 export class ServiceProviderResponse {
@@ -10,13 +15,13 @@ export class ServiceProviderResponse {
     @ApiProperty()
     public name: string;
 
-    @ApiProperty({ enum: ServiceProviderTarget, enumName: 'ServiceProviderTarget' })
+    @ApiProperty({ enum: ServiceProviderTarget, enumName: ServiceProviderTargetTypName })
     public target: ServiceProviderTarget;
 
     @ApiProperty({ description: 'Can be undefined, if `target` is not equal to `URL`' })
     public url?: string;
 
-    @ApiProperty({ enum: ServiceProviderKategorie, enumName: 'ServiceProviderKategorie' })
+    @ApiProperty({ enum: ServiceProviderKategorie, enumName: ServiceProviderKategorieTypName })
     public kategorie: ServiceProviderKategorie;
 
     @ApiProperty()

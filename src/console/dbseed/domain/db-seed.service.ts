@@ -1,32 +1,35 @@
 import { Injectable } from '@nestjs/common';
 import fs from 'fs';
-import { DataProviderFile } from './file/data-provider-file.js';
-import { OrganisationFile } from './file/organisation-file.js';
-import { Rolle } from '../../modules/rolle/domain/rolle.js';
-import { ConstructorCall, EntityFile } from './db-seed.console.js';
-import { ServiceProvider } from '../../modules/service-provider/domain/service-provider.js';
-import { Personenkontext } from '../../modules/personenkontext/domain/personenkontext.js';
+import { DataProviderFile } from '../file/data-provider-file.js';
+import { OrganisationFile } from '../file/organisation-file.js';
+import { Rolle } from '../../../modules/rolle/domain/rolle.js';
+import { ConstructorCall, EntityFile } from '../db-seed.console.js';
+import { ServiceProvider } from '../../../modules/service-provider/domain/service-provider.js';
+import { Personenkontext } from '../../../modules/personenkontext/domain/personenkontext.js';
 import { plainToInstance } from 'class-transformer';
-import { OrganisationDo } from '../../modules/organisation/domain/organisation.do.js';
-import { Person, PersonCreationParams } from '../../modules/person/domain/person.js';
-import { PersonFile } from './file/person-file.js';
-import { PersonRepository } from '../../modules/person/persistence/person.repository.js';
-import { PersonFactory } from '../../modules/person/domain/person.factory.js';
-import { DomainError, EntityNotFoundError } from '../../shared/error/index.js';
-import { ClassLogger } from '../../core/logging/class-logger.js';
+import { OrganisationDo } from '../../../modules/organisation/domain/organisation.do.js';
+import { Person, PersonCreationParams } from '../../../modules/person/domain/person.js';
+import { PersonFile } from '../file/person-file.js';
+import { PersonRepository } from '../../../modules/person/persistence/person.repository.js';
+import { PersonFactory } from '../../../modules/person/domain/person.factory.js';
+import { DomainError, EntityNotFoundError } from '../../../shared/error/index.js';
+import { ClassLogger } from '../../../core/logging/class-logger.js';
 import { ConfigService } from '@nestjs/config';
-import { PersonenkontextFile } from './file/personenkontext-file.js';
-import { OrganisationRepo } from '../../modules/organisation/persistence/organisation.repo.js';
-import { RolleFile } from './file/rolle-file.js';
-import { RolleRepo } from '../../modules/rolle/repo/rolle.repo.js';
-import { RolleFactory } from '../../modules/rolle/domain/rolle.factory.js';
-import { ServiceProviderFile } from './file/service-provider-file.js';
-import { DBiamPersonenkontextRepo } from '../../modules/personenkontext/persistence/dbiam-personenkontext.repo.js';
-import { ServiceProviderFactory } from '../../modules/service-provider/domain/service-provider.factory.js';
-import { ServiceProviderRepo } from '../../modules/service-provider/repo/service-provider.repo.js';
-import { ServerConfig, DataConfig } from '../../shared/config/index.js';
-import { FindUserFilter, KeycloakUserService, UserDo } from '../../modules/keycloak-administration/index.js';
-import { DBiamPersonenkontextService } from '../../modules/personenkontext/domain/dbiam-personenkontext.service.js';
+import { PersonenkontextFile } from '../file/personenkontext-file.js';
+import { OrganisationRepo } from '../../../modules/organisation/persistence/organisation.repo.js';
+import { RolleFile } from '../file/rolle-file.js';
+import { RolleRepo } from '../../../modules/rolle/repo/rolle.repo.js';
+import { RolleFactory } from '../../../modules/rolle/domain/rolle.factory.js';
+import { ServiceProviderFile } from '../file/service-provider-file.js';
+import { DBiamPersonenkontextRepo } from '../../../modules/personenkontext/persistence/dbiam-personenkontext.repo.js';
+import { ServiceProviderFactory } from '../../../modules/service-provider/domain/service-provider.factory.js';
+import { ServiceProviderRepo } from '../../../modules/service-provider/repo/service-provider.repo.js';
+import { DataConfig, ServerConfig } from '../../../shared/config/index.js';
+import { FindUserFilter, KeycloakUserService, UserDo } from '../../../modules/keycloak-administration/index.js';
+import { DBiamPersonenkontextService } from '../../../modules/personenkontext/domain/dbiam-personenkontext.service.js';
+import { DbSeedReferenceRepo } from '../repo/db-seed-reference.repo.js';
+import { DbSeedReference } from './db-seed-reference.js';
+import { ReferencedEntityType } from '../repo/db-seed-reference.entity.js';
 
 @Injectable()
 export class DbSeedService {
@@ -44,20 +47,13 @@ export class DbSeedService {
         private readonly serviceProviderFactory: ServiceProviderFactory,
         private readonly kcUserService: KeycloakUserService,
         private readonly dbiamPersonenkontextService: DBiamPersonenkontextService,
+        private readonly dbSeedReferenceRepo: DbSeedReferenceRepo,
         config: ConfigService<ServerConfig>,
     ) {
         this.ROOT_ORGANISATION_ID = config.getOrThrow<DataConfig>('DATA').ROOT_ORGANISATION_ID;
     }
 
     private dataProviderMap: Map<string, DataProviderFile> = new Map<string, DataProviderFile>();
-
-    private organisationMap: Map<number, OrganisationDo<true>> = new Map();
-
-    private personMap: Map<number, Person<true>> = new Map();
-
-    private rolleMap: Map<number, Rolle<true>> = new Map();
-
-    private serviceProviderMap: Map<number, ServiceProvider<true>> = new Map();
 
     public readDataProvider(fileContentAsStr: string): DataProviderFile[] {
         const entities: DataProviderFile[] = this.readEntityFromJSONFile<DataProviderFile>(
@@ -77,13 +73,15 @@ export class DbSeedService {
         let zugehoerigZu: string | undefined = undefined;
 
         if (data.administriertVon != null) {
-            const adminstriertVonOrganisation: OrganisationDo<true> = this.getReferencedOrganisation(
+            const adminstriertVonOrganisation: OrganisationDo<true> = await this.getReferencedOrganisation(
                 data.administriertVon,
             );
             administriertVon = adminstriertVonOrganisation.id;
         }
         if (data.zugehoerigZu != null) {
-            const zugehoerigZuOrganisation: OrganisationDo<true> = this.getReferencedOrganisation(data.zugehoerigZu);
+            const zugehoerigZuOrganisation: OrganisationDo<true> = await this.getReferencedOrganisation(
+                data.zugehoerigZu,
+            );
             zugehoerigZu = zugehoerigZuOrganisation.id;
         }
 
@@ -101,8 +99,12 @@ export class DbSeedService {
         organisationDo.traegerschaft = data.traegerschaft ?? undefined;
 
         const persistedOrganisation: OrganisationDo<true> = await this.organisationRepo.save(organisationDo);
-        this.organisationMap.set(data.id, persistedOrganisation);
-
+        const dbSeedReference: DbSeedReference = DbSeedReference.createNew(
+            ReferencedEntityType.ORGANISATION,
+            data.id,
+            persistedOrganisation.id,
+        );
+        await this.dbSeedReferenceRepo.create(dbSeedReference);
         return organisationDo;
     }
 
@@ -123,22 +125,34 @@ export class DbSeedService {
         const rolleFile: EntityFile<RolleFile> = JSON.parse(fileContentAsStr) as EntityFile<RolleFile>;
         const files: RolleFile[] = plainToInstance(RolleFile, rolleFile.entities);
         for (const file of files) {
+            const serviceProviderUUIDs: string[] = [];
+            for (const spId of file.serviceProviderIds) {
+                const sp: ServiceProvider<true> = await this.getReferencedServiceProvider(spId);
+                serviceProviderUUIDs.push(sp.id);
+            }
+            const referencedOrga: OrganisationDo<true> = await this.getReferencedOrganisation(
+                file.administeredBySchulstrukturknoten,
+            );
             const rolle: Rolle<false> = this.rolleFactory.createNew(
                 file.name,
-                this.getReferencedOrganisation(file.administeredBySchulstrukturknoten).id,
+                referencedOrga.id,
                 file.rollenart,
                 file.merkmale,
                 file.systemrechte,
-                file.serviceProviderIds
-                    ? this.getReferencedServiceProviders(file.serviceProviderIds).map(
-                          (sp: ServiceProvider<true>) => sp.id,
-                      )
-                    : undefined,
+                serviceProviderUUIDs,
             );
 
-            const persistedRolle: Rolle<true> | DomainError = await this.rolleRepo.save(rolle);
-            if (file.id != null) {
-                this.rolleMap.set(file.id, persistedRolle);
+            const persistedRolle: Rolle<true> = await this.rolleRepo.save(rolle);
+            if (persistedRolle && file.id != null) {
+                const dbSeedReference: DbSeedReference = DbSeedReference.createNew(
+                    ReferencedEntityType.ROLLE,
+                    file.id,
+                    persistedRolle.id,
+                );
+                await this.dbSeedReferenceRepo.create(dbSeedReference);
+            } else {
+                this.logger.error('Rolle without ID thus not referenceable:');
+                this.logger.error(JSON.stringify(rolle));
             }
         }
         this.logger.info(`Insert ${files.length} entities of type Rolle`);
@@ -150,20 +164,31 @@ export class DbSeedService {
         ) as EntityFile<ServiceProviderFile>;
         const files: ServiceProviderFile[] = plainToInstance(ServiceProviderFile, serviceProviderFile.entities);
         for (const file of files) {
+            const referencedOrga: OrganisationDo<true> = await this.getReferencedOrganisation(
+                file.providedOnSchulstrukturknoten,
+            );
             const serviceProvider: ServiceProvider<false> = this.serviceProviderFactory.createNew(
                 file.name,
                 file.target,
                 file.url,
                 file.kategorie,
-                this.getReferencedOrganisation(file.providedOnSchulstrukturknoten).id,
+                referencedOrga.id,
                 file.logoBase64 ? Buffer.from(file.logoBase64, 'base64') : undefined,
                 file.logoMimeType,
             );
 
             const persistedServiceProvider: ServiceProvider<true> =
                 await this.serviceProviderRepo.save(serviceProvider);
-            if (file.id != null) {
-                this.serviceProviderMap.set(file.id, persistedServiceProvider);
+            if (persistedServiceProvider && file.id != null) {
+                const dbSeedReference: DbSeedReference = DbSeedReference.createNew(
+                    ReferencedEntityType.SERVICE_PROVIDER,
+                    file.id,
+                    persistedServiceProvider.id,
+                );
+                await this.dbSeedReferenceRepo.create(dbSeedReference);
+            } else {
+                this.logger.error('ServiceProvider without ID thus not referenceable:');
+                this.logger.error(JSON.stringify(serviceProvider));
             }
         }
         this.logger.info(`Insert ${files.length} entities of type ServiceProvider`);
@@ -213,10 +238,14 @@ export class DbSeedService {
                     `Keycloak User with keycloakid: ${existingKcUser.value.id} has been deleted, and will be replaced by newly seeded user with same username: ${person.username}`,
                 );
             }
-
             const persistedPerson: Person<true> | DomainError = await this.personRepository.create(person);
             if (persistedPerson instanceof Person && file.id != null) {
-                this.personMap.set(file.id, persistedPerson);
+                const dbSeedReference: DbSeedReference = DbSeedReference.createNew(
+                    ReferencedEntityType.PERSON,
+                    file.id,
+                    persistedPerson.id,
+                );
+                await this.dbSeedReferenceRepo.create(dbSeedReference);
             } else {
                 this.logger.error('Person without ID thus not referenceable:');
                 this.logger.error(JSON.stringify(person));
@@ -233,13 +262,16 @@ export class DbSeedService {
         const files: PersonenkontextFile[] = plainToInstance(PersonenkontextFile, personenkontextFile.entities);
         const persistedPersonenkontexte: Personenkontext<true>[] = [];
         for (const file of files) {
+            const referencedPerson: Person<true> = await this.getReferencedPerson(file.personId);
+            const referencedOrga: OrganisationDo<true> = await this.getReferencedOrganisation(file.organisationId);
+            const referencedRolle: Rolle<true> = await this.getReferencedRolle(file.rolleId);
             const personenKontext: Personenkontext<false> = Personenkontext.construct(
                 undefined,
                 new Date(),
                 new Date(),
-                this.getReferencedPerson(file.personId).id,
-                this.getReferencedOrganisation(file.organisationId).id,
-                this.getReferencedRolle(file.rolleId).id,
+                referencedPerson.id,
+                referencedOrga.id,
+                referencedRolle.id,
             );
 
             //Check specifications
@@ -250,37 +282,59 @@ export class DbSeedService {
             }
 
             persistedPersonenkontexte.push(await this.dBiamPersonenkontextRepo.save(personenKontext));
-            //at the moment no saving of Personenkontext in a map for referencing
+            //at the moment no saving of Personenkontext
         }
         this.logger.info(`Insert ${files.length} entities of type Personenkontext`);
+
         return persistedPersonenkontexte;
     }
 
-    private getReferencedPerson(seedingId: number): Person<true> {
-        const person: Person<true> | undefined = this.personMap.get(seedingId);
+    private async getReferencedPerson(seedingId: number): Promise<Person<true>> {
+        const personUUID: Option<string> = await this.dbSeedReferenceRepo.findUUID(
+            seedingId,
+            ReferencedEntityType.PERSON,
+        );
+        if (!personUUID) throw new EntityNotFoundError('Person', seedingId.toString());
+        const person: Option<Person<true>> = await this.personRepository.findById(personUUID);
         if (!person) throw new EntityNotFoundError('Person', seedingId.toString());
+
         return person;
     }
 
-    private getReferencedOrganisation(seedingId: number): OrganisationDo<true> {
-        const organisation: OrganisationDo<true> | undefined = this.organisationMap.get(seedingId);
+    private async getReferencedOrganisation(seedingId: number): Promise<OrganisationDo<true>> {
+        const organisationUUID: Option<string> = await this.dbSeedReferenceRepo.findUUID(
+            seedingId,
+            ReferencedEntityType.ORGANISATION,
+        );
+        if (!organisationUUID) throw new EntityNotFoundError('Organisation', seedingId.toString());
+        const organisation: Option<OrganisationDo<true>> = await this.organisationRepo.findById(organisationUUID);
         if (!organisation) throw new EntityNotFoundError('Organisation', seedingId.toString());
+
         return organisation;
     }
 
-    private getReferencedRolle(seedingId: number): Rolle<true> {
-        const rolle: Rolle<true> | undefined = this.rolleMap.get(seedingId);
+    private async getReferencedRolle(seedingId: number): Promise<Rolle<true>> {
+        const rolleUUID: Option<string> = await this.dbSeedReferenceRepo.findUUID(
+            seedingId,
+            ReferencedEntityType.ROLLE,
+        );
+        if (!rolleUUID) throw new EntityNotFoundError('Rolle', seedingId.toString());
+        const rolle: Option<Rolle<true>> = await this.rolleRepo.findById(rolleUUID);
         if (!rolle) throw new EntityNotFoundError('Rolle', seedingId.toString());
+
         return rolle;
     }
 
-    private getReferencedServiceProviders(seedingIds: number[]): ServiceProvider<true>[] {
-        return seedingIds.map((n: number) => this.getReferencedServiceProvider(n));
-    }
-
-    private getReferencedServiceProvider(seedingId: number): ServiceProvider<true> {
-        const serviceProvider: ServiceProvider<true> | undefined = this.serviceProviderMap.get(seedingId);
+    private async getReferencedServiceProvider(seedingId: number): Promise<ServiceProvider<true>> {
+        const serviceProviderUUID: Option<string> = await this.dbSeedReferenceRepo.findUUID(
+            seedingId,
+            ReferencedEntityType.SERVICE_PROVIDER,
+        );
+        if (!serviceProviderUUID) throw new EntityNotFoundError('ServiceProvider', seedingId.toString());
+        const serviceProvider: Option<ServiceProvider<true>> =
+            await this.serviceProviderRepo.findById(serviceProviderUUID);
         if (!serviceProvider) throw new EntityNotFoundError('ServiceProvider', seedingId.toString());
+
         return serviceProvider;
     }
 
@@ -296,7 +350,16 @@ export class DbSeedService {
         return entityList;
     }
 
-    public getEntityFileNames(directory: string): string[] {
-        return fs.readdirSync(`./seeding/${directory}`).filter((fileName: string) => fileName.endsWith('.json'));
+    public getEntityFileNames(directory: string, subDir: string): string[] {
+        return fs
+            .readdirSync(`./seeding/${directory}/${subDir}`)
+            .filter((fileName: string) => fileName.endsWith('.json'));
+    }
+
+    public getDirectories(directory: string): string[] {
+        const path: string = `./seeding/${directory}`;
+        return fs.readdirSync(path).filter(function (file: string) {
+            return fs.statSync(path + '/' + file).isDirectory();
+        });
     }
 }

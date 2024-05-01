@@ -1,5 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { OrganisationsTyp, Traegerschaft } from '../domain/organisation.enums.js';
+import {
+    OrganisationsTyp,
+    OrganisationsTypName,
+    Traegerschaft,
+    TraegerschaftTypName,
+} from '../domain/organisation.enums.js';
 import { Organisation } from '../domain/organisation.js';
 
 export class OrganisationResponse {
@@ -18,10 +23,10 @@ export class OrganisationResponse {
     @ApiProperty()
     public readonly kuerzel?: string;
 
-    @ApiProperty({ enum: OrganisationsTyp })
+    @ApiProperty({ enum: OrganisationsTyp, enumName: OrganisationsTypName })
     public readonly typ!: OrganisationsTyp;
 
-    @ApiProperty({ enum: Traegerschaft })
+    @ApiProperty({ enum: Traegerschaft, enumName: TraegerschaftTypName })
     public traegerschaft?: Traegerschaft;
 
     public constructor(organisation: Organisation<true>) {

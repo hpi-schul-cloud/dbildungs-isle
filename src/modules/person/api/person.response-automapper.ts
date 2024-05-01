@@ -2,7 +2,7 @@ import { AutoMap } from '@automapper/classes';
 import { PersonNameParams } from './person-name.params.js';
 import { ApiProperty } from '@nestjs/swagger';
 import { PersonBirthParams } from './person-birth.params.js';
-import { Vertrauensstufe } from '../domain/person.enums.js';
+import { Vertrauensstufe, VertrauensstufeTypName } from '../domain/person.enums.js';
 
 export class PersonResponseAutomapper {
     @AutoMap()
@@ -38,7 +38,7 @@ export class PersonResponseAutomapper {
     public lokalisierung!: string;
 
     @AutoMap(() => String)
-    @ApiProperty({ enum: Vertrauensstufe })
+    @ApiProperty({ enum: Vertrauensstufe, enumName: VertrauensstufeTypName })
     public vertrauensstufe!: Vertrauensstufe;
 
     @AutoMap()

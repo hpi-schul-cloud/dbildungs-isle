@@ -21,6 +21,8 @@ import { InvalidNameError } from './invalid-name.error.js';
 import { KennungRequiredForSchuleError } from '../../modules/organisation/specification/error/kennung-required-for-schule.error.js';
 import { NurLehrUndLernAnKlasseError } from '../../modules/personenkontext/specification/error/nur-lehr-und-lern-an-klasse.error.js';
 import { GleicheRolleAnKlasseWieSchuleError } from '../../modules/personenkontext/specification/error/gleiche-rolle-an-klasse-wie-schule.error.js';
+import { KlasseNurVonSchuleAdministriertError } from '../../modules/organisation/specification/error/klasse-nur-von-schule-administriert.error.js';
+import { KlassenNameAnSchuleEindeutigError } from '../../modules/organisation/specification/error/klassen-name-an-schule-eindeutig.error.js';
 
 export class SchulConnexErrorMapper {
     private static SCHULCONNEX_ERROR_MAPPINGS: Map<string, SchulConnexError> = new Map([
@@ -159,6 +161,24 @@ export class SchulConnexErrorMapper {
                 subcode: '00',
                 titel: 'Spezifikation von Organisation nicht erfüllt',
                 beschreibung: 'Die Root-Organisation ist bzgl. administriertVon und zugehörigZu unveränderlich.',
+            }),
+        ],
+        [
+            KlasseNurVonSchuleAdministriertError.name,
+            new SchulConnexError({
+                code: 400,
+                subcode: '00',
+                titel: 'Spezifikation von Organisation nicht erfüllt',
+                beschreibung: 'Eine Klasse kann nur von einer Schule administriert werden.',
+            }),
+        ],
+        [
+            KlassenNameAnSchuleEindeutigError.name,
+            new SchulConnexError({
+                code: 400,
+                subcode: '00',
+                titel: 'Spezifikation von Organisation nicht erfüllt',
+                beschreibung: 'Der Klassen-Name muss pro Schule eindeutig sein.',
             }),
         ],
         [

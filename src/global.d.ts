@@ -7,5 +7,5 @@ declare type Persisted<T, WasPersisted extends boolean> = WasPersisted extends t
 declare type Counted<T> = [T[], number];
 
 declare type Findable<T> = {
-    [P in keyof T]?: T[P] extends string | undefined ? string | RegExp | undefined : T[P];
+    [P in keyof T]?: T[P] extends string | { id: string } | undefined ? string | RegExp | undefined : T[P];
 };

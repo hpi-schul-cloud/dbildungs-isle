@@ -1,3 +1,6 @@
+export const OrganisationsTypName: string = 'OrganisationsTyp';
+export const TraegerschaftTypName: string = 'TraegerschaftTyp';
+
 export enum OrganisationsTyp {
     ROOT = 'ROOT',
     LAND = 'LAND',

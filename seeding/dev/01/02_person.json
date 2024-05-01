@@ -7,7 +7,7 @@
             "password": "test",
             "vorname": "test",
             "familienname": "test",
-            "personalnummer": "00002Z-7X"
+            "personalnummer": "6056356"
         },
         {
             "id": 2,
@@ -25,7 +25,7 @@
             "loaklisierung": null,
             "vertrauensstufe": null,
             "auskunftssperre": null,
-            "personalnummer": "00001A-1A"
+            "personalnummer": "0056357"
         },
         {
             "id": 3,
@@ -79,7 +79,7 @@
             "loaklisierung": null,
             "vertrauensstufe": null,
             "auskunftssperre": null,
-            "personalnummer": "00004B-4C"
+            "personalnummer": "2036354"
         },
         {
             "id": 10,

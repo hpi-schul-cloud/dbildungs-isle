@@ -1,3 +1,7 @@
+export const RollenArtTypName: string = 'RollenArt';
+export const RollenMerkmalTypName: string = 'RollenMerkmal';
+export const RollenSystemRechtTypName: string = 'RollenSystemRecht';
+
 export enum RollenArt {
     LERN = 'LERN',
     LEHR = 'LEHR',
