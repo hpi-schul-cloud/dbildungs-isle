@@ -8,7 +8,6 @@ import { OrganisationEntity } from './organisation.entity.js';
 import { Loaded } from '@mikro-orm/core';
 import { OrganisationScope } from './organisation.scope.js';
 import { ServerConfig, DataConfig } from '../../../shared/config/index.js';
-import { OrganisationID } from '../../../shared/types/aggregate-ids.types.js';
 
 @Injectable()
 export class OrganisationRepo {
@@ -96,12 +95,10 @@ export class OrganisationRepo {
         return this.mapper.mapArray(organisations, OrganisationEntity, OrganisationDo);
     }
 
-    public async findChildOrgasForIds(ids: OrganisationID[]): Promise<OrganisationDo<true>[]> {
+    public async findChildOrgasForId(id: string): Promise<OrganisationDo<true>[]> {
         let rawResult: OrganisationEntity[];
 
-        if (ids.length === 0) {
-            return [];
-        } else if (ids.some((id: OrganisationID) => id === this.ROOT_ORGANISATION_ID)) {
+        if (id === this.ROOT_ORGANISATION_ID) {
             // If id is the root, perform a simple SELECT * except root for performance enhancement.
             rawResult = await this.em.find(OrganisationEntity, { id: { $ne: this.ROOT_ORGANISATION_ID } });
         } else {
@@ -110,7 +107,7 @@ export class OrganisationRepo {
             WITH RECURSIVE sub_organisations AS (
                 SELECT *
                 FROM public.organisation
-                WHERE administriert_von IN (?)
+                WHERE administriert_von = ?
                 UNION ALL
                 SELECT o.*
                 FROM public.organisation o
@@ -119,7 +116,7 @@ export class OrganisationRepo {
             SELECT DISTINCT ON (id) * FROM sub_organisations;
             `;
 
-            rawResult = await this.em.execute(query, [ids]);
+            rawResult = await this.em.execute(query, [id]);
         }
 
         if (rawResult.length > 0) {

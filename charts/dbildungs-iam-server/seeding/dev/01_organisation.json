@@ -114,16 +114,6 @@
             "typ": "KLASSE",
             "administriertVon": 4,
             "zugehoerigZu": 4
-        },
-        {
-            "id": 12,
-            "kennung": "0703754-9a",
-            "name": "9a",
-            "namensergaenzung": "Keine",
-            "kuerzel": "A-Sieveking-9a",
-            "typ": "KLASSE",
-            "administriertVon": 3,
-            "zugehoerigZu": 3
         }
     ]
 }

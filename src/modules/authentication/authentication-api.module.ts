@@ -10,18 +10,9 @@ import { PersonModule } from '../person/person.module.js';
 import { SessionAccessTokenMiddleware } from './services/session-access-token.middleware.js';
 import { PersonenKontextModule } from '../personenkontext/personenkontext.module.js';
 import { JwtStrategy } from './passport/jwt.strategy.js';
-import { OrganisationModule } from '../organisation/organisation.module.js';
-import { RolleModule } from '../rolle/rolle.module.js';
 
 @Module({
-    imports: [
-        HttpModule,
-        LoggerModule.register(AuthenticationApiModule.name),
-        PersonModule,
-        PersonenKontextModule,
-        OrganisationModule,
-        RolleModule,
-    ],
+    imports: [HttpModule, LoggerModule.register(AuthenticationApiModule.name), PersonModule, PersonenKontextModule],
     providers: [
         OpenIdConnectStrategy,
         JwtStrategy,

@@ -42,15 +42,4 @@ export class PersonenQueryParams extends PagedQueryParams {
         nullable: true,
     })
     public readonly sichtfreigabe: SichtfreigabeType = SichtfreigabeType.NEIN;
-
-    @AutoMap()
-    @IsString()
-    @IsOptional()
-    @ApiProperty({
-        description:
-            'Search filter used to filter for Persons. It could be the vorname, familienname, referrer or the personalnummer.',
-        required: false,
-        nullable: true,
-    })
-    public readonly suchFilter?: string;
 }

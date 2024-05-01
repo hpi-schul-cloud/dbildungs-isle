@@ -1,6 +1,3 @@
-export const ServiceProviderKategorieTypName: string = 'ServiceProviderKategorie';
-export const ServiceProviderTargetTypName: string = 'ServiceProviderTarget';
-
 export enum ServiceProviderKategorie {
     EMAIL = 'EMAIL',
     UNTERRICHT = 'UNTERRICHT',

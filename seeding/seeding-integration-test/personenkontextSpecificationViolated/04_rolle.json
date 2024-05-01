@@ -1,0 +1,21 @@
+{
+    "entityName": "Rolle",
+    "entities": [
+        {
+            "id": 2345,
+            "name": "LehrerRolle2345",
+            "administeredBySchulstrukturknoten": 1,
+            "rollenart": "LEHR",
+            "merkmale": [],
+            "systemrechte": []
+        },
+        {
+            "id": 2346,
+            "name": "SchulAdminRolle2346",
+            "administeredBySchulstrukturknoten": 1,
+            "rollenart": "LEIT",
+            "merkmale": [],
+            "systemrechte": []
+        }
+    ]
+}

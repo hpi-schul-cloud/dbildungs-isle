@@ -122,20 +122,12 @@ describe('PersonenkontextRepo', () => {
                     rolle: Rolle.LERNENDER,
                     sichtfreigabe: SichtfreigabeType.NEIN,
                 };
-                const person1: PersonDo<true> = DoFactory.createPerson(true);
-                const person2: PersonDo<true> = DoFactory.createPerson(true);
-                await em.persistAndFlush([
-                    mapper.map(person1, PersonDo, PersonEntity),
-                    mapper.map(person2, PersonDo, PersonEntity),
-                ]);
+                const person1Id: string = faker.string.uuid();
                 const personenkontextDo1: PersonenkontextDo<false> = DoFactory.createPersonenkontext(false, {
                     ...props,
-                    personId: person1.id,
+                    personId: person1Id,
                 });
-                const personenkontextDo2: PersonenkontextDo<false> = DoFactory.createPersonenkontext(false, {
-                    ...props,
-                    personId: person2.id,
-                });
+                const personenkontextDo2: PersonenkontextDo<false> = DoFactory.createPersonenkontext(false, props);
                 await em.persistAndFlush(mapper.map(personenkontextDo1, PersonenkontextDo, PersonenkontextEntity));
                 await em.persistAndFlush(mapper.map(personenkontextDo2, PersonenkontextDo, PersonenkontextEntity));
 
@@ -145,7 +137,7 @@ describe('PersonenkontextRepo', () => {
                         personenstatus: Personenstatus.AKTIV,
                         rolle: Rolle.LERNENDER,
                         sichtfreigabe: SichtfreigabeType.NEIN,
-                        personId: person1.id,
+                        personId: person1Id,
                     }),
                 );
                 expect(result).not.toBeNull();
@@ -167,14 +159,10 @@ describe('PersonenkontextRepo', () => {
 
     describe('findById', () => {
         beforeEach(async () => {
-            const person: PersonDo<true> = DoFactory.createPerson(true);
-            await em.persistAndFlush(mapper.map(person, PersonDo, PersonEntity));
-
-            const personenkontextDos: PersonenkontextDo<false>[] = DoFactory.createMany<PersonenkontextDo<false>>(
+            const personenkontextDos: PersonenkontextDo<false>[] = DoFactory.createMany(
                 10,
                 false,
                 DoFactory.createPersonenkontext,
-                { personId: person.id },
             );
 
             await em.persistAndFlush(
@@ -211,14 +199,10 @@ describe('PersonenkontextRepo', () => {
     describe('deleteById', () => {
         describe('when deleting personenkontext by id', () => {
             it('should return number of deleted rows', async () => {
-                const person: PersonDo<true> = DoFactory.createPerson(true);
-                await em.persistAndFlush(mapper.map(person, PersonDo, PersonEntity));
-
-                const personenkontextDos: PersonenkontextDo<false>[] = DoFactory.createMany<PersonenkontextDo<false>>(
+                const personenkontextDos: PersonenkontextDo<false>[] = DoFactory.createMany(
                     5,
                     false,
                     DoFactory.createPersonenkontext,
-                    { personId: person.id },
                 );
 
                 await em.persistAndFlush(

@@ -10,7 +10,6 @@ describe('PersonenQueryParam', () => {
         familienname: faker.person.lastName(),
         referrer: 'referrer',
         vorname: faker.person.firstName(),
-        suchFilter: '',
     };
 
     it('should convert a plain object to a class of PersonenQueryParam', () => {
@@ -19,7 +18,6 @@ describe('PersonenQueryParam', () => {
             familienname: referenceParams.familienname,
             referrer: referenceParams.referrer,
             vorname: referenceParams.vorname,
-            suchFilter: referenceParams.suchFilter,
         };
         const mappedParams: PersonenQueryParams = plainToInstance(PersonenQueryParams, incomingParams, {});
 

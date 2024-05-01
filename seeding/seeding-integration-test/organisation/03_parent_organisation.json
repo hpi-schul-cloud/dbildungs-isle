@@ -1,0 +1,16 @@
+{
+    "entityName": "Organisation",
+    "entities": [
+        {
+            "id": 0,
+            "kennung": "ParentOrganisation",
+            "name": "Parent",
+            "namensergaenzung": "Keine",
+            "kuerzel": "00",
+            "typ": "TRAEGER",
+            "traegerschaft": "05"
+        }
+    ]
+}
+
+

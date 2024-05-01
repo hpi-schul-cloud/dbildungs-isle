@@ -4,7 +4,6 @@ import {
     ConfigTestModule,
     DEFAULT_TIMEOUT_FOR_TESTCONTAINERS,
     DatabaseTestModule,
-    MapperTestModule,
 } from '../../../../test/utils/index.js';
 import { PersonPermissionsRepo } from './person-permission.repo.js';
 import { PersonRepository } from '../../person/persistence/person.repository.js';
@@ -13,8 +12,6 @@ import { Person } from '../../person/domain/person.js';
 import { PersonPermissions } from './person-permissions.js';
 import { DBiamPersonenkontextRepo } from '../../personenkontext/persistence/dbiam-personenkontext.repo.js';
 import { UnauthorizedException } from '@nestjs/common';
-import { OrganisationRepo } from '../../organisation/persistence/organisation.repo.js';
-import { RolleRepo } from '../../rolle/repo/rolle.repo.js';
 
 describe('PersonPermissionRepo', () => {
     let module: TestingModule;
@@ -23,19 +20,13 @@ describe('PersonPermissionRepo', () => {
 
     beforeAll(async () => {
         module = await Test.createTestingModule({
-            imports: [ConfigTestModule, MapperTestModule, DatabaseTestModule.forRoot({ isDatabaseRequired: false })],
+            imports: [ConfigTestModule, DatabaseTestModule.forRoot({ isDatabaseRequired: false })],
             providers: [
                 PersonPermissionsRepo,
                 DBiamPersonenkontextRepo,
-                OrganisationRepo,
-                RolleRepo,
                 {
                     provide: PersonRepository,
                     useValue: createMock<PersonRepository>(),
-                },
-                {
-                    provide: RolleRepo,
-                    useValue: createMock<RolleRepo>(),
                 },
             ],
         }).compile();

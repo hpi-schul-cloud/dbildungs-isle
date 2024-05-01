@@ -12,13 +12,12 @@ export class FindPersonenkontextSchulstrukturknotenBodyParams {
     public readonly rolleId!: string;
 
     @IsString()
-    @IsOptional()
     @ApiProperty({
         description: 'Organisation/SSK name used to filter for schulstrukturknoten in personenkontext.',
-        required: false,
-        nullable: true,
+        required: true,
+        nullable: false,
     })
-    public readonly sskName?: string;
+    public readonly sskName!: string;
 
     @IsNotEmpty()
     @IsNumber()

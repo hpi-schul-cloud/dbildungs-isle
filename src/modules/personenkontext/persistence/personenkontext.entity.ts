@@ -1,15 +1,14 @@
 import { AutoMap } from '@automapper/classes';
-import { DateTimeType, Entity, Enum, ManyToOne, Opt, Property, Ref, Unique } from '@mikro-orm/core';
+import { DateTimeType, Entity, Enum, Opt, Property, Unique } from '@mikro-orm/core';
 import { TimestampedEntity } from '../../../persistence/timestamped.entity.js';
 import { Jahrgangsstufe, Personenstatus, Rolle, SichtfreigabeType } from '../domain/personenkontext.enums.js';
-import { PersonEntity } from '../../person/persistence/person.entity.js';
 
 @Entity({ tableName: 'personenkontext' })
 @Unique({ properties: ['personId', 'organisationId', 'rolleId'] })
 export class PersonenkontextEntity extends TimestampedEntity {
     @AutoMap()
-    @ManyToOne({ columnType: 'uuid', cascade: [], ref: true, nullable: false, entity: () => PersonEntity })
-    public personId!: Ref<PersonEntity>;
+    @Property({ columnType: 'uuid', nullable: false })
+    public personId!: string;
 
     // TODO EW-636: get from access_token, see SchulConneX (Version 1.003.003.000) page 91
     @AutoMap()

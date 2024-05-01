@@ -1,6 +1,3 @@
-export const VertrauensstufeTypName: string = 'Vertrauensstufe';
-export const GeschlechtTypName: string = 'Geschlecht';
-
 export enum Vertrauensstufe {
     KEIN = 'KEIN',
     UNBE = 'UNBE',

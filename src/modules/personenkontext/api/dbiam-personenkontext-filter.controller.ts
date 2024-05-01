@@ -62,10 +62,9 @@ export class DbiamPersonenkontextFilterController {
         @Query() params: FindPersonenkontextSchulstrukturknotenBodyParams,
     ): Promise<FindSchulstrukturknotenResponse> {
         const anlage: PersonenkontextAnlage = this.personenkontextAnlageFactory.createNew();
-        const sskName: string = params.sskName ?? '';
         const ssks: OrganisationDo<true>[] = await anlage.findSchulstrukturknoten(
             params.rolleId,
-            sskName,
+            params.sskName,
             params.limit,
         );
         const sskResponses: OrganisationResponseLegacy[] = this.mapper.mapArray(

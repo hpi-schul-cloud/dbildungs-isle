@@ -7,13 +7,7 @@
             "name": "Landesadmin",
             "rollenart": "SYSADMIN",
             "merkmale": [],
-            "systemrechte": [
-                "ROLLEN_VERWALTEN",
-                "PERSONEN_VERWALTEN",
-                "SCHULEN_VERWALTEN",
-                "KLASSEN_VERWALTEN",
-                "SCHULTRAEGER_VERWALTEN"
-            ],
+            "systemrechte": ["ROLLEN_VERWALTEN"],
             "serviceProviderIds": [
                 0,
                 1,
@@ -62,11 +56,7 @@
             "name": "Schuladmin",
             "rollenart": "LEIT",
             "merkmale": [],
-            "systemrechte": [
-                "PERSONEN_VERWALTEN",
-                "SCHULEN_VERWALTEN",
-                "KLASSEN_VERWALTEN"
-            ],
+            "systemrechte": [],
             "serviceProviderIds": [
                 0,
                 1,

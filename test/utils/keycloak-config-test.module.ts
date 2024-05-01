@@ -30,7 +30,7 @@ export class KeycloakConfigTestModule implements OnModuleDestroy {
                                 .withExposedPorts(8080)
                                 .withEnvironment({ KEYCLOAK_ADMIN: 'admin', KEYCLOAK_ADMIN_PASSWORD: 'admin' })
                                 .withCommand(['start-dev', '--import-realm'])
-                                .withStartupTimeout(240000)
+                                .withStartupTimeout(120000)
                                 .start();
                         }
 
