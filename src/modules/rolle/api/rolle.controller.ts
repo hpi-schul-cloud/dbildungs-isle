@@ -45,6 +45,8 @@ import { ServiceProviderRepo } from '../../service-provider/repo/service-provide
 import { ServiceProvider } from '../../service-provider/domain/service-provider.js';
 import { RolleWithServiceProvidersResponse } from './rolle-with-serviceprovider.response.js';
 import { RolleNameQueryParams } from './rolle-name-query.param.js';
+import { ServiceProviderResponse } from '../../service-provider/api/service-provider.response.js';
+import { SchulConnexError } from '../../../shared/error/schul-connex.error.js';
 
 @UseFilters(SchulConnexValidationErrorFilter)
 @ApiTags('rolle')
@@ -87,6 +89,35 @@ export class RolleController {
 
             return new RolleWithServiceProvidersResponse(r, sps);
         });
+    }
+
+    @Get(':rolleId')
+    @ApiOperation({ description: 'Get rolle by id.' })
+    @ApiOkResponse({
+        description: 'The rolle was successfully returned.',
+        type: RolleWithServiceProvidersResponse,
+    })
+    @ApiUnauthorizedResponse({ description: 'Not authorized to get rolle by id.' })
+    @ApiForbiddenResponse({ description: 'Insufficient permission to get rolle by id.' })
+    @ApiInternalServerErrorResponse({ description: 'Internal server error while getting rolle by id.' })
+    public async findRolleByIdWithServiceProviders(
+        @Param() findRolleByIdParams: FindRolleByIdParams,
+    ): Promise<RolleWithServiceProvidersResponse> {
+        const rolle: Option<Rolle<true>> = await this.rolleRepo.findById(findRolleByIdParams.rolleId);
+        if (!rolle) {
+            throw SchulConnexErrorMapper.mapSchulConnexErrorToHttpException(
+                SchulConnexErrorMapper.mapDomainErrorToSchulConnexError(
+                    new EntityNotFoundError('Rolle', findRolleByIdParams.rolleId),
+                ),
+            );
+        }
+        const serviceProviders: ServiceProvider<true>[] = await this.serviceProviderRepo.find();
+
+        const rolleServiceProviders: ServiceProvider<true>[] = rolle.serviceProviderIds
+            .map((id: string) => serviceProviders.find((sp: ServiceProvider<true>) => sp.id === id))
+            .filter(Boolean) as ServiceProvider<true>[];
+
+        return new RolleWithServiceProvidersResponse(rolle, rolleServiceProviders);
     }
 
     @Post()
@@ -167,14 +198,17 @@ export class RolleController {
     @Post(':rolleId/serviceProviders')
     @HttpCode(HttpStatus.CREATED)
     @ApiOperation({ description: 'Add a service-provider to a rolle by id.' })
-    @ApiOkResponse({ description: 'Adding service-provider finished successfully.' })
+    @ApiOkResponse({ description: 'Adding service-provider finished successfully.', type: ServiceProviderResponse })
     @ApiNotFoundResponse({ description: 'The rolle or the service-provider to add does not exist.' })
     @ApiBadRequestResponse({ description: 'The service-provider is already attached to rolle.' })
     @ApiUnauthorizedResponse({ description: 'Not authorized to retrieve service-providers for rolle.' })
+    @ApiInternalServerErrorResponse({
+        description: 'Internal server error, the service-provider may could not be found after attaching to rolle.',
+    })
     public async addServiceProviderById(
         @Param() findRolleByIdParams: FindRolleByIdParams,
         @Body() spBodyParams: RolleServiceProviderQueryParams,
-    ): Promise<void> {
+    ): Promise<ServiceProviderResponse> {
         const rolle: Option<Rolle<true>> = await this.rolleRepo.findById(findRolleByIdParams.rolleId);
         if (!rolle) {
             throw SchulConnexErrorMapper.mapSchulConnexErrorToHttpException(
@@ -190,6 +224,20 @@ export class RolleController {
             );
         }
         await this.rolleRepo.save(rolle);
+        const serviceProvider: Option<ServiceProvider<true>> = await this.serviceProviderRepo.findById(
+            spBodyParams.serviceProviderId,
+        );
+        if (!serviceProvider) {
+            throw SchulConnexErrorMapper.mapSchulConnexErrorToHttpException(
+                new SchulConnexError({
+                    code: 500,
+                    subcode: '00',
+                    titel: 'Service-Provider nicht gefunden',
+                    beschreibung: 'Der Service-Provider konnte nach Zuweisung zur Rolle nicht gefunden werden!',
+                }),
+            );
+        }
+        return new ServiceProviderResponse(serviceProvider);
     }
 
     @Delete(':rolleId/serviceProviders')

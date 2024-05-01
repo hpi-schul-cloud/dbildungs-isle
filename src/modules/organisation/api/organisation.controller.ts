@@ -34,6 +34,9 @@ import { OrganisationScope } from '../persistence/organisation.scope.js';
 import { Organisation } from '../domain/organisation.js';
 import { ScopeOperator } from '../../../shared/persistence/index.js';
 import { OrganisationResponse } from './organisation.response.js';
+import { Permissions } from '../../authentication/api/permissions.decorator.js';
+import { PersonPermissions } from '../../authentication/domain/person-permissions.js';
+import { OrganisationID } from '../../../shared/types/aggregate-ids.types.js';
 
 @UseFilters(SchulConnexValidationErrorFilter)
 @ApiTags('organisationen')
@@ -137,7 +140,13 @@ export class OrganisationController {
     @ApiInternalServerErrorResponse({ description: 'Internal server error while getting all organizations.' })
     public async findOrganizations(
         @Query() queryParams: FindOrganisationQueryParams,
+        @Permissions() permissions: PersonPermissions,
     ): Promise<PagedResponse<OrganisationResponse>> {
+        const validOrgaIDs: OrganisationID[] = await permissions.getOrgIdsWithSystemrecht(
+            queryParams.systemrechte,
+            true,
+        );
+
         const scope: OrganisationScope = new OrganisationScope()
             .findBy({
                 kennung: queryParams.kennung,
@@ -146,7 +155,9 @@ export class OrganisationController {
             })
             .setScopeWhereOperator(ScopeOperator.AND)
             .searchString(queryParams.searchString)
+            .byIDs(validOrgaIDs)
             .paged(queryParams.offset, queryParams.limit);
+
         const [organisations, total]: Counted<Organisation<true>> = await this.organisationRepository.findBy(scope);
         const organisationResponses: OrganisationResponse[] = organisations.map((organisation: Organisation<true>) => {
             return new OrganisationResponse(organisation);

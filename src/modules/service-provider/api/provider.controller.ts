@@ -7,6 +7,7 @@ import {
     ApiNotFoundResponse,
     ApiOAuth2,
     ApiOkResponse,
+    ApiOperation,
     ApiTags,
     ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
@@ -37,6 +38,7 @@ export class ProviderController {
     ) {}
 
     @Get('all')
+    @ApiOperation({ description: 'Get all service-providers.' })
     @ApiOkResponse({
         description: 'The service-providers were successfully returned.',
         type: [ServiceProviderResponse],
@@ -54,6 +56,7 @@ export class ProviderController {
     }
 
     @Get()
+    @ApiOperation({ description: 'Get service-providers available for logged-in user.' })
     @ApiOkResponse({
         description: 'The service-providers were successfully returned.',
         type: [ServiceProviderResponse],

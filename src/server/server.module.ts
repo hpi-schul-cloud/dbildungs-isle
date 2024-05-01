@@ -28,6 +28,7 @@ import { ClassLogger } from '../core/logging/class-logger.js';
 import { AccessGuard } from '../modules/authentication/api/access.guard.js';
 import { PermissionsInterceptor } from '../modules/authentication/services/permissions.interceptor.js';
 import { PassportModule } from '@nestjs/passport';
+import { EventModule } from '../core/eventbus/index.js';
 
 @Module({
     imports: [
@@ -67,6 +68,7 @@ import { PassportModule } from '@nestjs/passport';
             property: 'passportUser',
         }),
         LoggerModule.register(ServerModule.name),
+        EventModule,
         AuthenticationApiModule,
         PersonApiModule,
         OrganisationApiModule,

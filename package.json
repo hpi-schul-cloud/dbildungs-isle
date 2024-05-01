@@ -33,6 +33,7 @@
         "@automapper/core": "^8.8.1",
         "@automapper/nestjs": "^8.8.1",
         "@faker-js/faker": "^8.4.1",
+        "@golevelup/nestjs-discovery": "^4.0.1",
         "@mikro-orm/core": "^6.2.1",
         "@mikro-orm/nestjs": "^5.2.3",
         "@mikro-orm/postgresql": "^6.2.1",

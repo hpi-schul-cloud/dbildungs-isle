@@ -6,6 +6,9 @@ export class CreatedOrganisationDto {
     public readonly id!: string;
 
     @AutoMap()
+    public readonly administriertVon?: string;
+
+    @AutoMap()
     public readonly kennung?: string;
 
     @AutoMap()

@@ -7,6 +7,9 @@ export class OrganisationResponse {
     public readonly id!: string;
 
     @ApiProperty({ nullable: true })
+    public readonly administriertVon?: string;
+
+    @ApiProperty({ nullable: true })
     public readonly kennung?: string;
 
     @ApiProperty()
@@ -26,6 +29,7 @@ export class OrganisationResponse {
 
     public constructor(organisation: Organisation<true>) {
         this.id = organisation.id;
+        this.administriertVon = organisation.administriertVon;
         this.kennung = organisation.kennung;
         this.name = organisation.name!;
         this.namensergaenzung = organisation.namensergaenzung;

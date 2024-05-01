@@ -10,6 +10,10 @@ export class OrganisationResponseLegacy {
 
     @AutoMap()
     @ApiProperty({ nullable: true })
+    public readonly administriertVon?: string;
+
+    @AutoMap()
+    @ApiProperty({ nullable: true })
     public readonly kennung?: string;
 
     @AutoMap()

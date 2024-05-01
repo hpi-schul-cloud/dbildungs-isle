@@ -23,6 +23,7 @@ import { Organisation } from '../domain/organisation.js';
 import { OrganisationResponse } from './organisation.response.js';
 import { OrganisationScope } from '../persistence/organisation.scope.js';
 import { ScopeOperator } from '../../../shared/persistence/index.js';
+import { PersonPermissions } from '../../authentication/domain/person-permissions.js';
 
 describe('OrganisationController', () => {
     let module: TestingModule;
@@ -189,6 +190,7 @@ describe('OrganisationController', () => {
                 const queryParams: FindOrganisationQueryParams = {
                     typ: OrganisationsTyp.SONSTIGE,
                     searchString: faker.lorem.word(),
+                    systemrechte: [],
                 };
 
                 const mockedRepoResponse: Counted<Organisation<true>> = [
@@ -210,9 +212,15 @@ describe('OrganisationController', () => {
                     1,
                 ];
 
+                const permissionsMock: DeepMocked<PersonPermissions> = createMock<PersonPermissions>();
+                permissionsMock.getOrgIdsWithSystemrecht.mockResolvedValueOnce([]);
+
                 organisationRepositoryMock.findBy.mockResolvedValue(mockedRepoResponse);
 
-                const result: Paged<OrganisationResponse> = await organisationController.findOrganizations(queryParams);
+                const result: Paged<OrganisationResponse> = await organisationController.findOrganizations(
+                    queryParams,
+                    permissionsMock,
+                );
 
                 expect(organisationRepositoryMock.findBy).toHaveBeenCalledTimes(1);
                 expect(organisationRepositoryMock.findBy).toHaveBeenCalledWith(
@@ -224,6 +232,7 @@ describe('OrganisationController', () => {
                         })
                         .setScopeWhereOperator(ScopeOperator.AND)
                         .searchString(queryParams.searchString)
+                        .byIDs([])
                         .paged(queryParams.offset, queryParams.limit),
                 );
 

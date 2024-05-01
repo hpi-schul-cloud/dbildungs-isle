@@ -3,6 +3,7 @@ import { RolleID } from '../../../../shared/types/index.js';
 import { Personenkontext } from '../../../personenkontext/domain/personenkontext.js';
 import { Rolle } from '../../../rolle/domain/rolle.js';
 import { OrganisationDo } from '../../../organisation/domain/organisation.do.js';
+import { OrganisationsTyp, OrganisationsTypName } from '../../../organisation/domain/organisation.enums.js';
 
 export class DBiamPersonenzuordnungResponse {
     @ApiProperty({ type: String })
@@ -20,6 +21,9 @@ export class DBiamPersonenzuordnungResponse {
     @ApiProperty({ type: String })
     public readonly rolle: string;
 
+    @ApiProperty({ enum: OrganisationsTyp, enumName: OrganisationsTypName, nullable: true })
+    public readonly typ?: OrganisationsTyp;
+
     public constructor(personenkontext: Personenkontext<true>, organisation: OrganisationDo<true>, rolle: Rolle<true>) {
         //use Organisation Aggregate as soon as there is one
         this.sskId = personenkontext.organisationId;
@@ -27,5 +31,6 @@ export class DBiamPersonenzuordnungResponse {
         this.sskName = organisation.name!;
         this.sskDstNr = organisation.kennung!;
         this.rolle = rolle.name;
+        this.typ = organisation.typ;
     }
 }

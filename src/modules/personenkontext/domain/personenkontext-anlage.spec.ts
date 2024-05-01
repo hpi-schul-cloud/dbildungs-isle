@@ -12,6 +12,8 @@ import { PersonenkontextAnlageError } from '../../../shared/error/personenkontex
 import { EntityNotFoundError } from '../../../shared/error/index.js';
 import { DBiamPersonenkontextRepo } from '../persistence/dbiam-personenkontext.repo.js';
 import { PersonenkontextAnlageFactory } from './personenkontext-anlage.factory.js';
+import { RollenArt } from '../../rolle/domain/rolle.enums.js';
+import { OrganisationsTyp } from '../../organisation/domain/organisation.enums.js';
 
 function createPersonenkontext<WasPersisted extends boolean>(
     this: void,
@@ -35,10 +37,16 @@ function createPersonenkontext<WasPersisted extends boolean>(
 function createRolleOrganisationsPersonKontext(
     anlage: PersonenkontextAnlage,
 ): [Rolle<true>, OrganisationDo<true>, OrganisationDo<true>, OrganisationDo<true>, Personenkontext<true>] {
-    const rolle: Rolle<true> = DoFactory.createRolle(true);
-    const parentOrganisation: OrganisationDo<true> = DoFactory.createOrganisation(true);
-    const childOrganisation: OrganisationDo<true> = DoFactory.createOrganisation(true);
-    const childsChildOrganisation: OrganisationDo<true> = DoFactory.createOrganisation(true);
+    const rolle: Rolle<true> = DoFactory.createRolle(true, { rollenart: RollenArt.LEHR });
+    const parentOrganisation: OrganisationDo<true> = DoFactory.createOrganisation(true, {
+        typ: OrganisationsTyp.TRAEGER,
+    });
+    const childOrganisation: OrganisationDo<true> = DoFactory.createOrganisation(true, {
+        typ: OrganisationsTyp.SCHULE,
+    });
+    const childsChildOrganisation: OrganisationDo<true> = DoFactory.createOrganisation(true, {
+        typ: OrganisationsTyp.KLASSE,
+    });
     childsChildOrganisation.administriertVon = childOrganisation.id;
     childOrganisation.administriertVon = parentOrganisation.id;
     anlage.organisationId = childOrganisation.id;
@@ -149,7 +157,7 @@ describe('PersonenkontextAnlage', () => {
                 expect(result).toHaveLength(1);
             });
 
-            it('should return list of schulstrukturknoten when child of child-organisation is matching', async () => {
+            it('should return list of schulstrukturknoten when child of child-organisation is matching with two results', async () => {
                 const [rolle, parent, child, childOfChild]: [
                     Rolle<true>,
                     OrganisationDo<true>,
@@ -236,6 +244,224 @@ describe('PersonenkontextAnlage', () => {
 
             const result: OrganisationDo<true>[] = await anlage.findSchulstrukturknoten(rolle.id, 'nonexistent', LIMIT);
             expect(result).toHaveLength(0);
+        });
+
+        describe('filter organisations by RollenArt', () => {
+            it('should return empty list, because orga as SCHULE does not match RollenArt SYSADMIN', async () => {
+                const rolle: Rolle<true> = DoFactory.createRolle(true, { rollenart: RollenArt.SYSADMIN });
+                const organisationDo: OrganisationDo<true> = DoFactory.createOrganisation(true, {
+                    typ: OrganisationsTyp.SCHULE,
+                });
+
+                organisationRepoMock.findByNameOrKennung.mockResolvedValue([organisationDo]);
+                rolleRepoMock.findById.mockResolvedValueOnce(rolle);
+                organisationRepoMock.findById.mockResolvedValue(organisationDo); //mock call to find parent in findSchulstrukturknoten
+                organisationRepoMock.findChildOrgasForIds.mockResolvedValueOnce([organisationDo]);
+
+                const result: OrganisationDo<true>[] = await anlage.findSchulstrukturknoten(
+                    rolle.id,
+                    organisationDo.name!,
+                    LIMIT,
+                );
+                expect(result).toHaveLength(0);
+            });
+
+            it('should return one element, because orga as LAND does match RollenArt SYSADMIN', async () => {
+                const rolle: Rolle<true> = DoFactory.createRolle(true, { rollenart: RollenArt.SYSADMIN });
+                const organisationDo: OrganisationDo<true> = DoFactory.createOrganisation(true, {
+                    typ: OrganisationsTyp.LAND,
+                });
+
+                organisationRepoMock.findByNameOrKennung.mockResolvedValue([organisationDo]);
+                rolleRepoMock.findById.mockResolvedValueOnce(rolle);
+                organisationRepoMock.findById.mockResolvedValue(organisationDo); //mock call to find parent in findSchulstrukturknoten
+                organisationRepoMock.findChildOrgasForIds.mockResolvedValueOnce([organisationDo]);
+
+                const result: OrganisationDo<true>[] = await anlage.findSchulstrukturknoten(
+                    rolle.id,
+                    organisationDo.name!,
+                    LIMIT,
+                );
+                expect(result).toHaveLength(1);
+                expect(result).toContainEqual(organisationDo);
+            });
+
+            it('should return one element, because orga as ROOT does match RollenArt SYSADMIN', async () => {
+                const rolle: Rolle<true> = DoFactory.createRolle(true, { rollenart: RollenArt.SYSADMIN });
+                const organisationDo: OrganisationDo<true> = DoFactory.createOrganisation(true, {
+                    typ: OrganisationsTyp.ROOT,
+                });
+
+                organisationRepoMock.findByNameOrKennung.mockResolvedValue([organisationDo]);
+                rolleRepoMock.findById.mockResolvedValueOnce(rolle);
+                organisationRepoMock.findById.mockResolvedValue(organisationDo); //mock call to find parent in findSchulstrukturknoten
+                organisationRepoMock.findChildOrgasForIds.mockResolvedValueOnce([organisationDo]);
+
+                const result: OrganisationDo<true>[] = await anlage.findSchulstrukturknoten(
+                    rolle.id,
+                    organisationDo.name!,
+                    LIMIT,
+                );
+                expect(result).toHaveLength(1);
+                expect(result).toContainEqual(organisationDo);
+            });
+
+            it('should return empty list, because orga as LAND does not match RollenArt LEIT', async () => {
+                const rolle: Rolle<true> = DoFactory.createRolle(true, { rollenart: RollenArt.LEIT });
+                const organisationDo: OrganisationDo<true> = DoFactory.createOrganisation(true, {
+                    typ: OrganisationsTyp.LAND,
+                });
+
+                organisationRepoMock.findByNameOrKennung.mockResolvedValue([organisationDo]);
+                rolleRepoMock.findById.mockResolvedValueOnce(rolle);
+                organisationRepoMock.findById.mockResolvedValue(organisationDo); //mock call to find parent in findSchulstrukturknoten
+                organisationRepoMock.findChildOrgasForIds.mockResolvedValueOnce([organisationDo]);
+
+                const result: OrganisationDo<true>[] = await anlage.findSchulstrukturknoten(
+                    rolle.id,
+                    organisationDo.name!,
+                    LIMIT,
+                );
+                expect(result).toHaveLength(0);
+            });
+
+            it('should return one element, because orga as SCHULE does match RollenArt LEIT', async () => {
+                const rolle: Rolle<true> = DoFactory.createRolle(true, { rollenart: RollenArt.LEIT });
+                const organisationDo: OrganisationDo<true> = DoFactory.createOrganisation(true, {
+                    typ: OrganisationsTyp.SCHULE,
+                });
+
+                organisationRepoMock.findByNameOrKennung.mockResolvedValue([organisationDo]);
+                rolleRepoMock.findById.mockResolvedValueOnce(rolle);
+                organisationRepoMock.findById.mockResolvedValue(organisationDo); //mock call to find parent in findSchulstrukturknoten
+                organisationRepoMock.findChildOrgasForIds.mockResolvedValueOnce([organisationDo]);
+
+                const result: OrganisationDo<true>[] = await anlage.findSchulstrukturknoten(
+                    rolle.id,
+                    organisationDo.name!,
+                    LIMIT,
+                );
+                expect(result).toHaveLength(1);
+                expect(result).toContainEqual(organisationDo);
+            });
+
+            it('should return one element, because orga as SCHULE does match RollenArt LERN', async () => {
+                const rolle: Rolle<true> = DoFactory.createRolle(true, { rollenart: RollenArt.LERN });
+                const organisationDo: OrganisationDo<true> = DoFactory.createOrganisation(true, {
+                    typ: OrganisationsTyp.SCHULE,
+                });
+
+                organisationRepoMock.findByNameOrKennung.mockResolvedValue([organisationDo]);
+                rolleRepoMock.findById.mockResolvedValueOnce(rolle);
+                organisationRepoMock.findById.mockResolvedValue(organisationDo); //mock call to find parent in findSchulstrukturknoten
+                organisationRepoMock.findChildOrgasForIds.mockResolvedValueOnce([organisationDo]);
+
+                const result: OrganisationDo<true>[] = await anlage.findSchulstrukturknoten(
+                    rolle.id,
+                    organisationDo.name!,
+                    LIMIT,
+                );
+                expect(result).toHaveLength(1);
+                expect(result).toContainEqual(organisationDo);
+            });
+
+            it('should return one element, because orga as KLASSE does match RollenArt LERN', async () => {
+                const rolle: Rolle<true> = DoFactory.createRolle(true, { rollenart: RollenArt.LERN });
+                const organisationDo: OrganisationDo<true> = DoFactory.createOrganisation(true, {
+                    typ: OrganisationsTyp.KLASSE,
+                });
+
+                organisationRepoMock.findByNameOrKennung.mockResolvedValue([organisationDo]);
+                rolleRepoMock.findById.mockResolvedValueOnce(rolle);
+                organisationRepoMock.findById.mockResolvedValue(organisationDo); //mock call to find parent in findSchulstrukturknoten
+                organisationRepoMock.findChildOrgasForIds.mockResolvedValueOnce([organisationDo]);
+
+                const result: OrganisationDo<true>[] = await anlage.findSchulstrukturknoten(
+                    rolle.id,
+                    organisationDo.name!,
+                    LIMIT,
+                );
+                expect(result).toHaveLength(1);
+                expect(result).toContainEqual(organisationDo);
+            });
+
+            it('should return empty list, because orga as LAND does not match RollenArt LERN', async () => {
+                const rolle: Rolle<true> = DoFactory.createRolle(true, { rollenart: RollenArt.LERN });
+                const organisationDo: OrganisationDo<true> = DoFactory.createOrganisation(true, {
+                    typ: OrganisationsTyp.LAND,
+                });
+
+                organisationRepoMock.findByNameOrKennung.mockResolvedValue([organisationDo]);
+                rolleRepoMock.findById.mockResolvedValueOnce(rolle);
+                organisationRepoMock.findById.mockResolvedValue(organisationDo); //mock call to find parent in findSchulstrukturknoten
+                organisationRepoMock.findChildOrgasForIds.mockResolvedValueOnce([organisationDo]);
+
+                const result: OrganisationDo<true>[] = await anlage.findSchulstrukturknoten(
+                    rolle.id,
+                    organisationDo.name!,
+                    LIMIT,
+                );
+                expect(result).toHaveLength(0);
+            });
+
+            it('should return one element, because orga as SCHULE does match RollenArt LEHR', async () => {
+                const rolle: Rolle<true> = DoFactory.createRolle(true, { rollenart: RollenArt.LEHR });
+                const organisationDo: OrganisationDo<true> = DoFactory.createOrganisation(true, {
+                    typ: OrganisationsTyp.SCHULE,
+                });
+
+                organisationRepoMock.findByNameOrKennung.mockResolvedValue([organisationDo]);
+                rolleRepoMock.findById.mockResolvedValueOnce(rolle);
+                organisationRepoMock.findById.mockResolvedValue(organisationDo); //mock call to find parent in findSchulstrukturknoten
+                organisationRepoMock.findChildOrgasForIds.mockResolvedValueOnce([organisationDo]);
+
+                const result: OrganisationDo<true>[] = await anlage.findSchulstrukturknoten(
+                    rolle.id,
+                    organisationDo.name!,
+                    LIMIT,
+                );
+                expect(result).toHaveLength(1);
+                expect(result).toContainEqual(organisationDo);
+            });
+
+            it('should return one element, because orga as KLASSE does match RollenArt LEHR', async () => {
+                const rolle: Rolle<true> = DoFactory.createRolle(true, { rollenart: RollenArt.LEHR });
+                const organisationDo: OrganisationDo<true> = DoFactory.createOrganisation(true, {
+                    typ: OrganisationsTyp.KLASSE,
+                });
+
+                organisationRepoMock.findByNameOrKennung.mockResolvedValue([organisationDo]);
+                rolleRepoMock.findById.mockResolvedValueOnce(rolle);
+                organisationRepoMock.findById.mockResolvedValue(organisationDo); //mock call to find parent in findSchulstrukturknoten
+                organisationRepoMock.findChildOrgasForIds.mockResolvedValueOnce([organisationDo]);
+
+                const result: OrganisationDo<true>[] = await anlage.findSchulstrukturknoten(
+                    rolle.id,
+                    organisationDo.name!,
+                    LIMIT,
+                );
+                expect(result).toHaveLength(1);
+                expect(result).toContainEqual(organisationDo);
+            });
+
+            it('should return empty list, because orga as LAND does not match RollenArt LEHR', async () => {
+                const rolle: Rolle<true> = DoFactory.createRolle(true, { rollenart: RollenArt.LEHR });
+                const organisationDo: OrganisationDo<true> = DoFactory.createOrganisation(true, {
+                    typ: OrganisationsTyp.LAND,
+                });
+
+                organisationRepoMock.findByNameOrKennung.mockResolvedValue([organisationDo]);
+                rolleRepoMock.findById.mockResolvedValueOnce(rolle);
+                organisationRepoMock.findById.mockResolvedValue(organisationDo); //mock call to find parent in findSchulstrukturknoten
+                organisationRepoMock.findChildOrgasForIds.mockResolvedValueOnce([organisationDo]);
+
+                const result: OrganisationDo<true>[] = await anlage.findSchulstrukturknoten(
+                    rolle.id,
+                    organisationDo.name!,
+                    LIMIT,
+                );
+                expect(result).toHaveLength(0);
+            });
         });
     });
 
