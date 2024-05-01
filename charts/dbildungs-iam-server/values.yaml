@@ -152,3 +152,55 @@ redis:
   extraEnvVars: []
   extraVolumes: []
   extraVolumeMounts: []
+
+redis-cluster:
+  enabled: true
+  password: "password"
+  cluster:
+      ## Number of Redis&reg; nodes to be deployed
+      ##
+      ## Note:
+      ## This is total number of nodes including the replicas. Meaning there will be 3 master and 3 replica
+      ## nodes (as replica count is set to 1 by default, there will be 1 replica per master node).
+      ## Hence, nodes = numberOfMasterNodes + numberOfMasterNodes * replicas
+      ##
+      ## @param cluster.nodes The number of master nodes should always be >= 3, otherwise cluster creation will fail
+      ##
+      nodes: 6
+      ## @param cluster.replicas Number of replicas for every master in the cluster
+      ## Parameter to be passed as --cluster-replicas to the redis-cli --cluster create
+      ## 1 means that we want a replica for every master created
+      ##
+      replicas: 1   
+  networkPolicy:
+    ## @param networkPolicy.enabled Enable creation of NetworkPolicy resources
+    ##
+    enabled: false
+  serviceAccount:
+  ## @param serviceAccount.create Specifies whether a ServiceAccount should be created
+  ##
+    create: false
+
+  redis:
+    usePassword: false
+    username: "default"
+    password: "password"
+    extraVolumes:
+      - name: redis-tls-data
+        configMap:
+          name: dbildungs-iam-server-redis-tls-data
+          items:
+            - key: gencert.sh
+              path: gencert.sh
+            - key: copy-tls.sh
+              path: copy-tls.sh
+            - key: redis.conf
+              path: redis.conf
+    extraVolumeMounts:
+    - name: redis-tls-data
+      mountPath: /tls
+
+    podLabels:
+      app.kubernetes.io/component: server-redis
+  commonLabels:
+    app.kubernetes.io/name: dbildungs-iam-server 
