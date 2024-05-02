@@ -100,10 +100,12 @@ export class ServerModule implements NestModule {
         let redisClient: RedisClientType | RedisClusterType;
         if (redisConfig.CLUSTERED) {
             redisClient = createCluster({
+                defaults: {
+                    username: redisConfig.USERNAME,
+                    password: redisConfig.PASSWORD,
+                },
                 rootNodes: [
                     {
-                        username: redisConfig.USERNAME,
-                        password: redisConfig.PASSWORD,
                         socket: {
                             host: redisConfig.HOST,
                             port: redisConfig.PORT,
