@@ -24,7 +24,7 @@
     "HOST": "dbildungs-iam-server-redis-cluster",
     "PORT": 6379,
     "USERNAME": "default",
-    "USE_TLS": false,
+    "USE_TLS": true,
     "CLUSTERED": true
   },
   "DATA": {
