@@ -182,6 +182,23 @@ redis-cluster:
     create: false
 
   redis:
+    env:
+      - name: REDIS_TLS_ENABLED
+        value: "yes"
+      - name: REDIS_TLS_CERT_FILE
+        value: /tmp/tls/redis.crt
+      - name: REDIS_TLS_KEY_FILE
+        value: /tmp/tls/redis.key
+      - name: REDIS_TLS_CA_FILE
+        value: /tmp/tls/ca.crt
+    volumeMounts:
+    - name: redis-certificates
+      mountPath: /tmp/tls
+      readOnly: true
+    extraVolumeMounts:
+    - name: redis-tls-data
+      mountPath: /tmp
+
     usePassword: false
     username: "default"
     password: "password"
@@ -198,9 +215,6 @@ redis-cluster:
               path: copy-tls.sh
             - key: redis.conf
               path: redis.conf
-    extraVolumeMounts:
-    - name: redis-tls-data
-      mountPath: /tmp
 
     podLabels:
       app.kubernetes.io/component: server-redis
