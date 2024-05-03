@@ -185,6 +185,8 @@ redis-cluster:
     usePassword: false
     username: "default"
     password: "password"
+    tls:
+      enabled: true
     extraVolumes:
       - name: redis-tls-data
         configMap:
