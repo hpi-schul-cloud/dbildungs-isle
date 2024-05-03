@@ -200,7 +200,7 @@ redis-cluster:
               path: redis.conf
     extraVolumeMounts:
     - name: redis-tls-data
-      mountPath: /tls
+      mountPath: /tmp
 
     podLabels:
       app.kubernetes.io/component: server-redis

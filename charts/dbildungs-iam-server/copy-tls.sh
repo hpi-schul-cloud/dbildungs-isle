@@ -9,7 +9,7 @@ mkdir -p "$STAGING_DIR"
 mkdir -p "$CONFIG_DIR"
 
 # Check if the TLS files are already generated
-if [ ! -f "$MOUNTED_FILES_DIR/ca.crt" ] || [ ! -f "$MOUNTED_FILES_DIR/redis.crt" ] || [ ! -f "$MOUNTED_FILES_DIR/redis.key" ]; then
+if [ ! -f "/tmp/tls/ca.crt" ] || [ ! -f "/tmp/tls/redis.crt" ] || [ ! -f "/tmp/tls/redis.key" ]; then
   echo "Generating TLS certificates using gencert.sh..."
   cp -v "$MOUNTED_FILES_DIR/gencert.sh" "$STAGING_DIR"
   pushd "$STAGING_DIR" || exit 1
@@ -20,7 +20,7 @@ fi
 
 # Copy the TLS files to the staging directory
 echo "Copying TLS files to staging directory..."
-cp -v "$MOUNTED_FILES_DIR/ca.crt" "$MOUNTED_FILES_DIR/redis.crt" "$MOUNTED_FILES_DIR/redis.key" "$STAGING_DIR"
+cp -v "/tmp/tls/ca.crt" "/tmp/tls/redis.crt" "/tmp/tls/redis.key" "$STAGING_DIR"
 
 # Change to the staging directory
 echo "Changing to staging directory..."
