@@ -190,13 +190,13 @@ redis-cluster:
         value: /data/tls/redis.key
       - name: REDIS_TLS_CA_FILE
         value: /data/tls/ca.crt
-    volumes:
+    extraVolumes:
     - name: redis-tls-data
       emptyDir: {}
-    volumeMounts:
-    - name: redis-certificates
+    extraVolumeMounts:
+    - name: redis-tls-data
       mountPath: /data/tls
-      readOnly: true
+      
 
 
 
