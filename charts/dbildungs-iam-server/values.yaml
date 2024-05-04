@@ -203,7 +203,7 @@ redis-cluster:
     username: "default"
     password: "password"
     tls:
-      enabled: true
+      enabled: false
     extraVolumes:
       - name: redis-tls-data
         configMap:
