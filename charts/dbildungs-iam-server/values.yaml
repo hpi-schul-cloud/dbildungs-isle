@@ -185,18 +185,18 @@ redis-cluster:
       - name: REDIS_TLS_ENABLED
         value: "yes"
       - name: REDIS_TLS_CERT_FILE
-        value: /tmp/tls/redis.crt
+        value: tls/redis.crt
       - name: REDIS_TLS_KEY_FILE
-        value: /tmp/tls/redis.key
+        value: tls/redis.key
       - name: REDIS_TLS_CA_FILE
-        value: /tmp/tls/ca.crt
+        value: tls/ca.crt
     volumeMounts:
     - name: redis-certificates
-      mountPath: /tmp/tls
+      mountPath: tls
       readOnly: true
     extraVolumeMounts:
     - name: redis-tls-data
-      mountPath: /tmp
+      mountPath: /tls
 
     usePassword: false
     username: "default"
