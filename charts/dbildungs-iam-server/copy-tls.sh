@@ -1,7 +1,7 @@
 #!/bin/bash
 
 STAGING_DIR="/staging"
-MOUNTED_FILES_DIR="/opt/bitnami/redis/certs"
+MOUNTED_FILES_DIR="tmp/tls"
 CONFIG_DIR="/data/tls"
 # Create the directories
 mkdir -p "$STAGING_DIR"

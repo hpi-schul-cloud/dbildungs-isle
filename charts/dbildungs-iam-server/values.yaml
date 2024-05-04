@@ -185,17 +185,17 @@ redis-cluster:
       - name: REDIS_TLS_ENABLED
         value: "yes"
       - name: REDIS_TLS_CERT_FILE
-        value: /opt/bitnami/redis/certs/redis.crt
+        value: tmp/tls/redis.crt
       - name: REDIS_TLS_KEY_FILE
-        value: /opt/bitnami/redis/certs/redis.key
+        value: tmp/tls/redis.key
       - name: REDIS_TLS_CA_FILE
-        value: /opt/bitnami/redis/certs/ca.crt
+        value: tmp/tls/ca.crt
     volumes:
     - name: redis-tls-data
       emptyDir: {}
     volumeMounts:
     - name: redis-certificates
-      mountPath: /opt/bitnami/redis/certs
+      mountPath: tmp/tls
       readOnly: true
 
 

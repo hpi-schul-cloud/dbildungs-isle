@@ -8,7 +8,7 @@
 #   tmp/tls/server.{crt,key}      A certificate restricted for SSL server usage.
 #   tmp/tls/redis.dh              DH Params file.
 
-CERT_DIR="/opt/bitnami/redis/certs"
+CERT_DIR="tmp/tls"
 
 generate_cert() {
     local name=$1
