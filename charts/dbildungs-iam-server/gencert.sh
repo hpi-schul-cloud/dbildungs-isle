@@ -8,7 +8,7 @@
 #   tls/server.{crt,key}      A certificate restricted for SSL server usage.
 #   tls/redis.dh              DH Params file.
 
-CERT_DIR="tls"
+CERT_DIR="/tmp/tls"
 
 generate_cert() {
     local name=$1
