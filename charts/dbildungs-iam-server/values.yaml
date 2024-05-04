@@ -152,7 +152,6 @@ redis:
   extraEnvVars: []
   extraVolumes: []
   extraVolumeMounts: []
-
 redis-cluster:
   enabled: true
   password: "password"
@@ -203,7 +202,7 @@ redis-cluster:
     username: "default"
     password: "password"
     tls:
-      enabled: false
+      enabled: true
     extraVolumes:
       - name: redis-tls-data
         configMap:
