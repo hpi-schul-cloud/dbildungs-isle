@@ -1,10 +1,8 @@
-
 #!/bin/bash
 
 STAGING_DIR="/staging"
-MOUNTED_FILES_DIR="/tls"
+MOUNTED_FILES_DIR="tmp/tls"
 CONFIG_DIR="/data/tls"
-
 # Create the directories
 mkdir -p "$STAGING_DIR"
 mkdir -p "$CONFIG_DIR"
@@ -26,15 +24,12 @@ cp -v "$MOUNTED_FILES_DIR/ca.crt" "$MOUNTED_FILES_DIR/redis.crt" "$MOUNTED_FILES
 # Change to the staging directory
 echo "Changing to staging directory..."
 pushd "$STAGING_DIR" || exit 1
-
 # Copy the generated certificates to the config directory
 echo "Copying certificates to config directory..."
 cp -v ca.crt redis.crt redis.key "$CONFIG_DIR"
-
 # Copy the pre-made Redis configuration file to the config directory
 echo "Copying Redis configuration file to config directory..."
 cp -v "$MOUNTED_FILES_DIR/redis.conf" "$CONFIG_DIR"
-
 # Change back to the previous directory
 echo "Changing back to previous directory..."
 popd || exit 1
