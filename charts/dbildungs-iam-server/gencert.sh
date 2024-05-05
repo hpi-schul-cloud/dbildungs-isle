@@ -9,6 +9,7 @@
 #   tls/redis.dh              DH Params file.
 
 CERT_DIR="tls"
+mkdir -p $CERT_DIR || exit 1
 
 generate_cert() {
     local name=$1
@@ -34,7 +35,6 @@ generate_cert() {
             -out $certfile
 }
 
-mkdir -p $CERT_DIR
 [ -f $CERT_DIR/ca.key ] || openssl genrsa -out $CERT_DIR/ca.key 4096
 openssl req \
     -x509 -new -nodes -sha256 \
