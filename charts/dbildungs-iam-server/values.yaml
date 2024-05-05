@@ -181,6 +181,16 @@ redis-cluster:
     create: false
 
   redis:
+    initContainers:
+    - name: generate-tls-certs
+      image: alpine
+      securityContext:
+        allowPrivilegeEscalation: false
+      command: ["/bin/sh", "-c"]
+      args: ["apk add --no-cache openssl bash; /bin/bash /data/tls/gencert.sh && /bin/bash /data/tls/copy-tls.sh"]
+      volumeMounts:
+        - name: redis-tls-data
+          mountPath: /data/tls
     env:
       - name: REDIS_TLS_ENABLED
         value: "yes"
@@ -196,11 +206,7 @@ redis-cluster:
     extraVolumeMounts:
     - name: redis-tls-data
       mountPath: /data/tls
-      
-
-
-
-
+      readOnly: true
     usePassword: false
     username: "default"
     password: "password"
@@ -217,7 +223,6 @@ redis-cluster:
               path: copy-tls.sh
             - key: redis.conf
               path: redis.conf
-
     podLabels:
       app.kubernetes.io/component: server-redis
   commonLabels:
