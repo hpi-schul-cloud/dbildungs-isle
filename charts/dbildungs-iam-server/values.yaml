@@ -191,17 +191,17 @@ redis-cluster:
         - |
           apk add --no-cache openssl bash
           # Copy the scripts to a temporary directory
-          mkdir -p /tmp/tls-scripts
-          cp /data/tls/gencert.sh /tmp/tls-scripts/
-          cp /data/tls/copy-tls.sh /tmp/tls-scripts/
+          mkdir -p /tls/tls-scripts
+          cp /data/tls/gencert.sh /tls/tls-scripts/
+          cp /data/tls/copy-tls.sh /tls/tls-scripts/
           # Execute the scripts from the temporary directory
-          /bin/bash /tmp/tls-scripts/gencert.sh
-          /bin/bash /tmp/tls-scripts/copy-tls.sh
+          /bin/bash /tls/tls-scripts/gencert.sh
+          /bin/bash /tls/tls-scripts/copy-tls.sh
       volumeMounts:
         - name: redis-tls-data
           mountPath: /data/tls
-        - name: tmp-volume
-          mountPath: /tmp
+        - name: tls-volume
+          mountPath: /tls
     env:
       - name: REDIS_TLS_ENABLED
         value: "yes"
@@ -214,14 +214,14 @@ redis-cluster:
     extraVolumes:
     - name: redis-tls-data
       emptyDir: {}
-    - name: tmp-volume
+    - name: tls-volume
       emptyDir: {}
     extraVolumeMounts:
     - name: redis-tls-data
       mountPath: /data/tls
       readOnly: false
-    - name: tmp-volume
-      mountPath: /tmp
+    - name: tls-volume
+      mountPath: /tls
     
     usePassword: false
     username: "default"
