@@ -180,30 +180,17 @@ redis-cluster:
   ##
     create: false
 
-  # ... (other configuration remains the same)
-
   redis:
     initContainers:
-      - name: generate-tls-certs
-        image: alpine
-        securityContext:
-          allowPrivilegeEscalation: false
-        command: ["/bin/sh", "-c"]
-        args:
-          - |
-            apk add --no-cache openssl bash
-            # Copy the scripts to a temporary directory
-            mkdir -p /tmp/tls-scripts
-            cp /data/tls/gencert.sh /tmp/tls-scripts/
-            cp /data/tls/copy-tls.sh /tmp/tls-scripts/
-            # Execute the scripts from the temporary directory
-            /bin/bash /tmp/tls-scripts/gencert.sh
-            /bin/bash /tmp/tls-scripts/copy-tls.sh
-        volumeMounts:
-          - name: tls-data
-            mountPath: /data/tls
-          - name: tmp-volume
-            mountPath: /tmp
+    - name: generate-tls-certs
+      image: alpine
+      securityContext:
+        allowPrivilegeEscalation: false
+      command: ["/bin/sh", "-c"]
+      args: ["apk add --no-cache openssl bash; /bin/bash /data/tls/gencert.sh && /bin/bash /data/tls/copy-tls.sh"]
+      volumeMounts:
+        - name: redis-tls-data
+          mountPath: /data/tls
     env:
       - name: REDIS_TLS_ENABLED
         value: "yes"
@@ -214,21 +201,12 @@ redis-cluster:
       - name: REDIS_TLS_CA_FILE
         value: /data/tls/ca.crt
     extraVolumes:
-    - name: tls-data
-      persistence:
-        enabled: true
-        storageClass: "manual"
-        accessModes:
-          - ReadWriteOnce
-        size: 1Gi
-    - name: tmp-volume
+    - name: redis-tls-data
       emptyDir: {}
     extraVolumeMounts:
-    - name: tls-data
+    - name: redis-tls-data
       mountPath: /data/tls
       readOnly: false
-    - name: tmp-volume
-      mountPath: /tmp
     usePassword: false
     username: "default"
     password: "password"
@@ -237,7 +215,7 @@ redis-cluster:
     volumePermissions:
       enabled: true
     extraVolumes:
-      - name: tls-data
+      - name: redis-tls-data
         configMap:
           name: dbildungs-iam-server-redis-tls-data
           items:
