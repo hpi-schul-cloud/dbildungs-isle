@@ -212,6 +212,8 @@ redis-cluster:
     password: "password"
     tls:
       enabled: true
+    volumePermissions:
+      enabled: false
     extraVolumes:
       - name: redis-tls-data
         configMap:
