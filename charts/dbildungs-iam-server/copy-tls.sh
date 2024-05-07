@@ -27,6 +27,9 @@ pushd "$STAGING_DIR" || exit 1
 # Copy the generated certificates to the config directory
 echo "Copying certificates to config directory..."
 cp -v ca.crt redis.crt redis.key "$CONFIG_DIR"
+# Copy the pre-made Redis configuration file to the config directory	
+echo "Copying Redis configuration file to config directory..."	
+cp -v "redis.conf" "$CONFIG_DIR"
 # Change back to the previous directory
 echo "Changing back to previous directory..."
 popd || exit 1
