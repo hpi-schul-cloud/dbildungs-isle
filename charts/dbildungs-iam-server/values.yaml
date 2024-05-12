@@ -152,3 +152,8 @@ redis:
   extraEnvVars: []
   extraVolumes: []
   extraVolumeMounts: []
+  
+# existingSecret: Refers to a secret already present in the cluster, which is required.
+redis-cluster:
+  redis:
+    existingSecret: redis-credentials
