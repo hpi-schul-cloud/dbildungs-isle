@@ -3,8 +3,11 @@ import { SchuleCreatedEvent } from '../../../shared/events/schule-created.event.
 import { EventHandler } from '../../eventbus/decorators/event-handler.decorator.js';
 import { LdapClientService, PersonData } from './ldap-client.service.js';
 import { ClassLogger } from '../../logging/class-logger.js';
+import { OrganisationsTyp } from '../../../modules/organisation/domain/organisation.enums.js';
 import { RollenArt } from '../../../modules/rolle/domain/rolle.enums.js';
+import { Organisation } from '../../../modules/organisation/domain/organisation.js';
 import { SchuleDeletedEvent } from '../../../shared/events/schule-deleted.event.js';
+import { OrganisationRepository } from '../../../modules/organisation/persistence/organisation.repository.js';
 import {
     PersonenkontextUpdatedData,
     PersonenkontextUpdatedEvent,
@@ -15,40 +18,51 @@ export class LdapEventHandler {
     public constructor(
         private readonly logger: ClassLogger,
         private readonly ldapClientService: LdapClientService,
+        private readonly organisationRepository: OrganisationRepository,
     ) {}
 
     @EventHandler(SchuleCreatedEvent)
     public async handleSchuleCreatedEvent(event: SchuleCreatedEvent): Promise<void> {
         this.logger.info(`Received SchuleCreatedEvent, organisationId:${event.organisationId}`);
 
-        if (!event.kennung) {
-            return this.logger.error('Schule has no kennung. Aborting.');
+        const organisation: Option<Organisation<true>> = await this.organisationRepository.findById(
+            event.organisationId,
+        );
+        if (!organisation) {
+            this.logger.error(`Organisation with id ${event.organisationId} could not be found!`);
+            return;
         }
-        this.logger.info(`Kennung of organisation is:${event.kennung}`);
+        this.logger.info(`Kennung of organisation is:${organisation.kennung}`);
 
-        this.logger.info(`Call LdapClientService because ${event.name} type is SCHULE`);
-        const creationResult: Result<void> = await this.ldapClientService.createOrganisation({
-            kennung: event.kennung,
-        });
-        if (!creationResult.ok) {
-            this.logger.error(creationResult.error.message);
+        if (organisation.typ == OrganisationsTyp.SCHULE) {
+            this.logger.info(`Call LdapClientService because ${organisation.name} type is SCHULE`);
+            const creationResult: Result<Organisation<true>> =
+                await this.ldapClientService.createOrganisation(organisation);
+            if (!creationResult.ok) {
+                this.logger.error(creationResult.error.message);
+            }
         }
     }
 
     @EventHandler(SchuleDeletedEvent)
     public async handleSchuleDeletedEvent(event: SchuleDeletedEvent): Promise<void> {
         this.logger.info(`Received SchuleDeletedEvent, organisationId:${event.organisationId}`);
-
-        if (!event.kennung) {
-            return this.logger.error('Schule has no kennung. Aborting.');
+        const organisation: Option<Organisation<true>> = await this.organisationRepository.findById(
+            event.organisationId,
+        );
+        if (!organisation) {
+            this.logger.error(`Organisation with id ${event.organisationId} could not be found!`);
+            return;
         }
-        this.logger.info(`Kennung of organisation is:${event.kennung}`);
-        this.logger.info(`Call LdapClientService because ${event.name} type is SCHULE`);
-        const creationResult: Result<void> = await this.ldapClientService.deleteOrganisation({
-            kennung: event.kennung,
-        });
-        if (!creationResult.ok) {
-            this.logger.error(creationResult.error.message);
+        this.logger.info(`Kennung of organisation is:${organisation.kennung}`);
+
+        if (organisation.typ == OrganisationsTyp.SCHULE) {
+            this.logger.info(`Call LdapClientService because ${organisation.name} type is SCHULE`);
+            const creationResult: Result<Organisation<true>> =
+                await this.ldapClientService.deleteOrganisation(organisation);
+            if (!creationResult.ok) {
+                this.logger.error(creationResult.error.message);
+            }
         }
     }
 

@@ -6,7 +6,7 @@ import { OrganisationID } from '../../../shared/types/aggregate-ids.types.js';
 import { Organisation } from '../domain/organisation.js';
 import { OrganisationEntity } from './organisation.entity.js';
 import { OrganisationScope } from './organisation.scope.js';
-import { OrganisationsTyp, RootDirectChildrenType } from '../domain/organisation.enums.js';
+import { OrganisationsTyp } from '../domain/organisation.enums.js';
 import { SchuleCreatedEvent } from '../../../shared/events/schule-created.event.js';
 import { EventService } from '../../../core/eventbus/services/event.service.js';
 import { ScopeOperator } from '../../../shared/persistence/scope.enums.js';
@@ -15,7 +15,6 @@ import { EntityNotFoundError } from '../../../shared/error/entity-not-found.erro
 import { EntityCouldNotBeUpdated } from '../../../shared/error/entity-could-not-be-updated.error.js';
 import { OrganisationSpecificationError } from '../specification/error/organisation-specification.error.js';
 import { KlasseUpdatedEvent } from '../../../shared/events/klasse-updated.event.js';
-import { KlasseCreatedEvent } from '../../../shared/events/klasse-created.event.js';
 
 export function mapAggregateToData(organisation: Organisation<boolean>): RequiredEntityData<OrganisationEntity> {
     return {
@@ -251,25 +250,7 @@ export class OrganisationRepository {
         await this.em.persistAndFlush(organisationEntity);
 
         if (organisationEntity.typ === OrganisationsTyp.SCHULE) {
-            const orgaBaumZuordnung: RootDirectChildrenType = await this.findOrganisationZuordnungErsatzOderOeffentlich(
-                organisationEntity.id,
-            );
-            this.eventService.publish(
-                new SchuleCreatedEvent(
-                    organisationEntity.id,
-                    organisationEntity.kennung,
-                    organisationEntity.name,
-                    orgaBaumZuordnung,
-                ),
-            );
-        } else if (organisationEntity.typ === OrganisationsTyp.KLASSE) {
-            this.eventService.publish(
-                new KlasseCreatedEvent(
-                    organisationEntity.id,
-                    organisationEntity.name,
-                    organisationEntity.administriertVon,
-                ),
-            );
+            this.eventService.publish(new SchuleCreatedEvent(organisationEntity.id));
         }
 
         return mapEntityToAggregate(organisationEntity);
@@ -285,28 +266,5 @@ export class OrganisationRepository {
         await this.em.persistAndFlush(organisationEntity);
 
         return mapEntityToAggregate(organisationEntity);
-    }
-
-    private async findOrganisationZuordnungErsatzOderOeffentlich(
-        organisationId: OrganisationID | undefined,
-    ): Promise<RootDirectChildrenType> {
-        const [oeffentlich, ersatz]: [Organisation<true> | undefined, Organisation<true> | undefined] =
-            await this.findRootDirectChildren();
-
-        let parentOrgaId: OrganisationID | undefined = organisationId;
-
-        while (parentOrgaId) {
-            const result: Option<Organisation<true>> = await this.findById(parentOrgaId);
-
-            if (result?.id === oeffentlich?.id) {
-                return RootDirectChildrenType.OEFFENTLICH;
-            } else if (result?.id === ersatz?.id) {
-                return RootDirectChildrenType.ERSATZ;
-            }
-
-            parentOrgaId = result?.administriertVon;
-        }
-
-        return RootDirectChildrenType.OEFFENTLICH;
     }
 }

@@ -3,6 +3,7 @@ import { ClassLogger } from '../../logging/class-logger.js';
 import { Client, SearchResult } from 'ldapts';
 import { LdapEntityType, LdapOrganisationEntry, LdapPersonEntry, LdapRoleEntry } from './ldap.types.js';
 import { KennungRequiredForSchuleError } from '../../../modules/organisation/specification/error/kennung-required-for-schule.error.js';
+import { Organisation } from '../../../modules/organisation/domain/organisation.js';
 import { LdapClient } from './ldap-client.js';
 import { LdapInstanceConfig } from '../ldap-instance-config.js';
 import { UsernameRequiredError } from '../../../modules/person/domain/username-required.error.js';
@@ -49,59 +50,52 @@ export class LdapClientService {
         }
     }
 
-    public async createOrganisation(organisationData: OrganisationData): Promise<Result<void>> {
+    public async createOrganisation(organisation: Organisation<true>): Promise<Result<Organisation<true>>> {
         return this.mutex.runExclusive(async () => {
             this.logger.info('LDAP: createOrganisation');
-            if (!organisationData.kennung) return { ok: false, error: new KennungRequiredForSchuleError() };
+            if (!organisation.kennung) return { ok: false, error: new KennungRequiredForSchuleError() };
             const client: Client = this.ldapClient.getClient();
             const bindResult: Result<boolean> = await this.bind();
             if (!bindResult.ok) return bindResult;
             const organisationEntry: LdapOrganisationEntry = {
-                ou: organisationData.kennung,
+                ou: organisation.kennung,
                 objectclass: ['organizationalUnit'],
             };
             const roleEntry: LdapRoleEntry = {
                 cn: 'lehrer',
-                ou: organisationData.kennung,
+                ou: organisation.kennung,
                 objectclass: ['organizationalRole'],
             };
-            await client.add(
-                `ou=${organisationData.kennung},ou=oeffentlicheSchulen,dc=schule-sh,dc=de`,
-                organisationEntry,
-            );
-            this.logger.info(`LDAP: Successfully created organisation ou=${organisationData.kennung}`);
+            await client.add(`ou=${organisation.kennung},ou=oeffentlicheSchulen,dc=schule-sh,dc=de`, organisationEntry);
+            this.logger.info(`LDAP: Successfully created organisation ou=${organisation.kennung}`);
 
             await client.add(
-                `cn=lehrer,ou=${organisationData.kennung},ou=oeffentlicheSchulen,dc=schule-sh,dc=de`,
+                `cn=lehrer,ou=${organisation.kennung},ou=oeffentlicheSchulen,dc=schule-sh,dc=de`,
                 roleEntry,
             );
-            this.logger.info(
-                `LDAP: Successfully created corresponding lehrer rolle for ou=${organisationData.kennung}`,
-            );
+            this.logger.info(`LDAP: Successfully created corresponding lehrer rolle for ou=${organisation.kennung}`);
 
-            return { ok: true, value: undefined };
+            return { ok: true, value: organisation };
         });
     }
 
-    public async deleteOrganisation(organisationData: OrganisationData): Promise<Result<void>> {
+    public async deleteOrganisation(organisation: Organisation<true>): Promise<Result<Organisation<true>>> {
         return this.mutex.runExclusive(async () => {
             this.logger.info('LDAP: deleteOrganisation');
             const client: Client = this.ldapClient.getClient();
             const bindResult: Result<boolean> = await this.bind();
             if (!bindResult.ok) return bindResult;
-            if (!organisationData.kennung) return { ok: false, error: new KennungRequiredForSchuleError() };
+            if (!organisation.kennung) return { ok: false, error: new KennungRequiredForSchuleError() };
 
             this.logger.info('LDAP: Successfully connected to LDAP');
 
-            await client.del(`cn=lehrer,ou=${organisationData.kennung},ou=oeffentlicheSchulen,dc=schule-sh,dc=de`);
-            this.logger.info(
-                `LDAP: Successfully deleted corresponding lehrer rolle for ou=${organisationData.kennung}`,
-            );
+            await client.del(`cn=lehrer,ou=${organisation.kennung},ou=oeffentlicheSchulen,dc=schule-sh,dc=de`);
+            this.logger.info(`LDAP: Successfully deleted corresponding lehrer rolle for ou=${organisation.kennung}`);
 
-            await client.del(`ou=${organisationData.kennung},ou=oeffentlicheSchulen,dc=schule-sh,dc=de`);
-            this.logger.info(`LDAP: Successfully deleted organisation ou=${organisationData.kennung}`);
+            await client.del(`ou=${organisation.kennung},ou=oeffentlicheSchulen,dc=schule-sh,dc=de`);
+            this.logger.info(`LDAP: Successfully deleted organisation ou=${organisation.kennung}`);
 
-            return { ok: true, value: undefined };
+            return { ok: true, value: organisation };
         });
     }
 

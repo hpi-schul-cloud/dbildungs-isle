@@ -11,7 +11,7 @@ import { DataConfig, ServerConfig } from '../../../shared/config/index.js';
 import { OrganisationID } from '../../../shared/types/aggregate-ids.types.js';
 import { SchuleCreatedEvent } from '../../../shared/events/schule-created.event.js';
 import { EventService } from '../../../core/eventbus/index.js';
-import { OrganisationsTyp, RootDirectChildrenType } from '../domain/organisation.enums.js';
+import { OrganisationsTyp } from '../domain/organisation.enums.js';
 import { KlasseCreatedEvent } from '../../../shared/events/klasse-created.event.js';
 import { ScopeOperator } from '../../../shared/persistence/scope.enums.js';
 
@@ -32,14 +32,7 @@ export class OrganisationRepo {
         const organisation: OrganisationEntity = this.mapper.map(organisationDo, OrganisationDo, OrganisationEntity);
         await this.em.persistAndFlush(organisation);
         if (organisationDo.typ === OrganisationsTyp.SCHULE) {
-            this.eventService.publish(
-                new SchuleCreatedEvent(
-                    organisation.id,
-                    organisation.kennung,
-                    organisation.name,
-                    RootDirectChildrenType.OEFFENTLICH, //The create method in the organisation.repo is not being used, and should be soon deleted.
-                ),
-            );
+            this.eventService.publish(new SchuleCreatedEvent(organisation.id));
         } else if (organisationDo.typ === OrganisationsTyp.KLASSE) {
             this.eventService.publish(
                 new KlasseCreatedEvent(organisation.id, organisation.name, organisation.administriertVon),

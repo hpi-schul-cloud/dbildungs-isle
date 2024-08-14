@@ -17,25 +17,26 @@ import { LdapEventHandler } from './ldap-event-handler.js';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { LdapClientService } from './ldap-client.service.js';
 import { SchuleCreatedEvent } from '../../../shared/events/schule-created.event.js';
+import { OrganisationsTyp } from '../../../modules/organisation/domain/organisation.enums.js';
 import { PersonRepository } from '../../../modules/person/persistence/person.repository.js';
 import { RolleRepo } from '../../../modules/rolle/repo/rolle.repo.js';
 import { faker } from '@faker-js/faker';
 import { Organisation } from '../../../modules/organisation/domain/organisation.js';
 import { RollenArt } from '../../../modules/rolle/domain/rolle.enums.js';
 import { SchuleDeletedEvent } from '../../../shared/events/schule-deleted.event.js';
+import { OrganisationRepository } from '../../../modules/organisation/persistence/organisation.repository.js';
 import { DBiamPersonenkontextRepo } from '../../../modules/personenkontext/persistence/dbiam-personenkontext.repo.js';
 import { PersonenkontextFactory } from '../../../modules/personenkontext/domain/personenkontext.factory.js';
 import { PersonenkontextUpdatedEvent } from '../../../shared/events/personenkontext-updated.event.js';
-import { ClassLogger } from '../../logging/class-logger.js';
-import { RootDirectChildrenType } from '../../../modules/organisation/domain/organisation.enums.js';
 
 describe('LDAP Event Handler', () => {
     let app: INestApplication;
     let orm: MikroORM;
 
+    let organisationRepositoryMock: DeepMocked<OrganisationRepository>;
+
     let ldapEventHandler: LdapEventHandler;
     let ldapClientServiceMock: DeepMocked<LdapClientService>;
-    let loggerMock: DeepMocked<ClassLogger>;
 
     beforeAll(async () => {
         const module: TestingModule = await Test.createTestingModule({
@@ -56,6 +57,8 @@ describe('LDAP Event Handler', () => {
         })
             .overrideProvider(LdapClientService)
             .useValue(createMock<LdapClientService>())
+            .overrideProvider(OrganisationRepository)
+            .useValue(createMock<OrganisationRepository>())
             .overrideProvider(PersonRepository)
             .useValue(createMock<PersonRepository>())
             .overrideProvider(PersonenkontextFactory)
@@ -64,15 +67,14 @@ describe('LDAP Event Handler', () => {
             .useValue(createMock<RolleRepo>())
             .overrideProvider(DBiamPersonenkontextRepo)
             .useValue(createMock<DBiamPersonenkontextRepo>())
-            .overrideProvider(ClassLogger)
-            .useValue(createMock<ClassLogger>())
             .compile();
 
         orm = module.get(MikroORM);
 
+        organisationRepositoryMock = module.get(OrganisationRepository);
+
         ldapEventHandler = module.get(LdapEventHandler);
         ldapClientServiceMock = module.get(LdapClientService);
-        loggerMock = module.get(ClassLogger);
 
         await DatabaseTestModule.setupDatabase(module.get(MikroORM));
         app = module.createNestApplication();
@@ -92,16 +94,18 @@ describe('LDAP Event Handler', () => {
     describe('asyncSchuleCreatedEventHandler', () => {
         describe('when type is SCHULE and creation is successful', () => {
             it('should execute without errors', async () => {
-                const event: SchuleCreatedEvent = new SchuleCreatedEvent(
-                    faker.string.uuid(),
-                    faker.string.uuid(),
-                    faker.word.noun(),
-                    RootDirectChildrenType.OEFFENTLICH,
-                );
-                const result: Result<void> = {
+                const organisation: Organisation<true> = createMock<Organisation<true>>({
+                    id: faker.string.uuid(),
+                    typ: OrganisationsTyp.SCHULE,
+                });
+
+                const event: SchuleCreatedEvent = new SchuleCreatedEvent(organisation.id);
+                const result: Result<Organisation<true>> = {
                     ok: true,
-                    value: undefined,
+                    value: createMock<Organisation<true>>(),
                 };
+
+                organisationRepositoryMock.findById.mockResolvedValueOnce(organisation);
                 ldapClientServiceMock.createOrganisation.mockResolvedValueOnce(result);
 
                 await ldapEventHandler.handleSchuleCreatedEvent(event);
@@ -109,18 +113,20 @@ describe('LDAP Event Handler', () => {
             });
         });
 
-        describe('when creation fails', () => {
+        describe('when type is SCHULE and creation fails', () => {
             it('should execute without errors', async () => {
-                const event: SchuleCreatedEvent = new SchuleCreatedEvent(
-                    faker.string.uuid(),
-                    faker.string.uuid(),
-                    faker.word.noun(),
-                    RootDirectChildrenType.OEFFENTLICH,
-                );
+                const organisation: Organisation<true> = createMock<Organisation<true>>({
+                    id: faker.string.uuid(),
+                    typ: OrganisationsTyp.SCHULE,
+                });
+
+                const event: SchuleCreatedEvent = new SchuleCreatedEvent(organisation.id);
                 const result: Result<Organisation<true>> = {
                     ok: false,
                     error: new Error(),
                 };
+
+                organisationRepositoryMock.findById.mockResolvedValueOnce(organisation);
                 ldapClientServiceMock.createOrganisation.mockResolvedValueOnce(result);
 
                 await ldapEventHandler.handleSchuleCreatedEvent(event);
@@ -128,34 +134,34 @@ describe('LDAP Event Handler', () => {
             });
         });
 
-        it('should skip event, if kennung is undefined', async () => {
-            const organisationId: string = faker.string.uuid();
-            const event: SchuleCreatedEvent = new SchuleCreatedEvent(
-                organisationId,
-                undefined,
-                faker.word.noun(),
-                RootDirectChildrenType.OEFFENTLICH,
-            );
+        describe('when type is SCHULE and organisation cannot be found', () => {
+            it('should execute without errors', async () => {
+                const event: SchuleCreatedEvent = new SchuleCreatedEvent(faker.string.uuid());
 
-            await ldapEventHandler.handleSchuleCreatedEvent(event);
+                organisationRepositoryMock.findById.mockResolvedValueOnce(undefined);
 
-            expect(loggerMock.info).toHaveBeenCalledWith(
-                `Received SchuleCreatedEvent, organisationId:${organisationId}`,
-            );
-            expect(loggerMock.error).toHaveBeenCalledWith('Schule has no kennung. Aborting.');
-            expect(ldapClientServiceMock.createOrganisation).not.toHaveBeenCalled();
+                await ldapEventHandler.handleSchuleCreatedEvent(event);
+                expect(ldapClientServiceMock.createOrganisation).toHaveBeenCalledTimes(0);
+            });
         });
     });
 
     describe('asyncSchuleDeletedEventHandler', () => {
-        describe('deletion is successful', () => {
+        describe('when type is SCHULE and deletion is successful', () => {
             it('should execute without errors', async () => {
-                const event: SchuleDeletedEvent = new SchuleDeletedEvent(faker.string.uuid(), '1234567', 'Teschule');
-                const result: Result<void> = {
+                const organisation: Organisation<true> = createMock<Organisation<true>>({
+                    name: 'TestSchule',
+                    typ: OrganisationsTyp.SCHULE,
+                    kennung: '1234567',
+                });
+
+                const event: SchuleDeletedEvent = new SchuleDeletedEvent(organisation.id);
+                const result: Result<Organisation<true>> = {
                     ok: true,
-                    value: undefined,
+                    value: createMock<Organisation<true>>(),
                 };
 
+                organisationRepositoryMock.findById.mockResolvedValueOnce(organisation);
                 ldapClientServiceMock.deleteOrganisation.mockResolvedValueOnce(result);
 
                 await ldapEventHandler.handleSchuleDeletedEvent(event);
@@ -163,15 +169,21 @@ describe('LDAP Event Handler', () => {
             });
         });
 
-        describe('deletion fails', () => {
+        describe('when type is SCHULE and deletion fails', () => {
             it('should execute without errors', async () => {
-                const event: SchuleDeletedEvent = new SchuleDeletedEvent(faker.string.uuid(), '1234567', 'Teschule');
+                const organisation: Organisation<true> = createMock<Organisation<true>>({
+                    name: 'TestSchule',
+                    typ: OrganisationsTyp.SCHULE,
+                    kennung: '1234567',
+                });
 
+                const event: SchuleDeletedEvent = new SchuleDeletedEvent(organisation.id);
                 const result: Result<Organisation<true>> = {
                     ok: false,
                     error: new Error(),
                 };
 
+                organisationRepositoryMock.findById.mockResolvedValueOnce(organisation);
                 ldapClientServiceMock.deleteOrganisation.mockResolvedValueOnce(result);
 
                 await ldapEventHandler.handleSchuleDeletedEvent(event);
@@ -179,17 +191,15 @@ describe('LDAP Event Handler', () => {
             });
         });
 
-        it('should skip event, if kennung is undefined', async () => {
-            const organisationId: string = faker.string.uuid();
-            const event: SchuleDeletedEvent = new SchuleDeletedEvent(organisationId, undefined, faker.word.noun());
+        describe('when type is SCHULE and organisation cannot be found', () => {
+            it('should execute without errors', async () => {
+                const event: SchuleDeletedEvent = new SchuleDeletedEvent(faker.string.uuid());
 
-            await ldapEventHandler.handleSchuleDeletedEvent(event);
+                organisationRepositoryMock.findById.mockResolvedValueOnce(undefined);
 
-            expect(loggerMock.info).toHaveBeenCalledWith(
-                `Received SchuleDeletedEvent, organisationId:${organisationId}`,
-            );
-            expect(loggerMock.error).toHaveBeenCalledWith('Schule has no kennung. Aborting.');
-            expect(ldapClientServiceMock.deleteOrganisation).not.toHaveBeenCalled();
+                await ldapEventHandler.handleSchuleDeletedEvent(event);
+                expect(ldapClientServiceMock.deleteOrganisation).toHaveBeenCalledTimes(0);
+            });
         });
     });
 
