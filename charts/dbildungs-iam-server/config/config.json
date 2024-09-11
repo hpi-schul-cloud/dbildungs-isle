@@ -56,17 +56,19 @@
         "ROOT_OEFFENTLICH": "oeffentlich",
         "ROOT_ERSATZ": "ersatz"
     },
+    "OX": {
+        "ENABLED": "false",
+        "ENDPOINT": "https://ox_ip:ox_port/webservices/OXUserService",
+        "CONTEXT_ID": "1337",
+        "CONTEXT_NAME": "contextname",
+        "USERNAME": "username",
+        "PASSWORD": "password"
+    },
     "PRIVACYIDEA": {
         "ENDPOINT": "http://localhost:5000",
         "USERNAME": "admin",
         "PASSWORD": "admin",
         "USER_RESOLVER": "mariadb_resolver",
         "REALM": "defrealm"
-    },
-    "OX": {
-        "ENABLED": "false",
-        "ENDPOINT": "https://ox_ip:ox_port/webservices/OXUserService",
-        "USERNAME": "username",
-        "PASSWORD": "password"
     }
 }

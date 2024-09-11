@@ -18,6 +18,7 @@ import {
 } from '@nestjs/common';
 import {
     ApiAcceptedResponse,
+    ApiBadGatewayResponse,
     ApiBadRequestResponse,
     ApiBearerAuth,
     ApiCreatedResponse,
@@ -47,7 +48,7 @@ import { PersonenkontextUc } from '../../personenkontext/api/personenkontext.uc.
 import { UpdatePersonBodyParams } from './update-person.body.params.js';
 import { PersonRepository } from '../persistence/person.repository.js';
 import { DomainError, EntityNotFoundError } from '../../../shared/error/index.js';
-import { Person } from '../domain/person.js';
+import { LockInfo, Person } from '../domain/person.js';
 import { PersonendatensatzResponse } from './personendatensatz.response.js';
 import { PersonScope } from '../persistence/person.scope.js';
 import { ScopeOrder } from '../../../shared/persistence/index.js';
@@ -64,6 +65,11 @@ import { PersonExceptionFilter } from './person-exception-filter.js';
 import { Personenkontext } from '../../personenkontext/domain/personenkontext.js';
 import { PersonenkontextService } from '../../personenkontext/domain/personenkontext.service.js';
 import { PersonApiMapper } from '../mapper/person-api.mapper.js';
+import { KeycloakUserService } from '../../keycloak-administration/index.js';
+import { LockUserBodyParams } from './lock-user.body.params.js';
+import { PersonLockResponse } from './person-lock.response.js';
+import { NotFoundOrNoPermissionError } from '../domain/person-not-found-or-no-permission.error.js';
+import { DownstreamKeycloakError } from '../domain/person-keycloak.error.js';
 import { PersonDeleteService } from '../person-deletion/person-delete.service.js';
 
 @UseFilters(SchulConnexValidationErrorFilter, new AuthenticationExceptionFilter(), new PersonExceptionFilter())
@@ -80,6 +86,7 @@ export class PersonController {
         private readonly personFactory: PersonFactory,
         private readonly personenkontextService: PersonenkontextService,
         private readonly personDeleteService: PersonDeleteService,
+        private keycloakUserService: KeycloakUserService,
         @Inject(getMapperToken()) private readonly mapper: Mapper,
         config: ConfigService<ServerConfig>,
         private readonly personApiMapper: PersonApiMapper,
@@ -203,7 +210,9 @@ export class PersonController {
                 ),
             );
         }
-        return new PersonendatensatzResponse(personResult.value, false);
+
+        const response: PersonendatensatzResponse = new PersonendatensatzResponse(personResult.value, false);
+        return response;
     }
 
     /**
@@ -439,5 +448,46 @@ export class PersonController {
         }
 
         return { ok: true, value: personResult.value.newPassword! };
+    }
+
+    @Put(':personId/lock-user')
+    @HttpCode(HttpStatus.ACCEPTED)
+    @ApiOkResponse({ description: 'User has been successfully updated.', type: PersonLockResponse })
+    @ApiNotFoundResponse({ description: 'The person was not found.' })
+    @ApiForbiddenResponse({ description: 'Insufficient permissions to perform operation.' })
+    @ApiInternalServerErrorResponse({ description: 'An internal server error occurred.' })
+    @ApiBadGatewayResponse({ description: 'A downstream server returned an error.' })
+    public async lockPerson(
+        @Param('personId') personId: string,
+        @Body() lockUserBodyParams: LockUserBodyParams,
+        @Permissions() permissions: PersonPermissions,
+    ): Promise<PersonLockResponse> {
+        const personResult: Result<Person<true>> = await this.personRepository.getPersonIfAllowed(
+            personId,
+            permissions,
+        );
+
+        if (!personResult.ok) {
+            throw new NotFoundOrNoPermissionError(personId);
+        }
+
+        if (!personResult.value?.keycloakUserId) {
+            throw new PersonDomainError(`Person with id ${personId} has no keycloak id`, personId);
+        }
+
+        const lockInfo: LockInfo = {
+            lock_locked_from: lockUserBodyParams.locked_from,
+            lock_timestamp: new Date().toISOString(),
+        };
+
+        const result: Result<void, DomainError> = await this.keycloakUserService.updateKeycloakUserStatus(
+            personResult.value.keycloakUserId,
+            !lockUserBodyParams.lock,
+            lockInfo,
+        );
+        if (!result.ok) {
+            throw new DownstreamKeycloakError(result.error.message, personId, [result.error.details]);
+        }
+        return new PersonLockResponse(`User has been successfully ${lockUserBodyParams.lock ? '' : 'un'}locked.`);
     }
 }

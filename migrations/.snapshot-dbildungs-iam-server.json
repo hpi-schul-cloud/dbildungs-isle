@@ -136,6 +136,15 @@
             "VOLL"
           ]
         },
+        "email_address_status_enum": {
+          "name": "email_address_status_enum",
+          "schema": "public",
+          "items": [
+            "ENABLED",
+            "DISABLED",
+            "REQUESTED"
+          ]
+        },
         "rollen_art_enum": {
           "name": "rollen_art_enum",
           "schema": "public",
@@ -326,6 +335,15 @@
             "UNBE",
             "TEIL",
             "VOLL"
+          ]
+        },
+        "email_address_status_enum": {
+          "name": "email_address_status_enum",
+          "schema": "public",
+          "items": [
+            "ENABLED",
+            "DISABLED",
+            "REQUESTED"
           ]
         },
         "rollen_art_enum": {
@@ -542,6 +560,15 @@
             "VOLL"
           ]
         },
+        "email_address_status_enum": {
+          "name": "email_address_status_enum",
+          "schema": "public",
+          "items": [
+            "ENABLED",
+            "DISABLED",
+            "REQUESTED"
+          ]
+        },
         "rollen_art_enum": {
           "name": "rollen_art_enum",
           "schema": "public",
@@ -748,6 +775,15 @@
             "VOLL"
           ]
         },
+        "email_address_status_enum": {
+          "name": "email_address_status_enum",
+          "schema": "public",
+          "items": [
+            "ENABLED",
+            "DISABLED",
+            "REQUESTED"
+          ]
+        },
         "rollen_art_enum": {
           "name": "rollen_art_enum",
           "schema": "public",
@@ -944,6 +980,15 @@
             "UNBE",
             "TEIL",
             "VOLL"
+          ]
+        },
+        "email_address_status_enum": {
+          "name": "email_address_status_enum",
+          "schema": "public",
+          "items": [
+            "ENABLED",
+            "DISABLED",
+            "REQUESTED"
           ]
         },
         "rollen_art_enum": {
@@ -1248,6 +1293,15 @@
             "UNBE",
             "TEIL",
             "VOLL"
+          ]
+        },
+        "email_address_status_enum": {
+          "name": "email_address_status_enum",
+          "schema": "public",
+          "items": [
+            "ENABLED",
+            "DISABLED",
+            "REQUESTED"
           ]
         },
         "rollen_art_enum": {
@@ -1701,6 +1755,15 @@
             "VOLL"
           ]
         },
+        "email_address_status_enum": {
+          "name": "email_address_status_enum",
+          "schema": "public",
+          "items": [
+            "ENABLED",
+            "DISABLED",
+            "REQUESTED"
+          ]
+        },
         "rollen_art_enum": {
           "name": "rollen_art_enum",
           "schema": "public",
@@ -1828,14 +1891,20 @@
           "nullable": true,
           "mappedType": "uuid"
         },
-        "enabled": {
-          "name": "enabled",
-          "type": "boolean",
+        "status": {
+          "name": "status",
+          "type": "email_address_status_enum",
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
           "nullable": false,
-          "mappedType": "boolean"
+          "nativeEnumName": "email_address_status_enum",
+          "enumItems": [
+            "ENABLED",
+            "DISABLED",
+            "REQUESTED"
+          ],
+          "mappedType": "enum"
         }
       },
       "name": "email_address",
@@ -1943,6 +2012,15 @@
             "UNBE",
             "TEIL",
             "VOLL"
+          ]
+        },
+        "email_address_status_enum": {
+          "name": "email_address_status_enum",
+          "schema": "public",
+          "items": [
+            "ENABLED",
+            "DISABLED",
+            "REQUESTED"
           ]
         },
         "rollen_art_enum": {
@@ -2181,6 +2259,15 @@
             "UNBE",
             "TEIL",
             "VOLL"
+          ]
+        },
+        "email_address_status_enum": {
+          "name": "email_address_status_enum",
+          "schema": "public",
+          "items": [
+            "ENABLED",
+            "DISABLED",
+            "REQUESTED"
           ]
         },
         "rollen_art_enum": {
@@ -2559,6 +2646,15 @@
             "VOLL"
           ]
         },
+        "email_address_status_enum": {
+          "name": "email_address_status_enum",
+          "schema": "public",
+          "items": [
+            "ENABLED",
+            "DISABLED",
+            "REQUESTED"
+          ]
+        },
         "rollen_art_enum": {
           "name": "rollen_art_enum",
           "schema": "public",
@@ -2757,6 +2853,15 @@
             "UNBE",
             "TEIL",
             "VOLL"
+          ]
+        },
+        "email_address_status_enum": {
+          "name": "email_address_status_enum",
+          "schema": "public",
+          "items": [
+            "ENABLED",
+            "DISABLED",
+            "REQUESTED"
           ]
         },
         "rollen_art_enum": {
@@ -2962,6 +3067,15 @@
             "UNBE",
             "TEIL",
             "VOLL"
+          ]
+        },
+        "email_address_status_enum": {
+          "name": "email_address_status_enum",
+          "schema": "public",
+          "items": [
+            "ENABLED",
+            "DISABLED",
+            "REQUESTED"
           ]
         },
         "rollen_art_enum": {
@@ -3252,6 +3366,15 @@
             "VOLL"
           ]
         },
+        "email_address_status_enum": {
+          "name": "email_address_status_enum",
+          "schema": "public",
+          "items": [
+            "ENABLED",
+            "DISABLED",
+            "REQUESTED"
+          ]
+        },
         "rollen_art_enum": {
           "name": "rollen_art_enum",
           "schema": "public",
@@ -3539,6 +3662,15 @@
             "VOLL"
           ]
         },
+        "email_address_status_enum": {
+          "name": "email_address_status_enum",
+          "schema": "public",
+          "items": [
+            "ENABLED",
+            "DISABLED",
+            "REQUESTED"
+          ]
+        },
         "rollen_art_enum": {
           "name": "rollen_art_enum",
           "schema": "public",
@@ -3746,6 +3878,15 @@
             "VOLL"
           ]
         },
+        "email_address_status_enum": {
+          "name": "email_address_status_enum",
+          "schema": "public",
+          "items": [
+            "ENABLED",
+            "DISABLED",
+            "REQUESTED"
+          ]
+        },
         "rollen_art_enum": {
           "name": "rollen_art_enum",
           "schema": "public",
@@ -3889,6 +4030,15 @@
         "UNBE",
         "TEIL",
         "VOLL"
+      ]
+    },
+    "email_address_status_enum": {
+      "name": "email_address_status_enum",
+      "schema": "public",
+      "items": [
+        "ENABLED",
+        "DISABLED",
+        "REQUESTED"
       ]
     },
     "rollen_art_enum": {

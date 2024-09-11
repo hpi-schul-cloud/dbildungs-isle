@@ -84,7 +84,6 @@ export class DbiamPersonenkontextWorkflowController {
         const organisations: Organisation<true>[] = await anlage.findAllSchulstrukturknoten(
             permissions,
             params.organisationName,
-            params.limit,
         );
 
         // Find all possible roles under the selected Organisation

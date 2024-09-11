@@ -19,7 +19,7 @@ import { EmailAddressEntity } from './email-address.entity.js';
 import { Person } from '../../person/domain/person.js';
 import { DomainError } from '../../../shared/error/index.js';
 import { MikroORM } from '@mikro-orm/core';
-import { EmailAddress } from '../domain/email-address.js';
+import { EmailAddress, EmailAddressStatus } from '../domain/email-address.js';
 
 describe('EmailRepo', () => {
     let module: TestingModule;
@@ -190,7 +190,7 @@ describe('EmailRepo', () => {
                     faker.date.recent(),
                     person.id,
                     faker.internet.email(),
-                    true,
+                    EmailAddressStatus.ENABLED,
                 );
 
                 const persistenceResult: EmailAddress<true> | DomainError = await sut.save(emailAddress);

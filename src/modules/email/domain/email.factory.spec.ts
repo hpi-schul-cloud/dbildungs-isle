@@ -4,7 +4,7 @@ import { faker } from '@faker-js/faker';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { EmailRepo } from '../persistence/email.repo.js';
 import { EmailFactory } from './email.factory.js';
-import { EmailAddress } from './email-address.js';
+import { EmailAddress, EmailAddressStatus } from './email-address.js';
 import { PersonRepository } from '../../person/persistence/person.repository.js';
 import { Person } from '../../person/domain/person.js';
 import { InvalidNameError } from '../../../shared/error/index.js';
@@ -67,7 +67,7 @@ describe('EmailFactory', () => {
                     faker.date.recent(),
                     personId,
                     address,
-                    true,
+                    EmailAddressStatus.ENABLED,
                 );
 
                 expect(email.personId).toStrictEqual(personId);
@@ -97,7 +97,7 @@ describe('EmailFactory', () => {
 
                 if (!creationResult.ok) throw new Error();
                 expect(creationResult.value.personId).toStrictEqual(person.id);
-                expect(creationResult.value.currentAddress).toStrictEqual(
+                expect(creationResult.value.address).toStrictEqual(
                     `${person.vorname}.${person.familienname}@schule-sh.de`,
                 );
             });

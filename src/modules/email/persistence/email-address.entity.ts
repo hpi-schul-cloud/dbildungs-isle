@@ -1,6 +1,7 @@
-import { Entity, ManyToOne, Property, Rel } from '@mikro-orm/core';
+import { Entity, Enum, ManyToOne, Property, Rel } from '@mikro-orm/core';
 import { PersonEntity } from '../../person/persistence/person.entity.js';
 import { TimestampedEntity } from '../../../persistence/timestamped.entity.js';
+import { EmailAddressStatus } from '../domain/email-address.js';
 
 @Entity({ tableName: 'email_address' })
 export class EmailAddressEntity extends TimestampedEntity {
@@ -17,6 +18,6 @@ export class EmailAddressEntity extends TimestampedEntity {
     @Property({ primary: true, nullable: false, unique: true })
     public address!: string;
 
-    @Property({ nullable: false })
-    public enabled!: boolean;
+    @Enum({ items: () => EmailAddressStatus, nativeEnumName: 'email_address_status_enum' })
+    public status!: EmailAddressStatus;
 }

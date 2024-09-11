@@ -1,8 +1,8 @@
-import { EntityManager, RequiredEntityData, rel } from '@mikro-orm/core';
+import { EntityManager, rel, RequiredEntityData } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
 import { PersonID } from '../../../shared/types/index.js';
 import { EmailAddressEntity } from './email-address.entity.js';
-import { EmailAddress } from '../domain/email-address.js';
+import { EmailAddress, EmailAddressStatus } from '../domain/email-address.js';
 import { EmailAddressNotFoundError } from '../error/email-address-not-found.error.js';
 import { ClassLogger } from '../../../core/logging/class-logger.js';
 import { DomainError } from '../../../shared/error/index.js';
@@ -14,7 +14,7 @@ function mapAggregateToData(emailAddress: EmailAddress<boolean>): RequiredEntity
         id: emailAddress.id,
         personId: rel(PersonEntity, emailAddress.personId),
         address: emailAddress.address,
-        enabled: emailAddress.enabled,
+        status: emailAddress.status,
     };
 }
 
@@ -25,7 +25,7 @@ function mapEntityToAggregate(entity: EmailAddressEntity): EmailAddress<boolean>
         entity.updatedAt,
         entity.personId.id,
         entity.address,
-        entity.enabled,
+        entity.status,
     );
 }
 
@@ -67,7 +67,7 @@ export class EmailRepo {
         );
         if (!emailAddressEntity) return new EmailAddressNotFoundError(emailAddress);
 
-        emailAddressEntity.enabled = false;
+        emailAddressEntity.status = EmailAddressStatus.DISABLED;
         await this.em.persistAndFlush(emailAddressEntity);
 
         return emailAddressEntity;

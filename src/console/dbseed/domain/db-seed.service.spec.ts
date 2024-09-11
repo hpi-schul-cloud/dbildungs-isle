@@ -32,6 +32,8 @@ import { KeycloakGroupRoleService } from '../../../modules/keycloak-administrati
 import { Organisation } from '../../../modules/organisation/domain/organisation.js';
 import { NameForOrganisationWithTrailingSpaceError } from '../../../modules/organisation/specification/error/name-with-trailing-space.error.js';
 import { NameForRolleWithTrailingSpaceError } from '../../../modules/rolle/domain/name-with-trailing-space.error.js';
+import { RollenMerkmal } from '../../../modules/rolle/domain/rolle.enums.js';
+import { Personenkontext } from '../../../modules/personenkontext/domain/personenkontext.js';
 
 describe('DbSeedService', () => {
     let module: TestingModule;
@@ -43,6 +45,7 @@ describe('DbSeedService', () => {
     let personenkontextServiceMock: DeepMocked<DBiamPersonenkontextService>;
     let dbSeedReferenceRepoMock: DeepMocked<DbSeedReferenceRepo>;
     let kcUserService: DeepMocked<KeycloakUserService>;
+    let dBiamPersonenkontextRepo: DeepMocked<DBiamPersonenkontextRepo>;
 
     beforeAll(async () => {
         module = await Test.createTestingModule({
@@ -107,6 +110,7 @@ describe('DbSeedService', () => {
         personenkontextServiceMock = module.get(DBiamPersonenkontextService);
         dbSeedReferenceRepoMock = module.get(DbSeedReferenceRepo);
         kcUserService = module.get(KeycloakUserService);
+        dBiamPersonenkontextRepo = module.get(DBiamPersonenkontextRepo);
     });
 
     afterAll(async () => {
@@ -392,8 +396,10 @@ describe('DbSeedService', () => {
                     'test@example.com',
                     faker.date.recent(),
                     {
-                        ID_ITSLEARNING: faker.string.uuid(),
+                        ID_ITSLEARNING: [faker.string.uuid()],
                     },
+                    true,
+                    {},
                 );
 
                 kcUserService.findOne.mockResolvedValueOnce({ ok: true, value: existingUser });
@@ -422,13 +428,39 @@ describe('DbSeedService', () => {
                 organisationRepositoryMock.findById.mockResolvedValue(createMock<Organisation<true>>()); // mock getReferencedOrganisation
 
                 dbSeedReferenceRepoMock.findUUID.mockResolvedValue(faker.string.uuid()); //mock UUID in seeding-ref-table
-                rolleRepoMock.findById.mockResolvedValue(createMock<Rolle<true>>()); // mock getReferencedRolle
+                rolleRepoMock.findById.mockResolvedValue(createMock<Rolle<true>>({ merkmale: [] })); // mock getReferencedRolle
 
                 personenkontextServiceMock.checkSpecifications.mockResolvedValueOnce(
                     new GleicheRolleAnKlasseWieSchuleError(),
                 );
                 await expect(dbSeedService.seedPersonenkontext(fileContentAsStr)).rejects.toThrow(
                     GleicheRolleAnKlasseWieSchuleError,
+                );
+            });
+        });
+
+        describe('with Rolle with Befristung', () => {
+            it('should insert one entity with Befristung', async () => {
+                const fileContentAsStr: string = fs.readFileSync(
+                    `./seeding/seeding-integration-test/personenkontext/05_personenkontext.json`,
+                    'utf-8',
+                );
+                dbSeedReferenceRepoMock.findUUID.mockResolvedValue(faker.string.uuid()); //mock UUID in seeding-ref-table
+                personRepoMock.findById.mockResolvedValue(createMock<Person<true>>()); // mock getReferencedPerson
+
+                dbSeedReferenceRepoMock.findUUID.mockResolvedValue(faker.string.uuid()); //mock UUID in seeding-ref-table
+                organisationRepositoryMock.findById.mockResolvedValue(createMock<Organisation<true>>()); // mock getReferencedOrganisation
+
+                dbSeedReferenceRepoMock.findUUID.mockResolvedValue(faker.string.uuid()); //mock UUID in seeding-ref-table
+                rolleRepoMock.findById.mockResolvedValue(
+                    createMock<Rolle<true>>({ merkmale: [RollenMerkmal.BEFRISTUNG_PFLICHT] }),
+                ); // mock getReferencedRolle
+
+                personenkontextServiceMock.checkSpecifications.mockResolvedValueOnce(null);
+                dBiamPersonenkontextRepo.save.mockResolvedValueOnce({} as Personenkontext<true>);
+
+                await expect(dbSeedService.seedPersonenkontext(fileContentAsStr)).resolves.not.toThrow(
+                    EntityNotFoundError,
                 );
             });
         });
@@ -514,7 +546,7 @@ describe('DbSeedService', () => {
                     organisationRepositoryMock.findById.mockResolvedValue(createMock<Organisation<true>>()); // mock getReferencedOrganisation
 
                     dbSeedReferenceRepoMock.findUUID.mockResolvedValue(faker.string.uuid()); //mock UUID in seeding-ref-table
-                    rolleRepoMock.findById.mockResolvedValue(createMock<Rolle<true>>()); // mock getReferencedRolle
+                    rolleRepoMock.findById.mockResolvedValue(createMock<Rolle<true>>({ merkmale: [] })); // mock getReferencedRolle
 
                     personenkontextServiceMock.checkSpecifications.mockResolvedValueOnce(
                         new GleicheRolleAnKlasseWieSchuleError(),

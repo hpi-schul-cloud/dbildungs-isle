@@ -13,7 +13,7 @@ import {
     MapperTestModule,
 } from '../../../../test/utils/index.js';
 import { GlobalValidationPipe } from '../../../shared/validation/global-validation.pipe.js';
-import { OrganisationEntity } from '../../organisation/persistence/organisation.entity.js';
+import { OrganisationEntity } from '../persistence/organisation.entity.js';
 import { createMock } from '@golevelup/ts-jest';
 import { Observable } from 'rxjs';
 import { PersonPermissionsRepo } from '../../authentication/domain/person-permission.repo.js';

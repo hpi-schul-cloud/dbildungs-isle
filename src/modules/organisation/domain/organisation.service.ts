@@ -185,6 +185,7 @@ export class OrganisationService {
             offset: offset ?? 0,
             limit: limit ?? total,
             items: organisations,
+            pageTotal: organisations.length,
         };
     }
 
@@ -371,6 +372,7 @@ export class OrganisationService {
             offset: offset ?? 0,
             limit: limit ?? total,
             items: organisations,
+            pageTotal: organisations.length,
         };
     }
 
@@ -390,6 +392,7 @@ export class OrganisationService {
             offset: offset ?? 0,
             limit: limit ?? total,
             items: organisations,
+            pageTotal: organisations.length,
         };
     }
 }

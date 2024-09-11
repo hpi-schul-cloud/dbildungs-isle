@@ -13,9 +13,9 @@ import {
 import { ScopeOperator, ScopeOrder } from '../../../shared/persistence/scope.enums.js';
 import { OrganisationID, PersonID } from '../../../shared/types/aggregate-ids.types.js';
 import { PersonPermissions } from '../../authentication/domain/person-permissions.js';
-import { KeycloakUserService, PersonHasNoKeycloakId, User } from '../../keycloak-administration/index.js';
+import { KeycloakUserService, LockKeys, PersonHasNoKeycloakId, User } from '../../keycloak-administration/index.js';
 import { RollenSystemRecht } from '../../rolle/domain/rolle.enums.js';
-import { Person } from '../domain/person.js';
+import { Person, LockInfo } from '../domain/person.js';
 import { PersonEntity } from './person.entity.js';
 import { PersonScope } from './person.scope.js';
 import { EventService } from '../../../core/eventbus/index.js';
@@ -24,10 +24,11 @@ import { PersonRenamedEvent } from '../../../shared/events/person-renamed-event.
 import { PersonenkontextUpdatedEvent } from '../../../shared/events/personenkontext-updated.event.js';
 import { PersonenkontextEventKontextData } from '../../../shared/events/personenkontext-event.types.js';
 import { DuplicatePersonalnummerError } from '../../../shared/error/duplicate-personalnummer.error.js';
+import { EmailAddressStatus } from '../../email/domain/email-address.js';
 
 export function getEnabledEmailAddress(entity: PersonEntity): string | undefined {
     for (const emailAddress of entity.emailAddresses) {
-        if (emailAddress.enabled) return emailAddress.address;
+        if (emailAddress.status === EmailAddressStatus.ENABLED) return emailAddress.address;
     }
     return undefined;
 }
@@ -87,6 +88,8 @@ export function mapEntityToAggregate(entity: PersonEntity): Person<true> {
         entity.vertrauensstufe,
         entity.auskunftssperre,
         entity.personalnummer,
+        undefined,
+        undefined,
         getEnabledEmailAddress(entity),
     );
 }
@@ -155,12 +158,30 @@ export class PersonRepository {
         scope.findBy({ ids: [personId] }).sortBy('vorname', ScopeOrder.ASC);
 
         const [persons]: Counted<Person<true>> = await this.findBy(scope);
-
-        const person: Person<true> | undefined = persons[0];
-
+        let person: Person<true> | undefined = persons[0];
         if (!person) return { ok: false, error: new EntityNotFoundError('Person') };
+        person = await this.extendPersonWithKeycloakData(person);
 
         return { ok: true, value: person };
+    }
+
+    public async extendPersonWithKeycloakData(person: Person<true>): Promise<Person<true>> {
+        if (!person.keycloakUserId) {
+            return person;
+        }
+
+        const keyCloakUserDataResponse: Result<User<true>, DomainError> = await this.kcUserService.findById(
+            person.keycloakUserId,
+        );
+        if (keyCloakUserDataResponse.ok) {
+            const lockInfo: LockInfo = {
+                lock_locked_from: keyCloakUserDataResponse.value.attributes[LockKeys.LockedFrom]?.toString() ?? '',
+                lock_timestamp: keyCloakUserDataResponse.value.attributes[LockKeys.Timestamp]?.toString() ?? '',
+            };
+            person.lockInfo = lockInfo;
+            person.isLocked = keyCloakUserDataResponse.value.enabled === false;
+        }
+        return person;
     }
 
     public async checkIfDeleteIsAllowed(
@@ -360,7 +381,8 @@ export class PersonRepository {
 
         person.referrer = person.username;
         const userDo: User<false> = User.createNew(person.username, undefined, {
-            ID_ITSLEARNING: person.id,
+            ID_ITSLEARNING: [person.id],
+            ID_OX: [person.id],
         });
 
         const creationResult: Result<string, DomainError> = await kcUserService.create(userDo);
@@ -399,7 +421,7 @@ export class PersonRepository {
         }
         person.referrer = person.username;
         const userDo: User<false> = User.createNew(person.username, undefined, {
-            ID_ITSLEARNING: person.id,
+            ID_ITSLEARNING: [person.id],
         });
 
         const creationResult: Result<string, DomainError> = await kcUserService.createWithHashedPassword(

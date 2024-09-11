@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import { Injectable } from '@nestjs/common';
 import fs from 'fs';
 import { DataProviderFile } from '../file/data-provider-file.js';
@@ -31,6 +32,7 @@ import { ReferencedEntityType } from '../repo/db-seed-reference.entity.js';
 import { PersonenkontextFactory } from '../../../modules/personenkontext/domain/personenkontext.factory.js';
 import { OrganisationRepository } from '../../../modules/organisation/persistence/organisation.repository.js';
 import { Organisation } from '../../../modules/organisation/domain/organisation.js';
+import { RollenMerkmal } from '../../../modules/rolle/domain/rolle.enums.js';
 
 @Injectable()
 export class DbSeedService {
@@ -279,6 +281,17 @@ export class DbSeedService {
             const referencedPerson: Person<true> = await this.getReferencedPerson(file.personId);
             const referencedOrga: Organisation<true> = await this.getReferencedOrganisation(file.organisationId);
             const referencedRolle: Rolle<true> = await this.getReferencedRolle(file.rolleId);
+
+            let befristung: Date | undefined = undefined;
+            console.log(referencedRolle.merkmale);
+            console.log(typeof referencedRolle.merkmale);
+            const hasBefristungPflicht: boolean = referencedRolle.merkmale?.some(
+                (merkmal: RollenMerkmal) => merkmal === RollenMerkmal.BEFRISTUNG_PFLICHT,
+            );
+            if (hasBefristungPflicht) {
+                befristung = new Date(2099, 1, 1, 0, 1, 0); // In consultation with Kristoff, Kiefer (Cap): Set Befristung fixed to Date far in future
+            }
+
             const personenKontext: Personenkontext<false> = this.personenkontextFactory.construct(
                 undefined,
                 new Date(),
@@ -287,6 +300,13 @@ export class DbSeedService {
                 referencedPerson.id,
                 referencedOrga.id,
                 referencedRolle.id,
+                undefined,
+                undefined,
+                undefined,
+                undefined,
+                undefined,
+                undefined,
+                befristung,
             );
 
             //Check specifications

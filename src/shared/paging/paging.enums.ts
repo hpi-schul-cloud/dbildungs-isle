@@ -4,6 +4,7 @@ export enum PagingHeaders {
     OFFSET = 'X-Paging-Offset',
     LIMIT = 'X-Paging-Limit',
     TOTAL = 'X-Paging-Total',
+    PAGE_TOTAL = 'X-Paging-pageTotal',
 }
 
 export const PagingHeadersObject: HeadersObject = {
@@ -15,5 +16,8 @@ export const PagingHeadersObject: HeadersObject = {
     },
     'X-Paging-Total': {
         description: 'The total amount of items in the list.',
+    },
+    'X-Paging-pageTotal': {
+        description: 'The total amount of items in the paginated list.',
     },
 };

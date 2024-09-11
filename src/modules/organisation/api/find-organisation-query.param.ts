@@ -85,4 +85,16 @@ export class FindOrganisationQueryParams extends PagedQueryParams {
         isArray: true,
     })
     public readonly administriertVon?: string[];
+
+    @AutoMap(() => String)
+    @IsOptional()
+    @TransformToArray()
+    @ArrayUnique()
+    @IsUUID(undefined, { each: true })
+    @ApiProperty({
+        required: false,
+        nullable: true,
+        isArray: true,
+    })
+    public readonly organisationIds?: string[];
 }

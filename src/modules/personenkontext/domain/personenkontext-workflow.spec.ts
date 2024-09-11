@@ -150,9 +150,8 @@ describe('PersonenkontextWorkflow', () => {
             const result: Organisation<true>[] = await anlage.findAllSchulstrukturknoten(
                 personpermissionsMock,
                 undefined,
-                LIMIT,
             );
-            expect(result.length).toBe(1);
+            expect(result.length).toBe(2);
         });
 
         it('should return organisations based on name or kennung if provided', async () => {
@@ -164,7 +163,6 @@ describe('PersonenkontextWorkflow', () => {
             const result: Organisation<true>[] = await anlage.findAllSchulstrukturknoten(
                 personpermissionsMock,
                 organisation.name,
-                LIMIT,
             );
             expect(result.length).toBe(1);
         });
@@ -176,7 +174,6 @@ describe('PersonenkontextWorkflow', () => {
             const result: Organisation<true>[] = await anlage.findAllSchulstrukturknoten(
                 personpermissionsMock,
                 undefined,
-                LIMIT,
             );
             expect(result.length).toBe(0);
         });
@@ -205,7 +202,6 @@ describe('PersonenkontextWorkflow', () => {
             const result: Organisation<true>[] = await anlage.findAllSchulstrukturknoten(
                 personpermissionsMock,
                 undefined,
-                10,
             );
 
             expect(result.length).toBe(4);
@@ -222,7 +218,6 @@ describe('PersonenkontextWorkflow', () => {
             const result: Organisation<true>[] = await anlage.findAllSchulstrukturknoten(
                 personpermissionsMock,
                 undefined,
-                10,
             );
 
             expect(result.length).toBe(2);
@@ -240,7 +235,6 @@ describe('PersonenkontextWorkflow', () => {
             const result: Organisation<true>[] = await anlage.findAllSchulstrukturknoten(
                 personpermissionsMock,
                 undefined,
-                10,
             );
 
             expect(result.length).toBe(3);
@@ -258,7 +252,6 @@ describe('PersonenkontextWorkflow', () => {
             const result: Organisation<true>[] = await anlage.findAllSchulstrukturknoten(
                 personpermissionsMock,
                 undefined,
-                10,
             );
 
             expect(result.length).toBe(3);
@@ -279,7 +272,6 @@ describe('PersonenkontextWorkflow', () => {
             const result: Organisation<true>[] = await anlage.findAllSchulstrukturknoten(
                 personpermissionsMock,
                 undefined,
-                10,
             );
 
             expect(result.length).toBe(3);
@@ -295,7 +287,6 @@ describe('PersonenkontextWorkflow', () => {
             const result: Organisation<true>[] = await anlage.findAllSchulstrukturknoten(
                 personpermissionsMock,
                 undefined,
-                10,
             );
 
             expect(result.length).toBe(2);
@@ -322,7 +313,6 @@ describe('PersonenkontextWorkflow', () => {
             const result: Organisation<true>[] = await anlage.findAllSchulstrukturknoten(
                 personpermissionsMock,
                 undefined,
-                10,
             );
 
             expect(result.length).toBe(4);
@@ -339,7 +329,6 @@ describe('PersonenkontextWorkflow', () => {
             const result: Organisation<true>[] = await anlage.findAllSchulstrukturknoten(
                 personpermissionsMock,
                 undefined,
-                10,
             );
 
             expect(result.length).toBe(2);
@@ -361,7 +350,6 @@ describe('PersonenkontextWorkflow', () => {
             const result: Organisation<true>[] = await anlage.findAllSchulstrukturknoten(
                 personpermissionsMock,
                 undefined,
-                10,
             );
 
             expect(result.length).toEqual(2);
@@ -383,7 +371,6 @@ describe('PersonenkontextWorkflow', () => {
             const result: Organisation<true>[] = await anlage.findAllSchulstrukturknoten(
                 personpermissionsMock,
                 undefined,
-                10,
             );
 
             expect(result.length).toEqual(2);
@@ -405,7 +392,6 @@ describe('PersonenkontextWorkflow', () => {
             const result: Organisation<true>[] = await anlage.findAllSchulstrukturknoten(
                 personpermissionsMock,
                 undefined,
-                10,
             );
 
             expect(result.length).toEqual(2);
@@ -427,7 +413,6 @@ describe('PersonenkontextWorkflow', () => {
             const result: Organisation<true>[] = await anlage.findAllSchulstrukturknoten(
                 personpermissionsMock,
                 undefined,
-                10,
             );
 
             expect(result.length).toEqual(2);
@@ -449,7 +434,6 @@ describe('PersonenkontextWorkflow', () => {
             const result: Organisation<true>[] = await anlage.findAllSchulstrukturknoten(
                 personpermissionsMock,
                 undefined,
-                10,
             );
 
             expect(result.length).toEqual(2);
@@ -471,7 +455,6 @@ describe('PersonenkontextWorkflow', () => {
             const result: Organisation<true>[] = await anlage.findAllSchulstrukturknoten(
                 personpermissionsMock,
                 undefined,
-                10,
             );
 
             expect(result.length).toEqual(2);

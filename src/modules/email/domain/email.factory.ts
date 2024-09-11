@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PersonID } from '../../../shared/types/aggregate-ids.types.js';
 import { PersonRepository } from '../../person/persistence/person.repository.js';
-import { EmailAddress } from './email-address.js';
+import { EmailAddress, EmailAddressStatus } from './email-address.js';
 import { EmailGenerator } from './email-generator.js';
 import { EmailRepo } from '../persistence/email.repo.js';
 import { Person } from '../../person/domain/person.js';
@@ -24,7 +24,7 @@ export class EmailFactory {
         updatedAt: Date,
         personId: PersonID,
         address: string,
-        enabled: boolean,
+        enabled: EmailAddressStatus,
     ): EmailAddress<true> {
         return EmailAddress.construct(id, createdAt, updatedAt, personId, address, enabled);
     }
@@ -51,7 +51,7 @@ export class EmailFactory {
         const newEmailAddress: EmailAddress<false> = EmailAddress.createNew(
             personId,
             generatedAddressResult.value,
-            true,
+            EmailAddressStatus.REQUESTED,
         );
 
         return {

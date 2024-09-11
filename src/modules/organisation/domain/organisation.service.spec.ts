@@ -374,6 +374,7 @@ describe('OrganisationService', () => {
                     offset: 0,
                     limit: total,
                     items: organisations,
+                    pageTotal: total,
                 });
             });
         });
@@ -557,6 +558,7 @@ describe('OrganisationService', () => {
                     offset: 0,
                     limit: total,
                     items: organisations,
+                    pageTotal: total,
                 });
             });
         });
@@ -591,6 +593,7 @@ describe('OrganisationService', () => {
                     offset: 0,
                     limit: total,
                     items: organisations,
+                    pageTotal: total,
                 });
             });
         });

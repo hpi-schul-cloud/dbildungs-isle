@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { EmailAddress } from './email-address.js';
+import { EmailAddress, EmailAddressStatus } from './email-address.js';
 import { faker } from '@faker-js/faker';
 
 describe('EmailAddress Aggregate', () => {
@@ -27,7 +27,7 @@ describe('EmailAddress Aggregate', () => {
                 const emailAddress: EmailAddress<false> = EmailAddress.createNew(
                     personId,
                     faker.internet.email(),
-                    true,
+                    EmailAddressStatus.ENABLED,
                 );
 
                 expect(emailAddress.enabled).toBeTruthy();
@@ -39,7 +39,7 @@ describe('EmailAddress Aggregate', () => {
                 const emailAddress: EmailAddress<false> = EmailAddress.createNew(
                     personId,
                     faker.internet.email(),
-                    false,
+                    EmailAddressStatus.DISABLED,
                 );
 
                 expect(emailAddress.enabled).toBeFalsy();
@@ -51,7 +51,11 @@ describe('EmailAddress Aggregate', () => {
         describe('when email-address is enabled', () => {
             it('should return address', () => {
                 const fakeEmail: string = faker.internet.email();
-                const emailAddress: EmailAddress<false> = EmailAddress.createNew(personId, fakeEmail, true);
+                const emailAddress: EmailAddress<false> = EmailAddress.createNew(
+                    personId,
+                    fakeEmail,
+                    EmailAddressStatus.ENABLED,
+                );
 
                 const currentAddress: Option<string> = emailAddress.currentAddress;
                 expect(currentAddress).toBeDefined();
@@ -64,10 +68,28 @@ describe('EmailAddress Aggregate', () => {
                 const emailAddress: EmailAddress<false> = EmailAddress.createNew(
                     personId,
                     faker.internet.email(),
-                    false,
+                    EmailAddressStatus.DISABLED,
                 );
 
                 expect(emailAddress.currentAddress).toBeFalsy();
+            });
+        });
+    });
+
+    describe('setAddress', () => {
+        describe('when called', () => {
+            it('should set address', () => {
+                const fakeEmail: string = faker.internet.email();
+                const newFakeEmail: string = faker.internet.email();
+                const emailAddress: EmailAddress<false> = EmailAddress.createNew(
+                    personId,
+                    fakeEmail,
+                    EmailAddressStatus.ENABLED,
+                );
+
+                const result: string = emailAddress.setAddress(newFakeEmail);
+                expect(result).toStrictEqual(newFakeEmail);
+                expect(emailAddress.address).toStrictEqual(newFakeEmail);
             });
         });
     });

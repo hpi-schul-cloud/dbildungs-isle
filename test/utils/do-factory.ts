@@ -80,6 +80,8 @@ export class DoFactory {
             username: faker.internet.userName(),
             email: faker.internet.email(),
             externalSystemIDs: {},
+            enabled: true,
+            attributes: {},
         };
 
         return Object.assign(Object.create(User.prototype) as User<boolean>, user, props);

@@ -34,7 +34,7 @@ describe('GlobalPagingHeadersInterceptor', () => {
                 // is needed to execute the observable pipeline
                 await lastValueFrom(observable);
 
-                expect(responseMock.setHeader).toBeCalledTimes(3);
+                expect(responseMock.setHeader).toBeCalledTimes(4);
                 expect(responseMock.setHeader).toBeCalledWith(PagingHeaders.OFFSET, 0);
                 expect(responseMock.setHeader).toBeCalledWith(PagingHeaders.LIMIT, 0);
                 expect(responseMock.setHeader).toBeCalledWith(PagingHeaders.TOTAL, 0);

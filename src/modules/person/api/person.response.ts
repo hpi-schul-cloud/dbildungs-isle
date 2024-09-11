@@ -2,6 +2,7 @@ import { PersonNameParams } from './person-name.params.js';
 import { PersonBirthParams } from './person-birth.params.js';
 import { Vertrauensstufe, VertrauensstufeTypName } from '../domain/person.enums.js';
 import { ApiProperty } from '@nestjs/swagger';
+import { LockInfo } from '../domain/person.js';
 
 export class PersonResponse {
     @ApiProperty()
@@ -39,4 +40,10 @@ export class PersonResponse {
 
     @ApiProperty({ nullable: true })
     public personalnummer?: string;
+
+    @ApiProperty({ nullable: true })
+    public isLocked?: boolean;
+
+    @ApiProperty({ nullable: true })
+    public lockInfo?: LockInfo;
 }

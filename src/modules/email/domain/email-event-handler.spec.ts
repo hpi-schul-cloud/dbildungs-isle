@@ -29,11 +29,14 @@ import { PersonRenamedEvent } from '../../../shared/events/person-renamed-event.
 import { RolleUpdatedEvent } from '../../../shared/events/rolle-updated.event.js';
 import { RollenArt } from '../../rolle/domain/rolle.enums.js';
 import { DBiamPersonenkontextRepo } from '../../personenkontext/persistence/dbiam-personenkontext.repo.js';
-import { EmailAddress } from './email-address.js';
+import { EmailAddress, EmailAddressStatus } from './email-address.js';
 import { PersonID, RolleID } from '../../../shared/types/index.js';
 import { Personenkontext } from '../../personenkontext/domain/personenkontext.js';
 import { EntityNotFoundError } from '../../../shared/error/entity-not-found.error.js';
 import { PersonenkontextUpdatedEvent } from '../../../shared/events/personenkontext-updated.event.js';
+import { OxUserAttributesCreatedEvent } from '../../../shared/events/ox-user-attributes-created.event.js';
+import { OXContextName, OXUserName } from '../../../shared/types/ox-ids.types.js';
+import { EntityCouldNotBeUpdated } from '../../../shared/error/entity-could-not-be-updated.error.js';
 
 function getEmail(): EmailAddress<true> {
     const fakePersonId: PersonID = faker.string.uuid();
@@ -44,7 +47,7 @@ function getEmail(): EmailAddress<true> {
         faker.date.recent(),
         fakePersonId,
         faker.internet.email(),
-        true,
+        EmailAddressStatus.ENABLED,
     );
 }
 
@@ -123,7 +126,11 @@ describe('Email Event Handler', () => {
     function mockEmailFactoryCreateNewReturnsEnabledEmail(fakeEmailAddress: string): void {
         // eslint-disable-next-line @typescript-eslint/require-await
         emailFactoryMock.createNew.mockImplementationOnce(async (personId: PersonID) => {
-            const emailAddress: EmailAddress<false> = EmailAddress.createNew(personId, fakeEmailAddress, true);
+            const emailAddress: EmailAddress<false> = EmailAddress.createNew(
+                personId,
+                fakeEmailAddress,
+                EmailAddressStatus.ENABLED,
+            );
 
             return {
                 ok: true,
@@ -175,7 +182,7 @@ describe('Email Event Handler', () => {
                         faker.date.recent(),
                         personId,
                         faker.internet.email(),
-                        true,
+                        EmailAddressStatus.ENABLED,
                     );
                 });
 
@@ -201,7 +208,7 @@ describe('Email Event Handler', () => {
                         faker.date.recent(),
                         personId,
                         faker.internet.email(),
-                        false,
+                        EmailAddressStatus.DISABLED,
                     );
                 });
 
@@ -211,7 +218,7 @@ describe('Email Event Handler', () => {
                 await emailEventHandler.handlePersonenkontextUpdatedEvent(event);
 
                 expect(loggerMock.info).toHaveBeenCalledWith(
-                    `Enabled and saved address:${persistedEmail.currentAddress}`,
+                    `Set Requested status and persisted address:${persistedEmail.currentAddress}`,
                 );
             });
         });
@@ -230,7 +237,7 @@ describe('Email Event Handler', () => {
                         faker.date.recent(),
                         personId,
                         faker.internet.email(),
-                        false,
+                        EmailAddressStatus.DISABLED,
                     );
                 });
 
@@ -262,7 +269,7 @@ describe('Email Event Handler', () => {
                     const emailAddress: EmailAddress<false> = EmailAddress.createNew(
                         personId,
                         faker.internet.email(),
-                        true,
+                        EmailAddressStatus.ENABLED,
                     );
 
                     return {
@@ -274,7 +281,7 @@ describe('Email Event Handler', () => {
                 await emailEventHandler.handlePersonenkontextUpdatedEvent(event);
 
                 expect(loggerMock.info).toHaveBeenCalledWith(
-                    `Successfully persisted email with new address:${persistenceResult.currentAddress}`,
+                    `Successfully persisted email with Request status for address:${persistenceResult.currentAddress}`,
                 );
             });
         });
@@ -318,7 +325,7 @@ describe('Email Event Handler', () => {
                     const emailAddress: EmailAddress<false> = EmailAddress.createNew(
                         personId,
                         faker.internet.email(),
-                        true,
+                        EmailAddressStatus.ENABLED,
                     );
 
                     return {
@@ -368,7 +375,7 @@ describe('Email Event Handler', () => {
                 faker.date.recent(),
                 fakePersonId,
                 fakeEmailAddress,
-                true,
+                EmailAddressStatus.ENABLED,
             );
         });
 
@@ -520,7 +527,7 @@ describe('Email Event Handler', () => {
                         faker.date.recent(),
                         personId,
                         faker.internet.email(),
-                        false,
+                        EmailAddressStatus.DISABLED,
                     );
                 });
 
@@ -545,6 +552,105 @@ describe('Email Event Handler', () => {
                 await emailEventHandler.handleRolleUpdatedEvent(event);
 
                 expect(loggerMock.info).toHaveBeenCalledWith(`Person with id:${fakePersonId} does not need an email`);
+            });
+        });
+    });
+
+    describe('handleOxUserAttributesCreatedEvent', () => {
+        let fakePersonId: string;
+        let fakeKeycloakUsername: string;
+        let fakeOXUserName: OXUserName;
+        let fakeOXContextName: OXContextName;
+        let fakeEmail: string;
+        let event: OxUserAttributesCreatedEvent;
+
+        beforeEach(() => {
+            fakePersonId = faker.string.uuid();
+            fakeKeycloakUsername = faker.internet.userName();
+            fakeOXUserName = fakeKeycloakUsername;
+            fakeOXContextName = 'context1';
+            fakeEmail = faker.internet.email();
+            event = new OxUserAttributesCreatedEvent(
+                fakePersonId,
+                fakeKeycloakUsername,
+                fakeOXUserName,
+                fakeOXContextName,
+                fakeEmail,
+            );
+        });
+
+        describe('when email cannot be found by personId', () => {
+            it('should log error', async () => {
+                emailRepoMock.findByPerson.mockResolvedValueOnce(undefined);
+
+                await emailEventHandler.handleOxUserAttributesCreatedEvent(event);
+
+                expect(loggerMock.error).toHaveBeenLastCalledWith(
+                    `Cannot find email-address for person with personId:${event.personId}, enabling not possible`,
+                );
+            });
+        });
+
+        describe('when email-address from OX and requested email-address are not equal', () => {
+            it('should log error', async () => {
+                const emailAddress: string = faker.internet.email();
+                emailRepoMock.findByPerson.mockResolvedValueOnce(
+                    createMock<EmailAddress<true>>({
+                        get address(): string {
+                            return emailAddress;
+                        },
+                    }),
+                );
+
+                emailRepoMock.save.mockResolvedValueOnce(createMock<EmailAddress<true>>({}));
+
+                await emailEventHandler.handleOxUserAttributesCreatedEvent(event);
+
+                expect(loggerMock.warning).toHaveBeenCalledWith(
+                    `Mismatch between requested(${emailAddress}) and received(${event.emailAddress}) address from OX`,
+                );
+                expect(loggerMock.warning).toHaveBeenLastCalledWith(
+                    `Overriding ${emailAddress} with ${event.emailAddress}) from OX`,
+                );
+            });
+        });
+
+        describe('when persisting changes to email-address fails', () => {
+            it('should log error', async () => {
+                emailRepoMock.findByPerson.mockResolvedValueOnce(
+                    createMock<EmailAddress<true>>({
+                        get address(): string {
+                            return fakeEmail;
+                        },
+                    }),
+                );
+
+                emailRepoMock.save.mockResolvedValueOnce(new EntityCouldNotBeUpdated('EmailAddress', '1'));
+
+                await emailEventHandler.handleOxUserAttributesCreatedEvent(event);
+
+                expect(loggerMock.error).toHaveBeenLastCalledWith(
+                    `Could not enable email, error is EmailAddress with ID 1 could not be updated`,
+                );
+            });
+        });
+
+        describe('when changing email status is successful', () => {
+            it('should log info', async () => {
+                const emailMock: EmailAddress<true> = createMock<EmailAddress<true>>({
+                    get address(): string {
+                        return fakeEmail;
+                    },
+                });
+                emailRepoMock.findByPerson.mockResolvedValueOnce(emailMock);
+
+                emailRepoMock.save.mockResolvedValueOnce(emailMock);
+
+                await emailEventHandler.handleOxUserAttributesCreatedEvent(event);
+
+                expect(loggerMock.info).toHaveBeenLastCalledWith(
+                    `Changed email-address:${fakeEmail} from REQUESTED to ENABLED`,
+                );
             });
         });
     });

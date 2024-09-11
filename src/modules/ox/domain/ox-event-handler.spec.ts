@@ -19,6 +19,7 @@ import { ServiceProviderKategorie } from '../../service-provider/domain/service-
 import { Person } from '../../person/domain/person.js';
 import { EmailAddressGeneratedEvent } from '../../../shared/events/email-address-generated.event.js';
 import { ExistsUserAction } from '../actions/user/exists-user.action.js';
+import { EventService } from '../../../core/eventbus/services/event.service.js';
 
 describe('OxEventHandler', () => {
     let module: TestingModule;
@@ -30,6 +31,7 @@ describe('OxEventHandler', () => {
     let personRepositoryMock: DeepMocked<PersonRepository>;
     let dbiamPersonenkontextRepoMock: DeepMocked<DBiamPersonenkontextRepo>;
     let serviceProviderRepoMock: DeepMocked<ServiceProviderRepo>;
+    let eventServiceMock: DeepMocked<EventService>;
 
     beforeAll(async () => {
         module = await Test.createTestingModule({
@@ -56,6 +58,10 @@ describe('OxEventHandler', () => {
                     provide: OxService,
                     useValue: createMock<OxService>(),
                 },
+                {
+                    provide: EventService,
+                    useValue: createMock<EventService>(),
+                },
             ],
         }).compile();
 
@@ -67,6 +73,7 @@ describe('OxEventHandler', () => {
         rolleRepoMock = module.get(RolleRepo);
         personRepositoryMock = module.get(PersonRepository);
         serviceProviderRepoMock = module.get(ServiceProviderRepo);
+        eventServiceMock = module.get(EventService);
     });
 
     afterAll(async () => {
@@ -100,7 +107,7 @@ describe('OxEventHandler', () => {
             rolle = createMock<Rolle<true>>({ serviceProviderIds: [] });
             rolleMap = new Map<string, Rolle<true>>();
             rolleMap.set(rolleId, rolle);
-            person = createMock<Person<true>>({ email: faker.internet.email() });
+            person = createMock<Person<true>>({ email: faker.internet.email(), referrer: faker.internet.userName() });
             sp = createMock<ServiceProvider<true>>({
                 kategorie: ServiceProviderKategorie.EMAIL,
             });
@@ -180,10 +187,11 @@ describe('OxEventHandler', () => {
             expect(loggerMock.error).toHaveBeenLastCalledWith(`Person with personId:${personId} has no email-address`);
         });
 
-        it('should log info on success', async () => {
+        it('should log info and publish OxUserCreatedEvent on success', async () => {
             dbiamPersonenkontextRepoMock.findByPerson.mockResolvedValueOnce(personenkontexte);
             rolleRepoMock.findByIds.mockResolvedValueOnce(rolleMap);
             serviceProviderRepoMock.findByIds.mockResolvedValueOnce(spMap);
+
             personRepositoryMock.findById.mockResolvedValueOnce(person);
 
             oxServiceMock.send.mockResolvedValueOnce({
@@ -210,6 +218,44 @@ describe('OxEventHandler', () => {
             expect(loggerMock.info).toHaveBeenLastCalledWith(
                 `User created in OX, userId:${fakeOXUserId}, email:${event.address}`,
             );
+            expect(eventServiceMock.publish).toHaveBeenCalledTimes(1);
+        });
+
+        it('should log info on success and error when person has no referrer', async () => {
+            dbiamPersonenkontextRepoMock.findByPerson.mockResolvedValueOnce(personenkontexte);
+            rolleRepoMock.findByIds.mockResolvedValueOnce(rolleMap);
+            serviceProviderRepoMock.findByIds.mockResolvedValueOnce(spMap);
+            person = createMock<Person<true>>({ email: faker.internet.email(), referrer: undefined });
+            personRepositoryMock.findById.mockResolvedValueOnce(person);
+
+            oxServiceMock.send.mockResolvedValueOnce({
+                ok: true,
+                value: {
+                    exists: false,
+                },
+            });
+            const fakeOXUserId: string = faker.string.uuid();
+            oxServiceMock.send.mockResolvedValueOnce({
+                ok: true,
+                value: {
+                    id: fakeOXUserId,
+                    firstname: 'firstname',
+                    lastname: 'lastname',
+                    username: 'username',
+                    primaryEmail: event.address,
+                    mailenabled: true,
+                },
+            });
+            await sut.handlePersonenkontextCreatedEvent(event);
+
+            expect(oxServiceMock.send).toHaveBeenLastCalledWith(expect.any(CreateUserAction));
+            expect(loggerMock.info).toHaveBeenLastCalledWith(
+                `User created in OX, userId:${fakeOXUserId}, email:${event.address}`,
+            );
+            expect(loggerMock.error).toHaveBeenLastCalledWith(
+                `Person with personId:${personId} has no keycloakUsername/referrer: cannot create OXUserCreatedEvent`,
+            );
+            expect(eventServiceMock.publish).toHaveBeenCalledTimes(0);
         });
 
         it('should log error on failure', async () => {

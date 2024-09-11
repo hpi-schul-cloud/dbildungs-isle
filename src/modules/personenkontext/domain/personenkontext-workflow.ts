@@ -47,16 +47,15 @@ export class PersonenkontextWorkflowAggregate {
     public async findAllSchulstrukturknoten(
         permissions: PersonPermissions,
         organisationName: string | undefined,
-        limit?: number,
+        organisationId?: string, // Add organisationId as an optional parameter
     ): Promise<Organisation<true>[]> {
         let allOrganisationsExceptKlassen: Organisation<boolean>[] = [];
-        // If the search string for organisation is present then search for Name or Kennung
 
+        // If the search string for organisation is present then search for Name or Kennung
         allOrganisationsExceptKlassen =
             await this.organisationRepository.findByNameOrKennungAndExcludeByOrganisationType(
                 OrganisationsTyp.KLASSE,
                 organisationName,
-                limit,
             );
 
         if (allOrganisationsExceptKlassen.length === 0) return [];
@@ -65,10 +64,24 @@ export class PersonenkontextWorkflowAggregate {
             [RollenSystemRecht.PERSONEN_VERWALTEN],
             true,
         );
+
         // Return only the orgas that the admin have rights on
-        const filteredOrganisations: Organisation<boolean>[] = allOrganisationsExceptKlassen.filter(
+        let filteredOrganisations: Organisation<boolean>[] = allOrganisationsExceptKlassen.filter(
             (orga: Organisation<boolean>) => orgsWithRecht.includes(orga.id as OrganisationID),
         );
+
+        // If organisationId is provided and it's not in the filtered results, fetch it explicitly
+        if (
+            this.selectedOrganisationId &&
+            !filteredOrganisations.find((orga: Organisation<boolean>) => orga.id === organisationId)
+        ) {
+            const selectedOrg: Option<Organisation<true>> = await this.organisationRepository.findById(
+                this.selectedOrganisationId,
+            );
+            if (selectedOrg) {
+                filteredOrganisations = [selectedOrg, ...filteredOrganisations]; // Add the selected org at the beginning
+            }
+        }
 
         // Sort the filtered organizations, handling undefined kennung and name
         filteredOrganisations.sort((a: Organisation<boolean>, b: Organisation<boolean>) => {
@@ -82,7 +95,8 @@ export class PersonenkontextWorkflowAggregate {
             if (b.name) return 1;
             return 0;
         });
-        // Return only the orgas that the admin have rights on
+
+        // Return the organizations that the admin has rights to
         return filteredOrganisations;
     }
 
