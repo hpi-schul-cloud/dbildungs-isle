@@ -423,7 +423,15 @@ describe('Personenuebersicht API', () => {
     });
 
     describe('/GET personenuebersichten', () => {
-        it('should return personuebersichten with zuordnungen', async () => {
+        let savedPerson1: Person<true>;
+        let savedPerson2: Person<true>;
+        let savedOrganisation1: OrganisationEntity;
+        let savedOrganisation2: OrganisationEntity;
+
+        beforeEach(async () => {
+            // create 2 persons, 2 organisations, 2 roles and 3 personenkontexts
+            // person 1 is assigned to organisation 1 with role 1+2 and organisation 2 with role 2
+            // person 2 is not assigned to any organisation
             const creationParams: PersonCreationParams = {
                 familienname: faker.person.lastName(),
                 vorname: faker.person.firstName(),
@@ -438,11 +446,12 @@ describe('Personenuebersicht API', () => {
                 return;
             }
 
-            const savedPerson1: Person<true> | DomainError = await personRepository.create(person1);
-            expect(savedPerson1).not.toBeInstanceOf(DomainError);
-            if (savedPerson1 instanceof DomainError) {
+            const savedPerson1Internal: Person<true> | DomainError = await personRepository.create(person1);
+            expect(savedPerson1Internal).not.toBeInstanceOf(DomainError);
+            if (savedPerson1Internal instanceof DomainError) {
                 return;
             }
+            savedPerson1 = savedPerson1Internal;
 
             const person2: Person<false> | DomainError = await Person.createNew(
                 usernameGeneratorService,
@@ -454,11 +463,12 @@ describe('Personenuebersicht API', () => {
                 return;
             }
 
-            const savedPerson2: Person<true> | DomainError = await personRepository.create(person2);
-            expect(savedPerson2).not.toBeInstanceOf(DomainError);
-            if (savedPerson2 instanceof DomainError) {
+            const savedPerson2Internal: Person<true> | DomainError = await personRepository.create(person2);
+            expect(savedPerson2Internal).not.toBeInstanceOf(DomainError);
+            if (savedPerson2Internal instanceof DomainError) {
                 return;
             }
+            savedPerson2 = savedPerson2Internal;
 
             const rolle1: Rolle<false> | DomainError = rolleFactory.createNew(
                 faker.string.alpha(5),
@@ -492,11 +502,8 @@ describe('Personenuebersicht API', () => {
             }
             const savedRolle2: Rolle<true> = await rolleRepo.save(rolle2);
 
-            const savedOrganisation1: OrganisationEntity = await createAndPersistRootOrganisation(
-                em,
-                organisationRepository,
-            );
-            const savedOrganisation2: OrganisationEntity = await createAndPersistOrganisation(
+            savedOrganisation1 = await createAndPersistRootOrganisation(em, organisationRepository);
+            savedOrganisation2 = await createAndPersistOrganisation(
                 em,
                 savedOrganisation1.id,
                 OrganisationsTyp.SONSTIGE,
@@ -504,22 +511,24 @@ describe('Personenuebersicht API', () => {
             );
 
             await dBiamPersonenkontextRepoInternal.save(
-                personenkontextFactory.createNew(savedPerson1.id, savedOrganisation1.id, savedRolle1.id),
+                personenkontextFactory.createNew(savedPerson1Internal.id, savedOrganisation1.id, savedRolle1.id),
             );
             await dBiamPersonenkontextRepoInternal.save(
-                personenkontextFactory.createNew(savedPerson1.id, savedOrganisation1.id, savedRolle2.id),
+                personenkontextFactory.createNew(savedPerson1Internal.id, savedOrganisation1.id, savedRolle2.id),
             );
             await dBiamPersonenkontextRepoInternal.save(
-                personenkontextFactory.createNew(savedPerson1.id, savedOrganisation2.id, savedRolle2.id),
+                personenkontextFactory.createNew(savedPerson1Internal.id, savedOrganisation2.id, savedRolle2.id),
             );
+        });
 
+        it('should return personuebersichten with zuordnungen for if admin has same organisation', async () => {
             const personpermissions: DeepMocked<PersonPermissions> = createMock();
             personpermissionsRepoMock.loadPersonPermissions.mockResolvedValue(personpermissions);
 
-            personpermissions.getOrgIdsWithSystemrechtDeprecated.mockResolvedValueOnce([
-                savedOrganisation1.id,
-                savedOrganisation2.id,
-            ]);
+            personpermissions.getOrgIdsWithSystemrecht.mockResolvedValueOnce({
+                all: false,
+                orgaIds: [savedOrganisation1.id, savedOrganisation2.id],
+            });
 
             const response: Response = await request(app.getHttpServer() as App)
                 .post(`/dbiam/personenuebersicht`)
@@ -531,7 +540,40 @@ describe('Personenuebersicht API', () => {
             expect(response.body).toBeInstanceOf(Object);
             const responseBody: PagedResponse<DBiamPersonenuebersichtResponse> =
                 response.body as PagedResponse<DBiamPersonenuebersichtResponse>;
-            expect(responseBody.total).toEqual(2);
+            expect(responseBody.items?.length).toEqual(1);
+            const item1: DBiamPersonenuebersichtResponse | undefined = responseBody.items.at(0);
+
+            expect(item1).toBeDefined();
+            if (!(item1 instanceof DBiamPersonenuebersichtResponse)) {
+                return;
+            }
+
+            expect(item1?.personId).toEqual(savedPerson1.id);
+            expect(item1?.vorname).toEqual(savedPerson1.vorname);
+            expect(item1?.nachname).toEqual(savedPerson1.familienname);
+            expect(item1?.benutzername).toEqual(savedPerson1.referrer);
+            expect(item1?.lastModifiedZuordnungen).not.toBeNull();
+            expect(item1?.zuordnungen.length).toEqual(3);
+        });
+
+        it('should return personuebersichten with zuordnungen for if admin has rights on root', async () => {
+            const personpermissions: DeepMocked<PersonPermissions> = createMock();
+            personpermissionsRepoMock.loadPersonPermissions.mockResolvedValue(personpermissions);
+
+            personpermissions.getOrgIdsWithSystemrecht.mockResolvedValueOnce({
+                all: true,
+            });
+
+            const response: Response = await request(app.getHttpServer() as App)
+                .post(`/dbiam/personenuebersicht`)
+                .send({
+                    personIds: [savedPerson1.id, savedPerson2.id],
+                });
+
+            expect(response.status).toBe(201);
+            expect(response.body).toBeInstanceOf(Object);
+            const responseBody: PagedResponse<DBiamPersonenuebersichtResponse> =
+                response.body as PagedResponse<DBiamPersonenuebersichtResponse>;
             expect(responseBody.items?.length).toEqual(2);
             const item1: DBiamPersonenuebersichtResponse | undefined = responseBody.items.at(0);
 

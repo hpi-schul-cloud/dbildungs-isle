@@ -9,7 +9,6 @@ import { PersonenKontextApiModule } from './personenkontext-api.module.js';
 import { PersonenkontextController } from './api/personenkontext.controller.js';
 import { PersonenkontextService } from './domain/personenkontext.service.js';
 import { PersonenkontextRepo } from './persistence/personenkontext.repo.js';
-import { PersonRepo } from '../person/persistence/person.repo.js';
 import { RolleRepo } from '../rolle/repo/rolle.repo.js';
 import { createMock } from '@golevelup/ts-jest';
 import { DBiamPersonenkontextRepo } from './persistence/dbiam-personenkontext.repo.js';
@@ -52,16 +51,12 @@ describe('PersonenKontextApiModule', () => {
             expect(module.get(PersonenkontextController)).toBeInstanceOf(PersonenkontextController);
         });
 
-        it('should resolve PersonkontextUc', () => {
+        it('should resolve PersonenkontextService', () => {
             expect(module.get(PersonenkontextService)).toBeInstanceOf(PersonenkontextService);
         });
 
-        it('should resolve PersonkontextUc', () => {
+        it('should resolve PersonenkontextRepo', () => {
             expect(module.get(PersonenkontextRepo)).toBeInstanceOf(PersonenkontextRepo);
-        });
-
-        it('should resolve PersonkontextUc', () => {
-            expect(module.get(PersonRepo)).toBeInstanceOf(PersonRepo);
         });
     });
 });

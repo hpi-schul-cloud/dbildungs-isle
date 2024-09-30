@@ -55,7 +55,6 @@
         0,
         1,
         2,
-        3,
         4,
         6,
         7,
@@ -80,7 +79,6 @@
         0,
         1,
         2,
-        3,
         4,
         6,
         7,
@@ -120,8 +118,8 @@
         ],
         "serviceProviderIds": [],
         "istTechnisch": true
-      },
-      {
+    },
+    {
         "id": 6,
         "administeredBySchulstrukturknoten": 0,
         "name": "Schulbegleitung",
@@ -129,6 +127,28 @@
         "merkmale": [],
         "systemrechte": [],
         "serviceProviderIds": []
-      }
+    },
+    {
+        "id": 7,
+        "administeredBySchulstrukturknoten": 0,
+        "name": "itslearning Admin",
+        "rollenart": "LEIT",
+        "merkmale": [],
+        "systemrechte": [],
+        "serviceProviderIds": [
+            3
+        ]
+    },
+    {
+        "id": 8,
+        "administeredBySchulstrukturknoten": 0,
+        "name": "itslearning Lehrkraft",
+        "rollenart": "LEHR",
+        "merkmale": [],
+        "systemrechte": [],
+        "serviceProviderIds": [
+            3
+        ]
+    }
   ]
 }

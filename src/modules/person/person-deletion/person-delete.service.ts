@@ -8,6 +8,8 @@ import { Personenkontext } from '../../personenkontext/domain/personenkontext.js
 import { DBiamPersonenkontextRepo } from '../../personenkontext/persistence/dbiam-personenkontext.repo.js';
 import { Rolle } from '../../rolle/domain/rolle.js';
 import { PersonRepository } from '../persistence/person.repository.js';
+import { ServiceProvider } from '../../service-provider/domain/service-provider.js';
+
 @Injectable()
 export class PersonDeleteService {
     public constructor(
@@ -48,6 +50,9 @@ export class PersonDeleteService {
                                               rolleId: personenKontext.rolleId,
                                               orgaId: personenKontext.organisationId,
                                               rolle: rolle.rollenart,
+                                              serviceProviderExternalSystems: rolle.serviceProviderData.map(
+                                                  (sp: ServiceProvider<true>) => sp.externalSystem,
+                                              ),
                                           })
                                         : reject(),
                                 () => reject(),

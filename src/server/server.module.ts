@@ -52,6 +52,7 @@ import { KeycloakHandlerModule } from '../modules/keycloak-handler/keycloak-hand
                 const dbConfig: DbConfig = config.getOrThrow<DbConfig>('DB');
                 return defineConfig({
                     clientUrl: dbConfig.CLIENT_URL,
+                    user: dbConfig.USERNAME,
                     password: dbConfig.SECRET,
                     dbName: dbConfig.DB_NAME,
                     entities: ['./dist/**/*.entity.js'],

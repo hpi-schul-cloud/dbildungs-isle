@@ -21,19 +21,22 @@ import { KeycloakClientError } from '../../../shared/error/keycloak-client.error
 import { PersonFactory } from '../domain/person.factory.js';
 import { PersonPermissions } from '../../authentication/domain/person-permissions.js';
 import { OrganisationID } from '../../../shared/types/index.js';
-import { EntityCouldNotBeDeleted, EntityNotFoundError } from '../../../shared/error/index.js';
+import { EntityCouldNotBeDeleted, EntityNotFoundError, MismatchedRevisionError } from '../../../shared/error/index.js';
 import { ConfigService } from '@nestjs/config';
 import { DBiamPersonenkontextRepo } from '../../personenkontext/persistence/dbiam-personenkontext.repo.js';
 import { VornameForPersonWithTrailingSpaceError } from '../domain/vorname-with-trailing-space.error.js';
 import { PersonenkontextService } from '../../personenkontext/domain/personenkontext.service.js';
 import { Personenkontext } from '../../personenkontext/domain/personenkontext.js';
-import { PersonApiMapperProfile } from './person-api.mapper.profile.js';
 import { RolleRepo } from '../../rolle/repo/rolle.repo.js';
 import { PersonApiMapper } from '../mapper/person-api.mapper.js';
 import { PersonDeleteService } from '../person-deletion/person-delete.service.js';
 import { LockUserBodyParams } from './lock-user.body.params.js';
 import { PersonDomainError } from '../domain/person-domain.error.js';
 import { ClassLogger } from '../../../core/logging/class-logger.js';
+import { PersonByPersonalnummerBodyParams } from './person-by-personalnummer.body.param.js';
+import { DuplicatePersonalnummerError } from '../../../shared/error/duplicate-personalnummer.error.js';
+import { PersonalnummerRequiredError } from '../domain/personalnummer-required.error.js';
+import { DBiamPersonenkontextService } from '../../personenkontext/domain/dbiam-personenkontext.service.js';
 
 describe('PersonController', () => {
     let module: TestingModule;
@@ -45,12 +48,12 @@ describe('PersonController', () => {
     let keycloakUserService: DeepMocked<KeycloakUserService>;
     let personDeleteServiceMock: DeepMocked<PersonDeleteService>;
     let personPermissionsMock: DeepMocked<PersonPermissions>;
+    let dBiamPersonenkontextServiceMock: DeepMocked<DBiamPersonenkontextService>;
 
     beforeAll(async () => {
         module = await Test.createTestingModule({
             imports: [MapperTestModule],
             providers: [
-                PersonApiMapperProfile,
                 PersonController,
                 PersonFactory,
                 PersonApiMapper,
@@ -91,6 +94,10 @@ describe('PersonController', () => {
                     useValue: createMock<RolleRepo>(),
                 },
                 {
+                    provide: DBiamPersonenkontextService,
+                    useValue: createMock<DBiamPersonenkontextService>(),
+                },
+                {
                     provide: ClassLogger,
                     useValue: createMock<ClassLogger>(),
                 },
@@ -103,6 +110,7 @@ describe('PersonController', () => {
         rolleRepoMock = module.get(RolleRepo);
         personDeleteServiceMock = module.get(PersonDeleteService);
         keycloakUserService = module.get(KeycloakUserService);
+        dBiamPersonenkontextServiceMock = module.get(DBiamPersonenkontextService);
     });
 
     function getPerson(): Person<true> {
@@ -131,7 +139,7 @@ describe('PersonController', () => {
         expect(personController).toBeDefined();
     });
 
-    describe('createPerson', () => {
+    describe('createPersonMigration', () => {
         describe('when is authorized migration user', () => {
             it('should return PersonendatensatzResponse', async () => {
                 const person: Person<true> = getPerson();
@@ -754,6 +762,81 @@ describe('PersonController', () => {
                     personController.lockPerson(params.personId, lockUserBodyParams, personPermissionsMock),
                 ).rejects.toThrow(PersonDomainError);
             });
+        });
+    });
+
+    describe('updatePersonalnummer', () => {
+        const params: PersonByIdParams = {
+            personId: faker.string.uuid(),
+        };
+        const body: PersonByPersonalnummerBodyParams = {
+            personalnummer: faker.finance.pin(7),
+            lastModified: faker.date.recent(),
+            revision: '1',
+        };
+
+        it('should return 200 when successful', async () => {
+            const person: Person<true> = getPerson();
+            person.personalnummer = body.personalnummer;
+            dBiamPersonenkontextServiceMock.isPersonalnummerRequiredForAnyPersonenkontextForPerson.mockResolvedValueOnce(
+                true,
+            );
+            personRepositoryMock.updatePersonalnummer.mockResolvedValue(person);
+            await expect(personController.updatePersonalnummer(params, body, personPermissionsMock)).resolves.toBe(
+                undefined,
+            );
+            expect(personRepositoryMock.updatePersonalnummer).toHaveBeenCalledTimes(1);
+        });
+
+        it('should throw DuplicatePersonalnummerError when Personalnummer is already assigned', async () => {
+            personRepositoryMock.updatePersonalnummer.mockResolvedValue(
+                new DuplicatePersonalnummerError('Personalnummer already exists'),
+            );
+            dBiamPersonenkontextServiceMock.isPersonalnummerRequiredForAnyPersonenkontextForPerson.mockResolvedValueOnce(
+                true,
+            );
+            await expect(personController.updatePersonalnummer(params, body, personPermissionsMock)).rejects.toThrow(
+                DuplicatePersonalnummerError,
+            );
+        });
+
+        it('should throw PersonalnummerRequiredError when Personalnummer was not provided', async () => {
+            const bodyWithInvalidPersonalnummer: PersonByPersonalnummerBodyParams = {
+                personalnummer: '',
+                lastModified: faker.date.recent(),
+                revision: '1',
+            };
+            dBiamPersonenkontextServiceMock.isPersonalnummerRequiredForAnyPersonenkontextForPerson.mockResolvedValueOnce(
+                true,
+            );
+            personRepositoryMock.updatePersonalnummer.mockResolvedValue(new PersonalnummerRequiredError());
+            await expect(
+                personController.updatePersonalnummer(params, bodyWithInvalidPersonalnummer, personPermissionsMock),
+            ).rejects.toThrow(PersonalnummerRequiredError);
+        });
+
+        it('should throw HttpException when revision is incorrect', async () => {
+            const bodyWithInvalidRevision: PersonByPersonalnummerBodyParams = {
+                personalnummer: '',
+                lastModified: faker.date.recent(),
+                revision: '2',
+            };
+            dBiamPersonenkontextServiceMock.isPersonalnummerRequiredForAnyPersonenkontextForPerson.mockResolvedValueOnce(
+                true,
+            );
+            personRepositoryMock.updatePersonalnummer.mockResolvedValue(new MismatchedRevisionError(''));
+            await expect(
+                personController.updatePersonalnummer(params, bodyWithInvalidRevision, personPermissionsMock),
+            ).rejects.toThrow(HttpException);
+        });
+
+        it('should throw PersonDomainError when Person has no personenkontexte where a rolle requires a KoPers.', async () => {
+            dBiamPersonenkontextServiceMock.isPersonalnummerRequiredForAnyPersonenkontextForPerson.mockResolvedValueOnce(
+                false,
+            );
+            await expect(personController.updatePersonalnummer(params, body, personPermissionsMock)).rejects.toThrow(
+                PersonDomainError,
+            );
         });
     });
 });

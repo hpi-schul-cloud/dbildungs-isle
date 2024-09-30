@@ -3,7 +3,6 @@ import { ConfigTestModule, DatabaseTestModule, MapperTestModule } from '../../..
 import { PersonenKontextModule } from './personenkontext.module.js';
 import { PersonenkontextRepo } from './persistence/personenkontext.repo.js';
 import { PersonenkontextService } from './domain/personenkontext.service.js';
-import { PersonRepo } from '../person/persistence/person.repo.js';
 
 describe('PersonKontextModule', () => {
     let module: TestingModule;
@@ -23,15 +22,11 @@ describe('PersonKontextModule', () => {
     });
 
     describe('when module is initialized', () => {
-        it('should resolve PersonProfile', () => {
-            expect(module.get(PersonRepo)).toBeInstanceOf(PersonRepo);
-        });
-
-        it('should resolve PersonRepo', () => {
+        it('should resolve PersonenkontextRepo', () => {
             expect(module.get(PersonenkontextRepo)).toBeInstanceOf(PersonenkontextRepo);
         });
 
-        it('should resolve PersonService', () => {
+        it('should resolve PersonenkontextService', () => {
             expect(module.get(PersonenkontextService)).toBeInstanceOf(PersonenkontextService);
         });
     });

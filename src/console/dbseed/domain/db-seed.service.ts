@@ -32,6 +32,7 @@ import { PersonenkontextFactory } from '../../../modules/personenkontext/domain/
 import { OrganisationRepository } from '../../../modules/organisation/persistence/organisation.repository.js';
 import { Organisation } from '../../../modules/organisation/domain/organisation.js';
 import { RollenMerkmal } from '../../../modules/rolle/domain/rolle.enums.js';
+import { ServiceProviderSystem } from '../../../modules/service-provider/domain/service-provider.enum.js';
 
 @Injectable()
 export class DbSeedService {
@@ -196,6 +197,7 @@ export class DbSeedService {
                 file.logoMimeType,
                 file.keycloakGroup,
                 file.keycloakRole,
+                file.externalSystem ?? ServiceProviderSystem.NONE,
                 file.requires2fa,
             );
 

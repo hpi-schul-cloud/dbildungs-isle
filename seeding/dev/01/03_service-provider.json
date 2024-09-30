@@ -12,6 +12,7 @@
             "providedOnSchulstrukturknoten": 0,
             "keycloakGroup": "E-Mail-service",
             "keycloakRole": "E-Mail-user",
+            "externalSystem": "EMAIL",
             "requires2fa": true
         },
         {
@@ -51,6 +52,7 @@
             "providedOnSchulstrukturknoten": 0,
             "keycloakGroup": "itslearning-service",
             "keycloakRole": "itslearning-user",
+            "externalSystem": "ITSLEARNING",
             "requires2fa": false
         },
         {

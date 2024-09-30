@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto';
-import { EntityManager, Loaded, RequiredEntityData } from '@mikro-orm/postgresql';
+import { EntityManager, FilterQuery, Loaded, RequiredEntityData } from '@mikro-orm/postgresql';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { DataConfig } from '../../../shared/config/data.config.js';
@@ -9,6 +9,7 @@ import {
     EntityCouldNotBeCreated,
     EntityCouldNotBeDeleted,
     EntityNotFoundError,
+    MissingPermissionsError,
 } from '../../../shared/error/index.js';
 import { ScopeOperator, ScopeOrder } from '../../../shared/persistence/scope.enums.js';
 import { PersonID } from '../../../shared/types/aggregate-ids.types.js';
@@ -25,6 +26,8 @@ import { PersonenkontextUpdatedEvent } from '../../../shared/events/personenkont
 import { PersonenkontextEventKontextData } from '../../../shared/events/personenkontext-event.types.js';
 import { DuplicatePersonalnummerError } from '../../../shared/error/duplicate-personalnummer.error.js';
 import { EmailAddressStatus } from '../../email/domain/email-address.js';
+import { PersonalnummerRequiredError } from '../domain/personalnummer-required.error.js';
+import { PersonalnummerUpdateOutdatedError } from '../domain/update-outdated.error.js';
 
 export function getEnabledEmailAddress(entity: PersonEntity): string | undefined {
     for (const emailAddress of entity.emailAddresses) {
@@ -149,6 +152,30 @@ export class PersonRepository {
         }
 
         return null;
+    }
+
+    public async findByIds(ids: string[], permissions: PersonPermissions): Promise<Person<true>[]> {
+        const permittedOrgas: PermittedOrgas = await permissions.getOrgIdsWithSystemrecht(
+            [RollenSystemRecht.PERSONEN_VERWALTEN],
+            true,
+        );
+
+        if (!permittedOrgas.all && !permittedOrgas.orgaIds.length) {
+            return [];
+        }
+
+        let organisationWhereClause: FilterQuery<PersonEntity> = {};
+        if (!permittedOrgas.all) {
+            organisationWhereClause = {
+                personenKontexte: { $some: { organisationId: { $in: permittedOrgas.orgaIds } } },
+            };
+        }
+
+        const personEntities: PersonEntity[] = await this.em.find(PersonEntity, {
+            $and: [{ id: { $in: ids } }, organisationWhereClause],
+        });
+
+        return personEntities.map((entity: PersonEntity) => mapEntityToAggregate(entity));
     }
 
     public async getPersonIfAllowed(personId: string, permissions: PersonPermissions): Promise<Result<Person<true>>> {
@@ -446,5 +473,60 @@ export class PersonRepository {
         person.keycloakUserId = creationResult.value;
 
         return person;
+    }
+
+    public async isPersonalnummerAlreadayAssigned(personalnummer: string): Promise<boolean> {
+        const person: Option<Loaded<PersonEntity, never, '*', never>> = await this.em.findOne(PersonEntity, {
+            personalnummer: personalnummer,
+        });
+
+        return !!person;
+    }
+
+    public async updatePersonalnummer(
+        personId: string,
+        newPersonalnummer: string,
+        lastModified: Date,
+        revision: string,
+        permissions: PersonPermissions,
+    ): Promise<Person<true> | DomainError> {
+        const personFound: Option<Person<true>> = await this.findById(personId);
+
+        if (!personFound) {
+            return new EntityNotFoundError('Person', personId);
+        }
+
+        //Permissions: Only the admin can update the personalnummer.
+        if (!(await permissions.canModifyPerson(personId))) {
+            return new MissingPermissionsError('Not allowed to update the Personalnummer for the person.');
+        }
+
+        {
+            //Specifications
+            if (!newPersonalnummer) {
+                return new PersonalnummerRequiredError();
+            }
+
+            if (await this.isPersonalnummerAlreadayAssigned(newPersonalnummer)) {
+                return new DuplicatePersonalnummerError(`Personalnummer ${newPersonalnummer} already exists.`);
+            }
+
+            if (personFound.updatedAt.getTime() > lastModified.getTime()) {
+                // The existing data is newer than the incoming update
+                return new PersonalnummerUpdateOutdatedError();
+            }
+
+            const newRevisionResult: Result<string, DomainError> = personFound.tryToUpdateRevision(revision);
+            if (!newRevisionResult.ok) {
+                return newRevisionResult.error;
+            }
+
+            //Update
+            personFound.revision = newRevisionResult.value;
+            personFound.personalnummer = newPersonalnummer;
+        }
+
+        const savedPerson: Person<true> | DomainError = await this.save(personFound);
+        return savedPerson;
     }
 }

@@ -13,6 +13,7 @@ import { DoBase } from '../../src/shared/types/do-base.js';
 import { ServiceProvider } from '../../src/modules/service-provider/domain/service-provider.js';
 import {
     ServiceProviderKategorie,
+    ServiceProviderSystem,
     ServiceProviderTarget,
 } from '../../src/modules/service-provider/domain/service-provider.enum.js';
 import { Person } from '../../src/modules/person/domain/person.js';
@@ -152,6 +153,7 @@ export class DoFactory {
                 'base64',
             ),
             providedOnSchulstrukturknoten: faker.string.uuid(),
+            externalSystem: ServiceProviderSystem.NONE,
             requires2fa: true,
         };
         return Object.assign(

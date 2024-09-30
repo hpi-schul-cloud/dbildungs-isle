@@ -8,7 +8,7 @@ import { Person } from '../../person/domain/person.js';
 import { PermittedOrgas, PersonFields, PersonPermissions } from './person-permissions.js';
 import { DBiamPersonenkontextRepo } from '../../personenkontext/persistence/dbiam-personenkontext.repo.js';
 import { Personenkontext } from '../../personenkontext/domain/personenkontext.js';
-import { OrganisationID, RolleID } from '../../../shared/types/index.js';
+import { RolleID } from '../../../shared/types/index.js';
 import { RolleRepo } from '../../rolle/repo/rolle.repo.js';
 import { Rolle } from '../../rolle/domain/rolle.js';
 import { PersonenkontextRolleFieldsResponse } from '../api/personen-kontext-rolle-fields.response.js';
@@ -239,74 +239,6 @@ describe('PersonPermissions', () => {
             }
             expect(permittedOrgas.orgaIds).toContain('1');
             expect(permittedOrgas.orgaIds).not.toContain('2');
-        });
-    });
-
-    describe('getOrgIdsWithSystemrechtDeprecated', () => {
-        it('should return organisations', async () => {
-            const person: Person<true> = Person.construct(
-                faker.string.uuid(),
-                faker.date.past(),
-                faker.date.recent(),
-                faker.person.lastName(),
-                faker.person.firstName(),
-                '1',
-                faker.lorem.word(),
-                undefined,
-                faker.string.uuid(),
-            );
-            const personenkontexte: Personenkontext<true>[] = [createPersonenkontext()];
-            dbiamPersonenkontextRepoMock.findByPerson.mockResolvedValueOnce(personenkontexte);
-            rolleRepoMock.findByIds.mockResolvedValueOnce(
-                new Map([['1', createMock<Rolle<true>>({ hasSystemRecht: () => true })]]),
-            );
-            organisationRepoMock.findChildOrgasForIds.mockResolvedValueOnce([
-                createMock<Organisation<true>>({ id: '2' }),
-            ]);
-
-            const personPermissions: PersonPermissions = new PersonPermissions(
-                dbiamPersonenkontextRepoMock,
-                organisationRepoMock,
-                rolleRepoMock,
-                person,
-            );
-            const ids: OrganisationID[] = await personPermissions.getOrgIdsWithSystemrechtDeprecated(
-                [RollenSystemRecht.PERSONEN_VERWALTEN],
-                true,
-            );
-            expect(ids).toContain('1');
-            expect(ids).toContain('2');
-        });
-    });
-
-    describe('getOrgIdsWithSystemrecht without Children', () => {
-        it('should return organisations', async () => {
-            const person: Person<true> = Person.construct(
-                faker.string.uuid(),
-                faker.date.past(),
-                faker.date.recent(),
-                faker.person.lastName(),
-                faker.person.firstName(),
-                '1',
-                faker.lorem.word(),
-                undefined,
-                faker.string.uuid(),
-            );
-            const personenkontexte: Personenkontext<true>[] = [createPersonenkontext()];
-            dbiamPersonenkontextRepoMock.findByPerson.mockResolvedValueOnce(personenkontexte);
-            rolleRepoMock.findByIds.mockResolvedValueOnce(
-                new Map<string, Rolle<true>>([['1', createMock<Rolle<true>>({ hasSystemRecht: () => true })]]),
-            );
-
-            const personPermissions: PersonPermissions = new PersonPermissions(
-                dbiamPersonenkontextRepoMock,
-                organisationRepoMock,
-                rolleRepoMock,
-                person,
-            );
-            const ids: OrganisationID[] = await personPermissions.getOrgIdsWithSystemrechtDeprecated([]);
-            expect(ids).toContain('1');
-            expect(ids).not.toContain('2');
         });
     });
 

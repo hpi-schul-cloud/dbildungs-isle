@@ -4,7 +4,11 @@ import { type Organisation } from '../../modules/organisation/domain/organisatio
 import { type Person } from '../../modules/person/domain/person.js';
 import { type Personenkontext } from '../../modules/personenkontext/domain/personenkontext.js';
 import { type Rolle } from '../../modules/rolle/domain/rolle.js';
-import { PersonenkontextEventKontextData, PersonenkontextEventPersonData } from './personenkontext-event.types.js';
+import { type ServiceProvider } from '../../modules/service-provider/domain/service-provider.js';
+import {
+    type PersonenkontextEventKontextData,
+    type PersonenkontextEventPersonData,
+} from './personenkontext-event.types.js';
 
 export type PersonenkontextUpdatedPersonData = PersonenkontextEventPersonData;
 
@@ -34,6 +38,7 @@ function mapPersonenkontextAndRolleAggregateToData([pk, orga, rolle]: [
         orgaId: pk.organisationId,
         orgaTyp: orga.typ,
         orgaKennung: orga.kennung,
+        serviceProviderExternalSystems: rolle.serviceProviderData.map((sp: ServiceProvider<true>) => sp.externalSystem),
     };
 }
 

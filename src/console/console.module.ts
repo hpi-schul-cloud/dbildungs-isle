@@ -53,6 +53,7 @@ import { DbSeedDataGeneratorConsole } from './dbseed/db-seed-data-generator.cons
                 return defineConfig({
                     clientUrl: config.getOrThrow<DbConfig>('DB').CLIENT_URL,
                     dbName: config.getOrThrow<DbConfig>('DB').DB_NAME,
+                    user: config.getOrThrow<DbConfig>('DB').USERNAME,
                     password: config.getOrThrow<DbConfig>('DB').SECRET,
                     entities: ['./dist/**/*.entity.js'],
                     entitiesTs: ['./src/**/*.entity.ts'],

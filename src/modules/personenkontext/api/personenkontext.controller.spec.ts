@@ -227,7 +227,7 @@ describe('PersonenkontextController', () => {
 
     describe('findPersonenkontexte', () => {
         describe('when finding personenkontexte', () => {
-            it('should return personenkontext', async () => {
+            it('should return personenkontext for one allowed organisation', async () => {
                 const queryParams: PersonenkontextQueryParams = {
                     referrer: 'referrer',
                     sichtfreigabe: SichtfreigabeType.JA,
@@ -248,9 +248,10 @@ describe('PersonenkontextController', () => {
                 };
 
                 const permissionsMock: DeepMocked<PersonPermissions> = createMock<PersonPermissions>();
-                permissionsMock.getOrgIdsWithSystemrechtDeprecated.mockResolvedValue([
-                    mockPersonenkontext.organisationId,
-                ]);
+                permissionsMock.getOrgIdsWithSystemrecht.mockResolvedValue({
+                    all: false,
+                    orgaIds: [mockPersonenkontext.organisationId],
+                });
 
                 personenkontextService.findAllPersonenkontexte.mockResolvedValue(personenkontexte);
 
@@ -259,7 +260,50 @@ describe('PersonenkontextController', () => {
                     permissionsMock,
                 );
 
-                expect(permissionsMock.getOrgIdsWithSystemrechtDeprecated).toHaveBeenCalledWith(
+                expect(permissionsMock.getOrgIdsWithSystemrecht).toHaveBeenCalledWith(
+                    [RollenSystemRecht.PERSONEN_VERWALTEN],
+                    true,
+                );
+                expect(result.items.length).toBe(1);
+                if (result.items[0]) {
+                    expect(result.items[0].person.id).toBe(mockPersonenkontext.personId);
+                    expect(result.items[0].personenkontexte).toHaveLength(1);
+                }
+            });
+
+            it('should return personenkontext for root admins', async () => {
+                const queryParams: PersonenkontextQueryParams = {
+                    referrer: 'referrer',
+                    sichtfreigabe: SichtfreigabeType.JA,
+                    personenstatus: Personenstatus.AKTIV,
+                    rolle: Rolle.LERNENDER,
+                    offset: 0,
+                    limit: 10,
+                };
+
+                const mockPersonenkontext: Personenkontext<true> = DoFactory.createPersonenkontext(true, {
+                    getRolle: () => rolleRepo.findById(faker.string.uuid()),
+                });
+                const personenkontexte: Paged<Personenkontext<true>> = {
+                    offset: queryParams.offset ?? 0,
+                    limit: queryParams.limit ?? 1,
+                    total: 1,
+                    items: [mockPersonenkontext],
+                };
+
+                const permissionsMock: DeepMocked<PersonPermissions> = createMock<PersonPermissions>();
+                permissionsMock.getOrgIdsWithSystemrecht.mockResolvedValue({
+                    all: true,
+                });
+
+                personenkontextService.findAllPersonenkontexte.mockResolvedValue(personenkontexte);
+
+                const result: PagedResponse<PersonenkontextdatensatzResponse> = await sut.findPersonenkontexte(
+                    queryParams,
+                    permissionsMock,
+                );
+
+                expect(permissionsMock.getOrgIdsWithSystemrecht).toHaveBeenCalledWith(
                     [RollenSystemRecht.PERSONEN_VERWALTEN],
                     true,
                 );

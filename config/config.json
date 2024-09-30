@@ -15,8 +15,10 @@
         "ERROR_PAGE_REDIRECT": "https://localhost:8099/login-error"
     },
     "DB": {
-        "CLIENT_URL": "postgres://admin:password@127.0.0.1:5432",
+        "CLIENT_URL": "postgres://127.0.0.1:5432",
         "DB_NAME": "dbildungs-iam-server",
+        "USERNAME": "admin",
+        "PASSWORD": "password",
         "USE_SSL": false
     },
     "KEYCLOAK": {

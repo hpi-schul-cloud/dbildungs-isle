@@ -1,4 +1,12 @@
-import { EntityDictionary, EntityManager, Loaded, RequiredEntityData } from '@mikro-orm/postgresql';
+import {
+    EntityManager,
+    Loaded,
+    QBFilterQuery,
+    QueryBuilder,
+    RequiredEntityData,
+    SelectQueryBuilder,
+    EntityDictionary,
+} from '@mikro-orm/postgresql';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { DataConfig, ServerConfig } from '../../../shared/config/index.js';
@@ -17,6 +25,8 @@ import { KlasseDeletedEvent } from '../../../shared/events/klasse-deleted.event.
 import { OrganisationSpecificationError } from '../specification/error/organisation-specification.error.js';
 import { KlasseUpdatedEvent } from '../../../shared/events/klasse-updated.event.js';
 import { KlasseCreatedEvent } from '../../../shared/events/klasse-created.event.js';
+import { PermittedOrgas, PersonPermissions } from '../../authentication/domain/person-permissions.js';
+import { RollenSystemRecht } from '../../rolle/domain/rolle.enums.js';
 
 export function mapAggregateToData(organisation: Organisation<boolean>): RequiredEntityData<OrganisationEntity> {
     return {
@@ -49,6 +59,18 @@ export function mapEntityToAggregate(entity: OrganisationEntity): Organisation<t
         entity.emailDomain,
     );
 }
+
+export type OrganisationSeachOptions = {
+    readonly kennung?: string;
+    readonly name?: string;
+    readonly searchString?: string;
+    readonly typ?: OrganisationsTyp;
+    readonly excludeTyp?: OrganisationsTyp[];
+    readonly administriertVon?: string[];
+    readonly organisationIds?: string[];
+    readonly offset?: number;
+    readonly limit?: number;
+};
 
 @Injectable()
 export class OrganisationRepository {
@@ -110,7 +132,10 @@ export class OrganisationRepository {
                 FROM sub_organisations;
             `;
 
-            rawResult = await this.em.execute(query, [ids]);
+            const rawEntities: EntityDictionary<OrganisationEntity>[] = await this.em.execute(query, [ids]);
+            rawResult = rawEntities.map((data: EntityDictionary<OrganisationEntity>) =>
+                this.em.map(OrganisationEntity, data),
+            );
         }
 
         return rawResult.map(mapEntityToAggregate);
@@ -136,7 +161,10 @@ export class OrganisationRepository {
                 FROM parent_organisations;
             `;
 
-            rawResult = await this.em.execute(query, [ids]);
+            const rawEntities: EntityDictionary<OrganisationEntity>[] = await this.em.execute(query, [ids]);
+            rawResult = rawEntities.map((data: EntityDictionary<OrganisationEntity>) =>
+                this.em.map(OrganisationEntity, data),
+            );
         }
 
         return rawResult.map(mapEntityToAggregate);
@@ -210,14 +238,6 @@ export class OrganisationRepository {
         return [oeffentlich && mapEntityToAggregate(oeffentlich), ersatz && mapEntityToAggregate(ersatz)];
     }
 
-    public async find(limit?: number, offset?: number): Promise<Organisation<true>[]> {
-        const organisations: OrganisationEntity[] = await this.em.findAll(OrganisationEntity, {
-            limit: limit,
-            offset: offset,
-        });
-        return organisations.map(mapEntityToAggregate);
-    }
-
     public async findById(id: string): Promise<Option<Organisation<true>>> {
         const organisation: Option<OrganisationEntity> = await this.em.findOne(OrganisationEntity, { id });
         if (organisation) {
@@ -263,6 +283,62 @@ export class OrganisationRepository {
         });
 
         return organisations.map(mapEntityToAggregate);
+    }
+
+    public async findAuthorized(
+        personPermissions: PersonPermissions,
+        systemrechte: RollenSystemRecht[],
+        searchOptions: OrganisationSeachOptions,
+    ): Promise<Counted<Organisation<true>>> {
+        const permittedOrgas: PermittedOrgas = await personPermissions.getOrgIdsWithSystemrecht(systemrechte, true);
+        if (!permittedOrgas.all && permittedOrgas.orgaIds.length === 0) {
+            return [[], 0];
+        }
+
+        let whereClause: QBFilterQuery<OrganisationEntity> = {};
+        const andClauses: QBFilterQuery<OrganisationEntity>[] = [];
+        if (searchOptions.kennung) {
+            andClauses.push({ kennung: searchOptions.kennung });
+        }
+        if (searchOptions.name) {
+            andClauses.push({ name: searchOptions.name });
+        }
+        if (searchOptions.typ) {
+            andClauses.push({ typ: searchOptions.typ });
+        }
+        if (searchOptions.administriertVon) {
+            andClauses.push({ administriertVon: { $in: searchOptions.administriertVon } });
+        }
+        if (searchOptions.searchString) {
+            andClauses.push({ name: { $ilike: `%${searchOptions.searchString}%` } });
+        }
+        if (searchOptions.excludeTyp) {
+            andClauses.push({ typ: { $nin: searchOptions.excludeTyp } });
+        }
+        if (andClauses.length > 0) {
+            whereClause = { $and: andClauses };
+        }
+        // return organisations for IDs even if other search options do not match
+        if (searchOptions.organisationIds) {
+            whereClause = { $or: [whereClause, { id: { $in: searchOptions.organisationIds } }] };
+        }
+        // return only permitted organisations
+        if (!permittedOrgas.all) {
+            whereClause = { $and: [whereClause, { id: { $in: permittedOrgas.orgaIds } }] };
+        }
+
+        const qb: QueryBuilder<OrganisationEntity> = this.em.createQueryBuilder(OrganisationEntity);
+        const query: SelectQueryBuilder<OrganisationEntity> = qb
+            .select('*')
+            .where(whereClause)
+            .offset(searchOptions.offset)
+            .limit(searchOptions.limit);
+        const [entities, total]: Counted<OrganisationEntity> = await query.getResultAndCount();
+
+        const organisations: Organisation<true>[] = entities.map((entity: OrganisationEntity) =>
+            mapEntityToAggregate(entity),
+        );
+        return [organisations, total];
     }
 
     public async deleteKlasse(id: OrganisationID): Promise<Option<DomainError>> {

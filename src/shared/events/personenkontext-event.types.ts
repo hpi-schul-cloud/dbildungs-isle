@@ -1,5 +1,6 @@
 import { OrganisationsTyp } from '../../modules/organisation/domain/organisation.enums.js';
 import { RollenArt } from '../../modules/rolle/domain/rolle.enums.js';
+import { ServiceProviderSystem } from '../../modules/service-provider/domain/service-provider.enum.js';
 import { OrganisationID, PersonenkontextID, PersonID, RolleID } from '../types/index.js';
 
 export type PersonenkontextEventPersonData = {
@@ -20,4 +21,6 @@ export type PersonenkontextEventKontextData = {
     orgaId: OrganisationID;
     orgaTyp?: OrganisationsTyp;
     orgaKennung?: string;
+
+    serviceProviderExternalSystems: ServiceProviderSystem[];
 };

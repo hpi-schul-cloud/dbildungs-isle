@@ -37,20 +37,16 @@ import { OrganisationByIdParams } from './organisation-by-id.params.js';
 import { UpdateOrganisationBodyParams } from './update-organisation.body.params.js';
 import { OrganisationByIdBodyParams } from './organisation-by-id.body.params.js';
 import { OrganisationRepository } from '../persistence/organisation.repository.js';
-import { OrganisationScope } from '../persistence/organisation.scope.js';
 import { Organisation } from '../domain/organisation.js';
-import { ScopeOperator } from '../../../shared/persistence/index.js';
 import { OrganisationResponse } from './organisation.response.js';
 import { Permissions } from '../../authentication/api/permissions.decorator.js';
 import { PersonPermissions } from '../../authentication/domain/person-permissions.js';
-import { OrganisationID } from '../../../shared/types/aggregate-ids.types.js';
 import { OrganisationRootChildrenResponse } from './organisation.root-children.response.js';
 import { DomainError, EntityNotFoundError } from '../../../shared/error/index.js';
 import { DbiamOrganisationError } from './dbiam-organisation.error.js';
 import { OrganisationExceptionFilter } from './organisation-exception-filter.js';
 import { OrganisationSpecificationError } from '../specification/error/organisation-specification.error.js';
 import { OrganisationByNameQueryParams } from './organisation-by-name.query.js';
-import { OrganisationsTyp } from '../domain/organisation.enums.js';
 import { ConfigService } from '@nestjs/config';
 import { ServerConfig } from '../../../shared/config/server.config.js';
 import { OrganisationService } from '../domain/organisation.service.js';
@@ -262,69 +258,15 @@ export class OrganisationController {
         @Query() queryParams: FindOrganisationQueryParams,
         @Permissions() permissions: PersonPermissions,
     ): Promise<PagedResponse<OrganisationResponse>> {
-        const validOrgaIDs: OrganisationID[] = await permissions.getOrgIdsWithSystemrechtDeprecated(
+        const [organisations, total]: Counted<Organisation<true>> = await this.organisationRepository.findAuthorized(
+            permissions,
             queryParams.systemrechte,
-            true,
+            queryParams,
         );
 
-        const scope: OrganisationScope = new OrganisationScope();
-
-        // Define scope based on the organisation type
-        if (queryParams.typ === OrganisationsTyp.KLASSE) {
-            scope
-                .findBy({
-                    kennung: queryParams.kennung,
-                    name: queryParams.name,
-                    typ: queryParams.typ,
-                })
-                .setScopeWhereOperator(ScopeOperator.AND)
-                .findByAdministriertVonArray(queryParams.administriertVon)
-                .searchStringAdministriertVon(queryParams.searchString)
-                .excludeTyp(queryParams.excludeTyp)
-                .byIDs(validOrgaIDs)
-                .paged(queryParams.offset, queryParams.limit);
-        } else {
-            scope
-                .findBy({
-                    kennung: queryParams.kennung,
-                    name: queryParams.name,
-                    typ: queryParams.typ,
-                })
-                .setScopeWhereOperator(ScopeOperator.AND)
-                .findByAdministriertVonArray(queryParams.administriertVon)
-                .searchString(queryParams.searchString)
-                .excludeTyp(queryParams.excludeTyp)
-                .byIDs(validOrgaIDs)
-                .paged(queryParams.offset, queryParams.limit);
-        }
-
-        const [organisations, total]: Counted<Organisation<true>> = await this.organisationRepository.findBy(scope);
-
-        // Create a Map from the existing organisations
-        const organisationMap: Map<string, Organisation<true>> = new Map(
-            organisations.map((org: Organisation<true>) => [org.id, org]),
-        );
-
-        // Fetch and merge selected organisations
-        if (queryParams.organisationIds?.length) {
-            const selectedOrganisationMap: Map<
-                string,
-                Organisation<true>
-            > = await this.organisationRepository.findByIds(queryParams.organisationIds);
-
-            selectedOrganisationMap.forEach((organisation: Organisation<true>, id: string) => {
-                organisationMap.set(id, organisation);
-            });
-        }
-
-        // Convert the map to an array and handle pagination
-        const mergedOrganisations: Organisation<true>[] = Array.from(organisationMap.values());
-
-        const organisationResponses: OrganisationResponse[] = mergedOrganisations.map(
-            (organisation: Organisation<true>) => {
-                return new OrganisationResponse(organisation);
-            },
-        );
+        const organisationResponses: OrganisationResponse[] = organisations.map((organisation: Organisation<true>) => {
+            return new OrganisationResponse(organisation);
+        });
 
         const pagedOrganisationResponse: Paged<OrganisationResponse> = {
             offset: queryParams.offset ?? 0,
@@ -333,7 +275,7 @@ export class OrganisationController {
             //During a search, you want to know how many items match the search criteria.
             //When not searching, you want to know the total number of items,
             // including any specifically selected items that might not have been part of the initial paginated results.
-            pageTotal: queryParams.searchString ? organisations.length : mergedOrganisations.length,
+            pageTotal: organisationResponses.length,
             items: organisationResponses,
         };
 

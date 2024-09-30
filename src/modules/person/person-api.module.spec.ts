@@ -8,7 +8,6 @@ import {
 import { PersonController } from './api/person.controller.js';
 import { PersonApiModule } from './person-api.module.js';
 import { PersonFrontendController } from './api/person.frontend.controller.js';
-import { PersonApiMapperProfile } from './api/person-api.mapper.profile.js';
 
 describe('PersonApiModule', () => {
     let module: TestingModule;
@@ -40,10 +39,6 @@ describe('PersonApiModule', () => {
 
         it('should resolve PersonFrontendController', () => {
             expect(module.get(PersonFrontendController)).toBeInstanceOf(PersonFrontendController);
-        });
-
-        it('should resolve PersonApiMapperProfile', () => {
-            expect(module.get(PersonApiMapperProfile)).toBeInstanceOf(PersonApiMapperProfile);
         });
     });
 });

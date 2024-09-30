@@ -7,7 +7,7 @@ export abstract class ScopeBase<T extends AnyEntity> {
 
     private readonly queryOrderMaps: QBQueryOrderMap<T>[] = [];
 
-    private scopeWhereOperator: ScopeOperator = ScopeOperator.OR;
+    private scopeWhereOperator?: ScopeOperator;
 
     private offset: Option<number>;
 
@@ -16,6 +16,9 @@ export abstract class ScopeBase<T extends AnyEntity> {
     protected abstract get entityName(): EntityName<T>;
 
     public setScopeWhereOperator(operator: ScopeOperator): this {
+        if (this.scopeWhereOperator) {
+            throw new Error('Scope where operator is already set. Scope Operator can not be nested');
+        }
         this.scopeWhereOperator = operator;
         return this;
     }
@@ -30,7 +33,7 @@ export abstract class ScopeBase<T extends AnyEntity> {
         const qb: QueryBuilder<T> = em.createQueryBuilder(this.entityName);
         const combinedFilters: {
             [x: string]: QBFilterQuery<T>[];
-        } = { [this.scopeWhereOperator]: this.queryFilters };
+        } = { [this.scopeWhereOperator || ScopeOperator.OR]: this.queryFilters };
         const result: SelectQueryBuilder<T> = qb
             .select('*')
             .where(combinedFilters)

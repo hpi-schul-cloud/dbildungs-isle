@@ -28,6 +28,7 @@ describe('PersonResponseDDD', () => {
         lokalisierung: faker.location.country(),
         vertrauensstufe: Vertrauensstufe.VOLL,
         revision: '1',
+        lastModified: faker.date.past(),
     };
 
     it('should convert plain object of person response to a class of person response', () => {
@@ -41,6 +42,7 @@ describe('PersonResponseDDD', () => {
             lokalisierung: personResponse.lokalisierung,
             vertrauensstufe: personResponse.vertrauensstufe,
             revision: personResponse.revision,
+            lastModified: personResponse.lastModified,
         };
         const mappedParams: PersonResponse = plainToInstance(PersonResponse, person, {});
         expect(mappedParams).toBeInstanceOf(PersonResponse);

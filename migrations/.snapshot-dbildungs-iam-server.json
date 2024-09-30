@@ -220,6 +220,15 @@
             "HINWEISE",
             "ANGEBOTE"
           ]
+        },
+        "service_provider_system_enum": {
+          "name": "service_provider_system_enum",
+          "schema": "public",
+          "items": [
+            "NONE",
+            "EMAIL",
+            "ITSLEARNING"
+          ]
         }
       }
     },
@@ -420,6 +429,15 @@
             "VERWALTUNG",
             "HINWEISE",
             "ANGEBOTE"
+          ]
+        },
+        "service_provider_system_enum": {
+          "name": "service_provider_system_enum",
+          "schema": "public",
+          "items": [
+            "NONE",
+            "EMAIL",
+            "ITSLEARNING"
           ]
         }
       }
@@ -644,6 +662,15 @@
             "HINWEISE",
             "ANGEBOTE"
           ]
+        },
+        "service_provider_system_enum": {
+          "name": "service_provider_system_enum",
+          "schema": "public",
+          "items": [
+            "NONE",
+            "EMAIL",
+            "ITSLEARNING"
+          ]
         }
       }
     },
@@ -859,6 +886,15 @@
             "HINWEISE",
             "ANGEBOTE"
           ]
+        },
+        "service_provider_system_enum": {
+          "name": "service_provider_system_enum",
+          "schema": "public",
+          "items": [
+            "NONE",
+            "EMAIL",
+            "ITSLEARNING"
+          ]
         }
       }
     },
@@ -1065,6 +1101,15 @@
             "VERWALTUNG",
             "HINWEISE",
             "ANGEBOTE"
+          ]
+        },
+        "service_provider_system_enum": {
+          "name": "service_provider_system_enum",
+          "schema": "public",
+          "items": [
+            "NONE",
+            "EMAIL",
+            "ITSLEARNING"
           ]
         }
       }
@@ -1387,6 +1432,15 @@
             "VERWALTUNG",
             "HINWEISE",
             "ANGEBOTE"
+          ]
+        },
+        "service_provider_system_enum": {
+          "name": "service_provider_system_enum",
+          "schema": "public",
+          "items": [
+            "NONE",
+            "EMAIL",
+            "ITSLEARNING"
           ]
         }
       }
@@ -1848,6 +1902,15 @@
             "HINWEISE",
             "ANGEBOTE"
           ]
+        },
+        "service_provider_system_enum": {
+          "name": "service_provider_system_enum",
+          "schema": "public",
+          "items": [
+            "NONE",
+            "EMAIL",
+            "ITSLEARNING"
+          ]
         }
       }
     },
@@ -2107,6 +2170,15 @@
             "HINWEISE",
             "ANGEBOTE"
           ]
+        },
+        "service_provider_system_enum": {
+          "name": "service_provider_system_enum",
+          "schema": "public",
+          "items": [
+            "NONE",
+            "EMAIL",
+            "ITSLEARNING"
+          ]
         }
       }
     },
@@ -2353,6 +2425,15 @@
             "VERWALTUNG",
             "HINWEISE",
             "ANGEBOTE"
+          ]
+        },
+        "service_provider_system_enum": {
+          "name": "service_provider_system_enum",
+          "schema": "public",
+          "items": [
+            "NONE",
+            "EMAIL",
+            "ITSLEARNING"
           ]
         }
       }
@@ -2739,6 +2820,15 @@
             "HINWEISE",
             "ANGEBOTE"
           ]
+        },
+        "service_provider_system_enum": {
+          "name": "service_provider_system_enum",
+          "schema": "public",
+          "items": [
+            "NONE",
+            "EMAIL",
+            "ITSLEARNING"
+          ]
         }
       }
     },
@@ -2947,6 +3037,15 @@
             "VERWALTUNG",
             "HINWEISE",
             "ANGEBOTE"
+          ]
+        },
+        "service_provider_system_enum": {
+          "name": "service_provider_system_enum",
+          "schema": "public",
+          "items": [
+            "NONE",
+            "EMAIL",
+            "ITSLEARNING"
           ]
         }
       }
@@ -3161,6 +3260,15 @@
             "VERWALTUNG",
             "HINWEISE",
             "ANGEBOTE"
+          ]
+        },
+        "service_provider_system_enum": {
+          "name": "service_provider_system_enum",
+          "schema": "public",
+          "items": [
+            "NONE",
+            "EMAIL",
+            "ITSLEARNING"
           ]
         }
       }
@@ -3459,6 +3567,15 @@
             "HINWEISE",
             "ANGEBOTE"
           ]
+        },
+        "service_provider_system_enum": {
+          "name": "service_provider_system_enum",
+          "schema": "public",
+          "items": [
+            "NONE",
+            "EMAIL",
+            "ITSLEARNING"
+          ]
         }
       }
     },
@@ -3587,6 +3704,21 @@
           "primary": false,
           "nullable": true,
           "mappedType": "string"
+        },
+        "external_system": {
+          "name": "external_system",
+          "type": "service_provider_system_enum",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "nativeEnumName": "service_provider_system_enum",
+          "enumItems": [
+            "NONE",
+            "EMAIL",
+            "ITSLEARNING"
+          ],
+          "mappedType": "enum"
         }
       },
       "name": "service_provider",
@@ -3754,6 +3886,15 @@
             "VERWALTUNG",
             "HINWEISE",
             "ANGEBOTE"
+          ]
+        },
+        "service_provider_system_enum": {
+          "name": "service_provider_system_enum",
+          "schema": "public",
+          "items": [
+            "NONE",
+            "EMAIL",
+            "ITSLEARNING"
           ]
         }
       }
@@ -3971,6 +4112,15 @@
             "HINWEISE",
             "ANGEBOTE"
           ]
+        },
+        "service_provider_system_enum": {
+          "name": "service_provider_system_enum",
+          "schema": "public",
+          "items": [
+            "NONE",
+            "EMAIL",
+            "ITSLEARNING"
+          ]
         }
       }
     }
@@ -4124,6 +4274,15 @@
         "VERWALTUNG",
         "HINWEISE",
         "ANGEBOTE"
+      ]
+    },
+    "service_provider_system_enum": {
+      "name": "service_provider_system_enum",
+      "schema": "public",
+      "items": [
+        "NONE",
+        "EMAIL",
+        "ITSLEARNING"
       ]
     }
   }

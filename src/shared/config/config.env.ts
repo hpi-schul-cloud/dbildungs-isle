@@ -19,6 +19,7 @@ export default (): {
 } => ({
     DB: {
         DB_NAME: process.env['DB_NAME'],
+        USERNAME: process.env['DB_USERNAME'],
         SECRET: process.env['DB_SECRET'],
         CLIENT_URL: process.env['DB_CLIENT_URL'],
     },

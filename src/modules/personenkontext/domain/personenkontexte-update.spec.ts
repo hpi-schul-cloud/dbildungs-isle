@@ -18,7 +18,6 @@ import { PersonRepository } from '../../person/persistence/person.repository.js'
 import { OrganisationRepository } from '../../organisation/persistence/organisation.repository.js';
 import { RolleRepo } from '../../rolle/repo/rolle.repo.js';
 import { EventService } from '../../../core/eventbus/index.js';
-import { PersonRepo } from '../../person/persistence/person.repo.js';
 import { UpdatePersonNotFoundError } from './error/update-person-not-found.error.js';
 import { PersonPermissions } from '../../authentication/domain/person-permissions.js';
 import { MissingPermissionsError } from '../../../shared/error/missing-permissions.error.js';
@@ -77,10 +76,6 @@ describe('PersonenkontexteUpdate', () => {
                 {
                     provide: DBiamPersonenkontextRepoInternal,
                     useValue: createMock<DBiamPersonenkontextRepoInternal>(),
-                },
-                {
-                    provide: PersonRepo,
-                    useValue: createMock<PersonRepo>(),
                 },
                 {
                     provide: PersonRepository,
@@ -167,15 +162,16 @@ describe('PersonenkontexteUpdate', () => {
 
                 dBiamPersonenkontextRepoMock.findByPerson.mockResolvedValueOnce([pk1, pk2]); // mock while checking the existing PKs
                 dBiamPersonenkontextRepoMock.findByPerson.mockResolvedValueOnce([pk1, pk2]); //mock the return values in the end of update method
-                const mapRollen: Map<string, Rolle<true>> = new Map();
-                mapRollen.set(
-                    faker.string.uuid(),
-                    DoFactory.createRolle(true, {
-                        rollenart: RollenArt.LEHR,
-                        merkmale: [RollenMerkmal.KOPERS_PFLICHT],
-                        id: pk1.rolleId,
-                    }),
-                );
+                const mapRollen: Map<string, Rolle<true>> = createMock<Map<string, Rolle<true>>>({
+                    get: () =>
+                        DoFactory.createRolle(true, {
+                            rollenart: RollenArt.LEHR,
+                            merkmale: [RollenMerkmal.KOPERS_PFLICHT],
+                            id: pk1.rolleId,
+                            serviceProviderData: [DoFactory.createServiceProvider(true)],
+                        }),
+                });
+                rolleRepoMock.findByIds.mockResolvedValueOnce(mapRollen);
                 rolleRepoMock.findByIds.mockResolvedValueOnce(mapRollen);
                 rolleRepoMock.findByIds.mockResolvedValueOnce(mapRollen);
                 rolleRepoMock.findByIds.mockResolvedValueOnce(mapRollen);

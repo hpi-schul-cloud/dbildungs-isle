@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ServiceProvider } from './service-provider.js';
-import { ServiceProviderKategorie, ServiceProviderTarget } from './service-provider.enum.js';
+import { ServiceProviderKategorie, ServiceProviderSystem, ServiceProviderTarget } from './service-provider.enum.js';
 
 @Injectable()
 export class ServiceProviderFactory {
@@ -17,6 +17,7 @@ export class ServiceProviderFactory {
         logoMimeType: string | undefined,
         keycloakGroup: string | undefined,
         keycloakRole: string | undefined,
+        externalSystem: ServiceProviderSystem,
         requires2fa: boolean,
     ): ServiceProvider<true> {
         return ServiceProvider.construct(
@@ -32,6 +33,7 @@ export class ServiceProviderFactory {
             logoMimeType,
             keycloakGroup,
             keycloakRole,
+            externalSystem,
             requires2fa,
         );
     }
@@ -46,6 +48,7 @@ export class ServiceProviderFactory {
         logoMimeType: string | undefined,
         keycloakGroup: string | undefined,
         keycloakRole: string | undefined,
+        externalSystem: ServiceProviderSystem,
         requires2fa: boolean,
     ): ServiceProvider<false> {
         return ServiceProvider.createNew(
@@ -58,6 +61,7 @@ export class ServiceProviderFactory {
             logoMimeType,
             keycloakGroup,
             keycloakRole,
+            externalSystem,
             requires2fa,
         );
     }

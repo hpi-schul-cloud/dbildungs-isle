@@ -3,7 +3,6 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ConfigTestModule, MapperTestModule } from '../../../../test/utils/index.js';
 import { SichtfreigabeType } from '../../personenkontext/domain/personenkontext.enums.js';
-import { PersonApiMapperProfile } from './person-api.mapper.profile.js';
 import { PersonFrontendController } from './person.frontend.controller.js';
 import { PersonenQueryParams } from './personen-query.param.js';
 import { Person } from '../domain/person.js';
@@ -24,7 +23,6 @@ describe('PersonFrontendController', () => {
             imports: [MapperTestModule, ConfigTestModule],
             providers: [
                 PersonFrontendController,
-                PersonApiMapperProfile,
                 {
                     provide: PersonRepository,
                     useValue: createMock<PersonRepository>(),

@@ -7,12 +7,12 @@ export enum IMSESInstitutionRoleType {
 }
 
 export enum IMSESRoleType {
-    LEARNER = '01',
-    INSTRUCTOR = '02',
-    CONTENT_DEVELOPER = '03',
-    MEMBER = '04',
-    MANAGER = '05',
-    MENTOR = '06',
-    ADMINISTRATOR = '07',
-    TEACHING_ASSISTANT = '08',
+    LEARNER = 'Learner',
+    INSTRUCTOR = 'Instructor',
+    CONTENT_DEVELOPER = 'ContentDeveloper',
+    MEMBER = 'Member',
+    MANAGER = 'Manager',
+    MENTOR = 'Mentor',
+    ADMINISTRATOR = 'Administrator',
+    TEACHING_ASSISTANT = 'TeachingAssistant',
 }

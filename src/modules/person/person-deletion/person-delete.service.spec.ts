@@ -9,6 +9,7 @@ import { PersonPermissions } from '../../authentication/domain/person-permission
 import { DomainError } from '../../../shared/error/index.js';
 import { Personenkontext } from '../../personenkontext/domain/personenkontext.js';
 import { Rolle } from '../../rolle/domain/rolle.js';
+import { DoFactory } from '../../../../test/utils/do-factory.js';
 
 describe('PersonDeleteService', () => {
     let module: TestingModule;
@@ -122,7 +123,9 @@ describe('PersonDeleteService', () => {
                     createMock<Personenkontext<true>>({
                         // eslint-disable-next-line @typescript-eslint/require-await
                         async getRolle(): Promise<Option<Rolle<true>>> {
-                            return createMock<Rolle<true>>();
+                            return DoFactory.createRolle(true, {
+                                serviceProviderData: [DoFactory.createServiceProvider(true)],
+                            });
                         },
                     }),
                 ]);

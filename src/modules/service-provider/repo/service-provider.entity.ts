@@ -1,7 +1,11 @@
 import { BlobType, Entity, Enum, Property } from '@mikro-orm/core';
 
 import { TimestampedEntity } from '../../../persistence/timestamped.entity.js';
-import { ServiceProviderKategorie, ServiceProviderTarget } from '../domain/service-provider.enum.js';
+import {
+    ServiceProviderKategorie,
+    ServiceProviderSystem,
+    ServiceProviderTarget,
+} from '../domain/service-provider.enum.js';
 
 @Entity({ tableName: 'service_provider' })
 export class ServiceProviderEntity extends TimestampedEntity {
@@ -31,6 +35,9 @@ export class ServiceProviderEntity extends TimestampedEntity {
 
     @Property({ nullable: true })
     public keycloakRole?: string;
+
+    @Enum({ items: () => ServiceProviderSystem, nativeEnumName: 'service_provider_system_enum' })
+    public externalSystem!: ServiceProviderSystem;
 
     @Property()
     public requires2fa!: boolean;

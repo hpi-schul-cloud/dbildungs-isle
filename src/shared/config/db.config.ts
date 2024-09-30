@@ -11,6 +11,10 @@ export class DbConfig {
 
     @IsString()
     @IsNotEmpty()
+    public readonly USERNAME!: string;
+
+    @IsString()
+    @IsNotEmpty()
     public readonly SECRET!: string;
 
     @IsBoolean()

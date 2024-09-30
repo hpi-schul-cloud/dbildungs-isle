@@ -25,15 +25,15 @@ export class PersonService {
     }
 
     public async findAllPersons(
-        personDo: Partial<Person<false>>,
+        person: Partial<Person<false>>,
         offset?: number,
         limit?: number,
     ): Promise<Paged<Person<true>>> {
         const scope: PersonScope = new PersonScope()
             .findBy({
-                vorname: personDo.vorname,
-                familienname: personDo.familienname,
-                geburtsdatum: personDo.geburtsdatum,
+                vorname: person.vorname,
+                familienname: person.familienname,
+                geburtsdatum: person.geburtsdatum,
             })
             .sortBy('vorname', ScopeOrder.ASC)
             .paged(offset, limit);

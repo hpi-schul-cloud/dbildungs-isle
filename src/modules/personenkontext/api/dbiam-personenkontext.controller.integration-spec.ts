@@ -22,7 +22,6 @@ import { PassportUser } from '../../authentication/types/user.js';
 import { OrganisationsTyp } from '../../organisation/domain/organisation.enums.js';
 import { Rolle } from '../../rolle/domain/rolle.js';
 import { RolleRepo } from '../../rolle/repo/rolle.repo.js';
-import { Personenkontext } from '../domain/personenkontext.js';
 import { DBiamPersonenkontextRepoInternal } from '../persistence/internal-dbiam-personenkontext.repo.js';
 import { RollenArt } from '../../rolle/domain/rolle.enums.js';
 import { PersonenKontextApiModule } from '../personenkontext-api.module.js';
@@ -141,36 +140,31 @@ describe('dbiam Personenkontext API', () => {
             if (personB instanceof DomainError) {
                 throw personB;
             }
-            const [pk1, pk2]: [Personenkontext<true>, Personenkontext<true>, Personenkontext<true>] = await Promise.all(
-                [
-                    personenkontextRepoInternal.save(
-                        DoFactory.createPersonenkontext(false, {
-                            personId: personA.id,
-                            rolleId: rolleA.id,
-                        }),
-                    ),
-                    personenkontextRepoInternal.save(
-                        DoFactory.createPersonenkontext(false, {
-                            personId: personA.id,
-                            rolleId: rolleB.id,
-                        }),
-                    ),
-                    personenkontextRepoInternal.save(
-                        DoFactory.createPersonenkontext(false, {
-                            personId: personB.id,
-                            rolleId: rolleC.id,
-                        }),
-                    ),
-                ],
-            );
+            await Promise.all([
+                personenkontextRepoInternal.save(
+                    DoFactory.createPersonenkontext(false, {
+                        personId: personA.id,
+                        rolleId: rolleA.id,
+                    }),
+                ),
+                personenkontextRepoInternal.save(
+                    DoFactory.createPersonenkontext(false, {
+                        personId: personA.id,
+                        rolleId: rolleB.id,
+                    }),
+                ),
+                personenkontextRepoInternal.save(
+                    DoFactory.createPersonenkontext(false, {
+                        personId: personB.id,
+                        rolleId: rolleC.id,
+                    }),
+                ),
+            ]);
 
             const personpermissions: DeepMocked<PersonPermissions> = createMock();
             personpermissions.canModifyPerson.mockResolvedValueOnce(true);
             personpermissionsRepoMock.loadPersonPermissions.mockResolvedValue(personpermissions);
-            personpermissions.getOrgIdsWithSystemrechtDeprecated.mockResolvedValueOnce([
-                pk1.organisationId,
-                pk2.organisationId,
-            ]);
+
             const response: Response = await request(app.getHttpServer() as App)
                 .get(`/dbiam/personenkontext/${personA.id}`)
                 .send();

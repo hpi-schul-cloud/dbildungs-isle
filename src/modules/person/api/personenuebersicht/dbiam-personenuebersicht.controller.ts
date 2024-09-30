@@ -21,15 +21,12 @@ import { DBiamPersonenkontextRepo } from '../../../personenkontext/persistence/d
 import { RolleRepo } from '../../../rolle/repo/rolle.repo.js';
 import { OrganisationID, PersonID, RolleID } from '../../../../shared/types/aggregate-ids.types.js';
 import { Rolle } from '../../../rolle/domain/rolle.js';
-import { ApiOkResponsePaginated, PagedResponse, PagingHeadersObject } from '../../../../shared/paging/index.js';
+import { ApiOkResponsePaginated, PagingHeadersObject } from '../../../../shared/paging/index.js';
 import { PersonenuebersichtBodyParams } from './personenuebersicht-body.params.js';
 import { Permissions } from '../../../authentication/api/permissions.decorator.js';
 import { PersonPermissions } from '../../../authentication/domain/person-permissions.js';
-import { PersonScope } from '../../persistence/person.scope.js';
-import { ScopeOrder } from '../../../../shared/persistence/scope.enums.js';
 import { ConfigService } from '@nestjs/config';
 import { ServerConfig, DataConfig } from '../../../../shared/config/index.js';
-import { RollenSystemRecht } from '../../../rolle/domain/rolle.enums.js';
 import { DbiamPersonenuebersicht } from '../../domain/dbiam-personenuebersicht.js';
 import { OrganisationRepository } from '../../../organisation/persistence/organisation.repository.js';
 import { AuthenticationExceptionFilter } from '../../../authentication/api/authentication-exception-filter.js';
@@ -64,32 +61,11 @@ export class DBiamPersonenuebersichtController {
     public async findPersonenuebersichten(
         @Body() bodyParams: PersonenuebersichtBodyParams,
         @Permissions() permissions: PersonPermissions,
-    ): Promise<PagedResponse<DBiamPersonenuebersichtResponse>> {
-        // Find all organisations where user has permission
-        let organisationIDs: OrganisationID[] | undefined = await permissions.getOrgIdsWithSystemrechtDeprecated(
-            [RollenSystemRecht.PERSONEN_VERWALTEN],
-            true,
-        );
-
-        // Check if user has permission on root organisation
-        if (organisationIDs?.includes(this.ROOT_ORGANISATION_ID)) {
-            organisationIDs = undefined;
-        }
-
-        const personIds: PersonID[] | undefined[] = Array.isArray(bodyParams.personIds)
-            ? bodyParams.personIds
-            : [bodyParams.personIds];
-
-        // Find all Personen on child-orgas (+root orgas)
-        const scope: PersonScope = new PersonScope()
-            .findBy({ ids: personIds, organisationen: organisationIDs })
-            .sortBy('vorname', ScopeOrder.ASC)
-            .paged(bodyParams.offset, bodyParams.limit);
-
-        const [persons, total]: Counted<Person<true>> = await this.personRepository.findBy(scope);
+    ): Promise<{ items: DBiamPersonenuebersichtResponse[] }> {
+        const persons: Person<true>[] = await this.personRepository.findByIds(bodyParams.personIds, permissions);
 
         const items: DBiamPersonenuebersichtResponse[] = [];
-        if (total > 0) {
+        if (persons.length > 0) {
             const allPersonIds: PersonID[] = persons.map((person: Person<true>) => person.id);
             const allPersonenKontexte: Map<PersonID, Personenkontext<true>[]> =
                 await this.dbiamPersonenkontextRepo.findByPersonIds(allPersonIds);
@@ -137,9 +113,6 @@ export class DBiamPersonenuebersichtController {
 
         return {
             items,
-            offset: bodyParams.offset ?? 0,
-            limit: bodyParams.limit ?? 0,
-            total,
         };
     }
 

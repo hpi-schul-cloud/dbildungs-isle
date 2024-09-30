@@ -9,7 +9,6 @@ import {
     MapperTestModule,
 } from '../../../../test/utils/index.js';
 import { Personenkontext, mapAggregateToPartial } from '../domain/personenkontext.js';
-import { PersonPersistenceMapperProfile } from '../../person/persistence/person-persistence.mapper.profile.js';
 import { UsernameGeneratorService } from '../../person/domain/username-generator.service.js';
 import { PersonFactory } from '../../person/domain/person.factory.js';
 import { PersonRepository } from '../../person/persistence/person.repository.js';
@@ -70,7 +69,6 @@ describe('dbiam Personenkontext Repo', () => {
             ],
             providers: [
                 DBiamPersonenkontextRepoInternal,
-                PersonPersistenceMapperProfile,
                 PersonFactory,
                 PersonRepository,
                 UsernameGeneratorService,

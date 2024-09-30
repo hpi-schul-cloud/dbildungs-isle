@@ -16,8 +16,6 @@ import { OrganisationByIdBodyParams } from './organisation-by-id.body.params.js'
 import { OrganisationRepository } from '../persistence/organisation.repository.js';
 import { Organisation } from '../domain/organisation.js';
 import { OrganisationResponse } from './organisation.response.js';
-import { OrganisationScope } from '../persistence/organisation.scope.js';
-import { ScopeOperator } from '../../../shared/persistence/index.js';
 import { PersonPermissions } from '../../authentication/domain/person-permissions.js';
 import { EventService } from '../../../core/eventbus/index.js';
 import { OrganisationRootChildrenResponse } from './organisation.root-children.response.js';
@@ -301,63 +299,23 @@ describe('OrganisationController', () => {
                             typ: OrganisationsTyp.SCHULE,
                             traegerschaft: Traegerschaft.LAND,
                         }),
+                        ...selectedOrganisationMap.values(),
                     ],
-                    1,
+                    selectedOrganisationMap.size + 1,
                 ];
 
                 const permissionsMock: DeepMocked<PersonPermissions> = createMock<PersonPermissions>();
-                permissionsMock.getOrgIdsWithSystemrechtDeprecated.mockResolvedValueOnce([]);
 
-                organisationRepositoryMock.findBy.mockResolvedValue(mockedRepoResponse);
-                organisationRepositoryMock.findByIds.mockResolvedValue(selectedOrganisationMap);
+                organisationRepositoryMock.findAuthorized.mockResolvedValue(mockedRepoResponse);
 
                 const result: Paged<OrganisationResponse> = await organisationController.findOrganizations(
                     queryParams,
                     permissionsMock,
                 );
 
-                expect(organisationRepositoryMock.findBy).toHaveBeenCalledTimes(1);
-                expect(organisationRepositoryMock.findBy).toHaveBeenCalledWith(
-                    new OrganisationScope()
-                        .findBy({
-                            kennung: queryParams.kennung,
-                            name: queryParams.name,
-                            typ: queryParams.typ,
-                        })
-                        .setScopeWhereOperator(ScopeOperator.AND)
-                        .findByAdministriertVonArray(queryParams.administriertVon)
-                        .searchString(queryParams.searchString)
-                        .byIDs([])
-                        .paged(queryParams.offset, queryParams.limit),
-                );
+                expect(organisationRepositoryMock.findAuthorized).toHaveBeenCalledTimes(1);
 
                 expect(result.items.length).toEqual(3);
-            });
-
-            it('should find all organizations that match with Klasse Typ', async () => {
-                const queryParams: FindOrganisationQueryParams = {
-                    typ: OrganisationsTyp.KLASSE,
-                    systemrechte: [],
-                    administriertVon: [faker.string.uuid(), faker.string.uuid()],
-                };
-
-                const mockedRepoResponse: Counted<Organisation<true>> = [
-                    [DoFactory.createOrganisationAggregate(true)],
-                    1,
-                ];
-
-                const permissionsMock: DeepMocked<PersonPermissions> = createMock<PersonPermissions>();
-                permissionsMock.getOrgIdsWithSystemrechtDeprecated.mockResolvedValueOnce([]);
-
-                organisationRepositoryMock.findBy.mockResolvedValue(mockedRepoResponse);
-
-                const result: Paged<OrganisationResponse> = await organisationController.findOrganizations(
-                    queryParams,
-                    permissionsMock,
-                );
-
-                expect(organisationRepositoryMock.findBy).toHaveBeenCalledTimes(1);
-                expect(result.items.length).toEqual(1);
             });
         });
     });

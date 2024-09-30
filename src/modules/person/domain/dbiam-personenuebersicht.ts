@@ -9,7 +9,7 @@ import { Personenkontext } from '../../personenkontext/domain/personenkontext.js
 import { Rolle } from '../../rolle/domain/rolle.js';
 import { DBiamPersonenzuordnungResponse } from '../api/personenuebersicht/dbiam-personenzuordnung.response.js';
 import { DBiamPersonenuebersichtResponse } from '../api/personenuebersicht/dbiam-personenuebersicht.response.js';
-import { PersonPermissions } from '../../authentication/domain/person-permissions.js';
+import { PermittedOrgas, PersonPermissions } from '../../authentication/domain/person-permissions.js';
 import { DataConfig, ServerConfig } from '../../../shared/config/index.js';
 import { ConfigService } from '@nestjs/config';
 import { OrganisationRepository } from '../../organisation/persistence/organisation.repository.js';
@@ -53,15 +53,10 @@ export class DbiamPersonenuebersicht {
             return new EntityNotFoundError('Person', personId);
         }
         // Find all organisations where user has permission
-        let organisationIDs: OrganisationID[] | undefined = await permissions.getOrgIdsWithSystemrechtDeprecated(
+        const permittedOrgas: PermittedOrgas = await permissions.getOrgIdsWithSystemrecht(
             [RollenSystemRecht.PERSONEN_VERWALTEN],
             true,
         );
-
-        // Check if user has permission on root organisation
-        if (organisationIDs?.includes(this.ROOT_ORGANISATION_ID)) {
-            organisationIDs = undefined;
-        }
 
         const personenKontexte: Personenkontext<true>[] = await this.dbiamPersonenkontextRepo.findByPerson(personId);
         const rollenIdsForKontexte: RolleID[] = personenKontexte.map(
@@ -80,7 +75,7 @@ export class DbiamPersonenuebersicht {
                 personenKontexte,
                 rollenForKontexte,
                 organisationsForKontexte,
-                organisationIDs,
+                permittedOrgas.all ? undefined : permittedOrgas.orgaIds,
             );
         if (result instanceof EntityNotFoundError) {
             return result;
