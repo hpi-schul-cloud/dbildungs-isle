@@ -181,10 +181,34 @@ export class Rolle<WasPersisted extends boolean> {
         this.serviceProviderIds.push(serviceProviderId);
     }
 
-    public detatchServiceProvider(serviceProviderId: string): void | DomainError {
-        if (!this.serviceProviderIds.includes(serviceProviderId)) {
-            return new EntityNotFoundError('Rolle ServiceProvider Verknüpfung', serviceProviderId);
+    public detatchServiceProvider(serviceProviderIds: string[]): void | DomainError {
+        // Find any serviceProviderIds that are not currently attached
+        const missingServiceProviderIds: string[] = serviceProviderIds.filter(
+            (id: string) => !this.serviceProviderIds.includes(id),
+        );
+
+        // If any IDs are missing, return an error indicating which ones were not found
+        if (missingServiceProviderIds.length > 0) {
+            return new EntityNotFoundError(
+                'Rolle ServiceProvider Verknüpfung',
+                `The following service-provider IDs were not found: ${missingServiceProviderIds.join(', ')}`,
+            );
         }
-        this.serviceProviderIds = this.serviceProviderIds.filter((id: string) => id !== serviceProviderId);
+
+        // Filter out all the serviceProviderIds that need to be detached
+        this.serviceProviderIds = this.serviceProviderIds.filter((id: string) => !serviceProviderIds.includes(id));
+    }
+
+    public async updateServiceProviders(serviceProviderIds: string[]): Promise<void | DomainError> {
+        const serviceProviderMap: Map<string, ServiceProvider<true>> = await this.serviceProviderRepo.findByIds(
+            serviceProviderIds,
+        );
+
+        const missingIds: string[] = serviceProviderIds.filter((id: string) => !serviceProviderMap.has(id));
+        if (missingIds.length > 0) {
+            return new EntityNotFoundError('ServiceProvider', missingIds.join(', '));
+        }
+
+        this.serviceProviderIds = serviceProviderIds;
     }
 }

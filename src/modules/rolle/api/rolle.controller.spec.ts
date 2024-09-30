@@ -77,7 +77,7 @@ describe('Rolle API with mocked ServiceProviderRepo', () => {
         jest.resetAllMocks();
     });
 
-    describe('/POST rolleId/serviceProviders mocked SP-repo', () => {
+    describe('/PUT rolleId/serviceProviders mocked SP-repo', () => {
         describe('when rolle and serviceProvider exists, attachment is done, but retrieving SP afterwards fails', () => {
             it('should return 500', async () => {
                 const rolleId: string = faker.string.uuid();
@@ -85,14 +85,17 @@ describe('Rolle API with mocked ServiceProviderRepo', () => {
                     rolleId: rolleId,
                 };
                 const params: RolleServiceProviderQueryParams = {
-                    serviceProviderId: faker.string.uuid(),
+                    serviceProviderIds: [faker.string.uuid()],
                 };
                 //mock get-rolle
                 rolleRepoMock.findById.mockResolvedValueOnce(createMock<Rolle<true>>());
-                //mock call to get sp (direct in controller-method)
-                serviceProviderRepoMock.findById.mockResolvedValueOnce(undefined);
 
-                await expect(rolleController.addServiceProviderById(rolleByIdParams, params)).rejects.toThrow(Error);
+                // Mock the call to find service providers by IDs, returning an empty map
+                serviceProviderRepoMock.findByIds.mockResolvedValueOnce(new Map());
+
+                await expect(rolleController.updateServiceProvidersById(rolleByIdParams, params)).rejects.toThrow(
+                    Error,
+                );
             });
         });
     });

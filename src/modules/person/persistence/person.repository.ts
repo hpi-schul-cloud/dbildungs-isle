@@ -154,6 +154,16 @@ export class PersonRepository {
         return null;
     }
 
+    // When implementing this on 30.09 we are still using 'referrer', but since we want in the future to use 'username' i already did this here
+    public async findByUsername(username: string): Promise<Option<Person<true>>> {
+        const person: Option<PersonEntity> = await this.em.findOne(PersonEntity, { referrer: username });
+        if (person) {
+            return mapEntityToAggregate(person);
+        }
+
+        return null;
+    }
+
     public async findByIds(ids: string[], permissions: PersonPermissions): Promise<Person<true>[]> {
         const permittedOrgas: PermittedOrgas = await permissions.getOrgIdsWithSystemrecht(
             [RollenSystemRecht.PERSONEN_VERWALTEN],

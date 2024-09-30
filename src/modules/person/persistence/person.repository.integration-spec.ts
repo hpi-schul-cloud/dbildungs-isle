@@ -147,6 +147,7 @@ describe('PersonRepository Integration', () => {
         const person: Person<false> | DomainError = await Person.createNew(usernameGeneratorService, {
             familienname: faker.person.lastName(),
             vorname: faker.person.firstName(),
+            referrer: faker.string.alphanumeric(5),
             personalnummer: withPersonalnummer ? faker.finance.pin(7) : undefined,
         });
 
@@ -189,6 +190,28 @@ describe('PersonRepository Integration', () => {
         describe('when not found by keycloakUserId', () => {
             it('should return null', async () => {
                 const foundPerson: Option<Person<true>> = await sut.findByKeycloakUserId(faker.string.uuid());
+
+                expect(foundPerson).toBeNull();
+            });
+        });
+    });
+
+    describe('findByUsername', () => {
+        describe('when found by username', () => {
+            it('should return found person', async () => {
+                const personSaved: Person<true> = await savePerson();
+                if (personSaved.referrer) {
+                    const foundPerson: Option<Person<true>> = await sut.findByUsername(personSaved.referrer);
+                    expect(foundPerson).toBeInstanceOf(Person);
+                } else {
+                    throw new Error();
+                }
+            });
+        });
+
+        describe('when not found by keycloakUserId', () => {
+            it('should return null', async () => {
+                const foundPerson: Option<Person<true>> = await sut.findByUsername(faker.string.uuid());
 
                 expect(foundPerson).toBeNull();
             });

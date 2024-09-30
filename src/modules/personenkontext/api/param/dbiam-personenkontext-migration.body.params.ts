@@ -5,10 +5,15 @@ import { OrganisationID, PersonID, RolleID } from '../../../../shared/types/inde
 
 export class DbiamPersonenkontextMigrationBodyParams {
     @IsString()
-    @IsNotEmpty()
     @IsUUID()
+    @IsOptional()
     @ApiProperty({ type: String })
-    public readonly personId!: PersonID;
+    public readonly personId?: PersonID;
+
+    @IsString()
+    @IsOptional()
+    @ApiProperty({ required: false })
+    public readonly username?: string;
 
     @IsString()
     @IsNotEmpty()
