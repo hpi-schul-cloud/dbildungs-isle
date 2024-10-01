@@ -402,7 +402,7 @@ export class PersonRepository {
         await this.em.persistAndFlush(personEntity);
 
         if (isPersonRenamedEventNecessary) {
-            this.eventService.publish(new PersonRenamedEvent(person.id));
+            this.eventService.publish(PersonRenamedEvent.fromPerson(person));
         }
 
         return mapEntityToAggregate(personEntity);

@@ -34,6 +34,7 @@ import { DomainError } from '../../../shared/error/domain.error.js';
 import { Organisation } from '../../organisation/domain/organisation.js';
 import { PersonFactory } from '../../person/domain/person.factory.js';
 import { UsernameGeneratorService } from '../../person/domain/username-generator.service.js';
+import { PersonenkontextMigrationRuntype } from '../domain/personenkontext.enums.js';
 
 describe('dbiam Personenkontext API', () => {
     let app: INestApplication;
@@ -208,279 +209,352 @@ describe('dbiam Personenkontext API', () => {
         });
     });
 
-    describe('/POST create personenkontext', () => {
-        it('should create personenkontext with personId', async () => {
-            const person: Person<true> = await createPerson();
-            const organisation: Organisation<true> = await organisationRepo.save(
-                DoFactory.createOrganisation(false, { typ: OrganisationsTyp.SCHULE }),
-            );
-            const rolle: Rolle<true> = await rolleRepo.save(
-                DoFactory.createRolle(false, {
-                    administeredBySchulstrukturknoten: organisation.id,
-                    rollenart: RollenArt.LEHR,
-                    merkmale: [],
-                }),
-            );
+    describe('/POST create personenkontext (Migration)', () => {
+        describe('MigrationRunType: STANDARD', () => {
+            it('should create personenkontext with personId', async () => {
+                const person: Person<true> = await createPerson();
+                const organisation: Organisation<true> = await organisationRepo.save(
+                    DoFactory.createOrganisation(false, { typ: OrganisationsTyp.SCHULE }),
+                );
+                const rolle: Rolle<true> = await rolleRepo.save(
+                    DoFactory.createRolle(false, {
+                        administeredBySchulstrukturknoten: organisation.id,
+                        rollenart: RollenArt.LEHR,
+                        merkmale: [],
+                    }),
+                );
 
-            const personpermissions: DeepMocked<PersonPermissions> = createMock();
-            personpermissionsRepoMock.loadPersonPermissions.mockResolvedValue(personpermissions);
-            personpermissions.hasSystemrechteAtRootOrganisation.mockResolvedValueOnce(true);
+                const personpermissions: DeepMocked<PersonPermissions> = createMock();
+                personpermissionsRepoMock.loadPersonPermissions.mockResolvedValue(personpermissions);
+                personpermissions.hasSystemrechteAtRootOrganisation.mockResolvedValueOnce(true);
 
-            const response: Response = await request(app.getHttpServer() as App)
-                .post('/dbiam/personenkontext')
-                .send({
-                    personId: person.id,
-                    organisationId: organisation.id,
-                    rolleId: rolle.id,
-                    email: 'test@schule-sh.de',
-                });
+                const response: Response = await request(app.getHttpServer() as App)
+                    .post('/dbiam/personenkontext')
+                    .send({
+                        personId: person.id,
+                        organisationId: organisation.id,
+                        rolleId: rolle.id,
+                        email: 'test@schule-sh.de',
+                        migrationRunType: PersonenkontextMigrationRuntype.STANDARD,
+                    });
 
-            expect(response.status).toBe(201);
+                expect(response.status).toBe(201);
+            });
+
+            it('should create personenkontext with username', async () => {
+                const person: Person<true> = await createPerson();
+                person.referrer = 'testusername';
+                await personRepo.save(person);
+
+                const organisation: Organisation<true> = await organisationRepo.save(
+                    DoFactory.createOrganisation(false, { typ: OrganisationsTyp.SCHULE }),
+                );
+                const rolle: Rolle<true> = await rolleRepo.save(
+                    DoFactory.createRolle(false, {
+                        administeredBySchulstrukturknoten: organisation.id,
+                        rollenart: RollenArt.LEHR,
+                        merkmale: [],
+                    }),
+                );
+
+                const personpermissions: DeepMocked<PersonPermissions> = createMock();
+                personpermissionsRepoMock.loadPersonPermissions.mockResolvedValue(personpermissions);
+                personpermissions.hasSystemrechteAtRootOrganisation.mockResolvedValueOnce(true);
+
+                const response: Response = await request(app.getHttpServer() as App)
+                    .post('/dbiam/personenkontext')
+                    .send({
+                        username: person.referrer,
+                        organisationId: organisation.id,
+                        rolleId: rolle.id,
+                        email: 'test@schule-sh.de',
+                        migrationRunType: PersonenkontextMigrationRuntype.STANDARD,
+                    });
+
+                expect(response.status).toBe(201);
+            });
+
+            it('should return error if neither personId or username passed', async () => {
+                const personpermissions: DeepMocked<PersonPermissions> = createMock();
+                personpermissionsRepoMock.loadPersonPermissions.mockResolvedValue(personpermissions);
+                personpermissions.hasSystemrechteAtRootOrganisation.mockResolvedValueOnce(true);
+
+                const response: Response = await request(app.getHttpServer() as App)
+                    .post('/dbiam/personenkontext')
+                    .send({
+                        organisationId: faker.string.uuid(),
+                        rolleId: faker.string.uuid(),
+                        email: 'test@schule-sh.de',
+                        migrationRunType: PersonenkontextMigrationRuntype.STANDARD,
+                    });
+
+                expect(response.status).toBe(500);
+            });
+
+            it('should return error if Not Migration User', async () => {
+                const person: Person<true> = await createPerson();
+                const organisation: Organisation<true> = await organisationRepo.save(
+                    DoFactory.createOrganisation(false, { typ: OrganisationsTyp.SCHULE }),
+                );
+                const rolle: Rolle<true> = await rolleRepo.save(
+                    DoFactory.createRolle(false, {
+                        administeredBySchulstrukturknoten: organisation.id,
+                        rollenart: RollenArt.LEHR,
+                    }),
+                );
+
+                const personpermissions: DeepMocked<PersonPermissions> = createMock();
+                personpermissionsRepoMock.loadPersonPermissions.mockResolvedValue(personpermissions);
+                personpermissions.hasSystemrechteAtRootOrganisation.mockResolvedValueOnce(false);
+
+                const response: Response = await request(app.getHttpServer() as App)
+                    .post('/dbiam/personenkontext')
+                    .send({
+                        personId: person.id,
+                        username: undefined,
+                        organisationId: organisation.id,
+                        rolleId: rolle.id,
+                        email: 'test@schule-sh.de',
+                        migrationRunType: PersonenkontextMigrationRuntype.STANDARD,
+                    });
+
+                expect(response.status).toBe(404);
+            });
+
+            it('should return error if Kontext Already Exists', async () => {
+                const person: Person<true> = await createPerson();
+                const organisation: Organisation<true> = await organisationRepo.save(
+                    DoFactory.createOrganisation(false, { typ: OrganisationsTyp.SCHULE }),
+                );
+                const rolle: Rolle<true> = await rolleRepo.save(
+                    DoFactory.createRolle(false, {
+                        administeredBySchulstrukturknoten: organisation.id,
+                        rollenart: RollenArt.LEHR,
+                    }),
+                );
+
+                await personenkontextRepoInternal.save(
+                    DoFactory.createPersonenkontext(false, {
+                        personId: person.id,
+                        rolleId: rolle.id,
+                        organisationId: organisation.id,
+                    }),
+                );
+
+                const personpermissions: DeepMocked<PersonPermissions> = createMock();
+                personpermissionsRepoMock.loadPersonPermissions.mockResolvedValue(personpermissions);
+                personpermissions.hasSystemrechteAtRootOrganisation.mockResolvedValueOnce(true);
+
+                const response: Response = await request(app.getHttpServer() as App)
+                    .post('/dbiam/personenkontext')
+                    .send({
+                        personId: person.id,
+                        organisationId: organisation.id,
+                        rolleId: rolle.id,
+                        email: 'test@schule-sh.de',
+                        migrationRunType: PersonenkontextMigrationRuntype.STANDARD,
+                    });
+
+                expect(response.status).toBe(500);
+            });
+
+            it('should return error if Rolle Does not exist', async () => {
+                const person: Person<true> = await createPerson();
+                const organisation: Organisation<true> = await organisationRepo.save(
+                    DoFactory.createOrganisation(false, { typ: OrganisationsTyp.SCHULE }),
+                );
+
+                const personpermissions: DeepMocked<PersonPermissions> = createMock();
+                personpermissionsRepoMock.loadPersonPermissions.mockResolvedValue(personpermissions);
+                personpermissions.hasSystemrechteAtRootOrganisation.mockResolvedValueOnce(true);
+
+                const response: Response = await request(app.getHttpServer() as App)
+                    .post('/dbiam/personenkontext')
+                    .send({
+                        personId: person.id,
+                        organisationId: organisation.id,
+                        rolleId: faker.string.uuid(),
+                        email: 'test@schule-sh.de',
+                        migrationRunType: PersonenkontextMigrationRuntype.STANDARD,
+                    });
+
+                expect(response.status).toBe(500);
+            });
+
+            it('should return error if Organisation Does not exist', async () => {
+                const person: Person<true> = await createPerson();
+                const organisation: Organisation<true> = await organisationRepo.save(
+                    DoFactory.createOrganisation(false, { typ: OrganisationsTyp.SCHULE }),
+                );
+                const rolle: Rolle<true> = await rolleRepo.save(
+                    DoFactory.createRolle(false, {
+                        administeredBySchulstrukturknoten: organisation.id,
+                        rollenart: RollenArt.LEHR,
+                    }),
+                );
+
+                const personpermissions: DeepMocked<PersonPermissions> = createMock();
+                personpermissionsRepoMock.loadPersonPermissions.mockResolvedValue(personpermissions);
+                personpermissions.hasSystemrechteAtRootOrganisation.mockResolvedValueOnce(true);
+
+                const response: Response = await request(app.getHttpServer() as App)
+                    .post('/dbiam/personenkontext')
+                    .send({
+                        personId: person.id,
+                        organisationId: faker.string.uuid(),
+                        rolleId: rolle.id,
+                        email: 'test@schule-sh.de',
+                        migrationRunType: PersonenkontextMigrationRuntype.STANDARD,
+                    });
+
+                expect(response.status).toBe(500);
+            });
+
+            it('should return error if Person Does not exist', async () => {
+                const organisation: Organisation<true> = await organisationRepo.save(
+                    DoFactory.createOrganisation(false, { typ: OrganisationsTyp.SCHULE }),
+                );
+                const rolle: Rolle<true> = await rolleRepo.save(
+                    DoFactory.createRolle(false, {
+                        administeredBySchulstrukturknoten: organisation.id,
+                        rollenart: RollenArt.LEHR,
+                    }),
+                );
+
+                const personpermissions: DeepMocked<PersonPermissions> = createMock();
+                personpermissionsRepoMock.loadPersonPermissions.mockResolvedValue(personpermissions);
+                personpermissions.hasSystemrechteAtRootOrganisation.mockResolvedValueOnce(true);
+
+                const response: Response = await request(app.getHttpServer() as App)
+                    .post('/dbiam/personenkontext')
+                    .send({
+                        personId: faker.string.uuid(),
+                        organisationId: organisation.id,
+                        rolleId: rolle.id,
+                        email: 'test@schule-sh.de',
+                        migrationRunType: PersonenkontextMigrationRuntype.STANDARD,
+                    });
+
+                expect(response.status).toBe(500);
+            });
+
+            it('should return error if No Email is Provided but Rollenart is LEHR', async () => {
+                const person: Person<true> = await createPerson();
+                const organisation: Organisation<true> = await organisationRepo.save(
+                    DoFactory.createOrganisation(false, { typ: OrganisationsTyp.SCHULE }),
+                );
+                const rolle: Rolle<true> = await rolleRepo.save(
+                    DoFactory.createRolle(false, {
+                        administeredBySchulstrukturknoten: organisation.id,
+                        rollenart: RollenArt.LEHR,
+                    }),
+                );
+
+                const personpermissions: DeepMocked<PersonPermissions> = createMock();
+                personpermissionsRepoMock.loadPersonPermissions.mockResolvedValue(personpermissions);
+                personpermissions.hasSystemrechteAtRootOrganisation.mockResolvedValueOnce(true);
+
+                const response: Response = await request(app.getHttpServer() as App)
+                    .post('/dbiam/personenkontext')
+                    .send({
+                        personId: person.id,
+                        organisationId: organisation.id,
+                        rolleId: rolle.id,
+                        migrationRunType: PersonenkontextMigrationRuntype.STANDARD,
+                    });
+
+                expect(response.status).toBe(500);
+            });
+
+            it('should return error if Email is Provided but Rollenart is Not LEHR', async () => {
+                const person: Person<true> = await createPerson();
+                const organisation: Organisation<true> = await organisationRepo.save(
+                    DoFactory.createOrganisation(false, { typ: OrganisationsTyp.SCHULE }),
+                );
+                const rolle: Rolle<true> = await rolleRepo.save(
+                    DoFactory.createRolle(false, {
+                        administeredBySchulstrukturknoten: organisation.id,
+                        rollenart: RollenArt.LERN,
+                    }),
+                );
+
+                const personpermissions: DeepMocked<PersonPermissions> = createMock();
+                personpermissionsRepoMock.loadPersonPermissions.mockResolvedValue(personpermissions);
+                personpermissions.hasSystemrechteAtRootOrganisation.mockResolvedValueOnce(true);
+
+                const response: Response = await request(app.getHttpServer() as App)
+                    .post('/dbiam/personenkontext')
+                    .send({
+                        personId: person.id,
+                        organisationId: organisation.id,
+                        rolleId: rolle.id,
+                        email: 'test@schule-sh.de',
+                        migrationRunType: PersonenkontextMigrationRuntype.STANDARD,
+                    });
+
+                expect(response.status).toBe(500);
+            });
         });
 
-        it('should create personenkontext with username', async () => {
-            const person: Person<true> = await createPerson();
-            person.referrer = 'testusername';
-            await personRepo.save(person);
+        describe('MigrationRunType: ITSLEARNING', () => {
+            it('should create personenkontext with personId', async () => {
+                const person: Person<true> = await createPerson();
+                const organisation: Organisation<true> = await organisationRepo.save(
+                    DoFactory.createOrganisation(false, { typ: OrganisationsTyp.SCHULE }),
+                );
+                const rolle: Rolle<true> = await rolleRepo.save(
+                    DoFactory.createRolle(false, {
+                        administeredBySchulstrukturknoten: organisation.id,
+                        rollenart: RollenArt.LEHR,
+                        merkmale: [],
+                    }),
+                );
 
-            const organisation: Organisation<true> = await organisationRepo.save(
-                DoFactory.createOrganisation(false, { typ: OrganisationsTyp.SCHULE }),
-            );
-            const rolle: Rolle<true> = await rolleRepo.save(
-                DoFactory.createRolle(false, {
-                    administeredBySchulstrukturknoten: organisation.id,
-                    rollenart: RollenArt.LEHR,
-                    merkmale: [],
-                }),
-            );
+                const personpermissions: DeepMocked<PersonPermissions> = createMock();
+                personpermissionsRepoMock.loadPersonPermissions.mockResolvedValue(personpermissions);
+                personpermissions.hasSystemrechteAtRootOrganisation.mockResolvedValueOnce(true);
 
-            const personpermissions: DeepMocked<PersonPermissions> = createMock();
-            personpermissionsRepoMock.loadPersonPermissions.mockResolvedValue(personpermissions);
-            personpermissions.hasSystemrechteAtRootOrganisation.mockResolvedValueOnce(true);
+                const response: Response = await request(app.getHttpServer() as App)
+                    .post('/dbiam/personenkontext')
+                    .send({
+                        personId: person.id,
+                        organisationId: organisation.id,
+                        rolleId: rolle.id,
+                        migrationRunType: PersonenkontextMigrationRuntype.ITSLEARNING,
+                    });
 
-            const response: Response = await request(app.getHttpServer() as App)
-                .post('/dbiam/personenkontext')
-                .send({
-                    username: person.referrer,
-                    organisationId: organisation.id,
-                    rolleId: rolle.id,
-                    email: 'test@schule-sh.de',
-                });
+                expect(response.status).toBe(201);
+            });
 
-            expect(response.status).toBe(201);
-        });
+            it('should return error if mail is provided', async () => {
+                const person: Person<true> = await createPerson();
+                const organisation: Organisation<true> = await organisationRepo.save(
+                    DoFactory.createOrganisation(false, { typ: OrganisationsTyp.SCHULE }),
+                );
+                const rolle: Rolle<true> = await rolleRepo.save(
+                    DoFactory.createRolle(false, {
+                        administeredBySchulstrukturknoten: organisation.id,
+                        rollenart: RollenArt.LEHR,
+                        merkmale: [],
+                    }),
+                );
 
-        it('should return error if neither personId or username passed', async () => {
-            const personpermissions: DeepMocked<PersonPermissions> = createMock();
-            personpermissionsRepoMock.loadPersonPermissions.mockResolvedValue(personpermissions);
-            personpermissions.hasSystemrechteAtRootOrganisation.mockResolvedValueOnce(true);
+                const personpermissions: DeepMocked<PersonPermissions> = createMock();
+                personpermissionsRepoMock.loadPersonPermissions.mockResolvedValue(personpermissions);
+                personpermissions.hasSystemrechteAtRootOrganisation.mockResolvedValueOnce(true);
 
-            const response: Response = await request(app.getHttpServer() as App)
-                .post('/dbiam/personenkontext')
-                .send({
-                    organisationId: faker.string.uuid(),
-                    rolleId: faker.string.uuid(),
-                    email: 'test@schule-sh.de',
-                });
+                const response: Response = await request(app.getHttpServer() as App)
+                    .post('/dbiam/personenkontext')
+                    .send({
+                        personId: person.id,
+                        organisationId: organisation.id,
+                        rolleId: rolle.id,
+                        email: 'test@schule-sh.de',
+                        migrationRunType: PersonenkontextMigrationRuntype.ITSLEARNING,
+                    });
 
-            expect(response.status).toBe(500);
-        });
-
-        it('should return error if Not Migration User', async () => {
-            const person: Person<true> = await createPerson();
-            const organisation: Organisation<true> = await organisationRepo.save(
-                DoFactory.createOrganisation(false, { typ: OrganisationsTyp.SCHULE }),
-            );
-            const rolle: Rolle<true> = await rolleRepo.save(
-                DoFactory.createRolle(false, {
-                    administeredBySchulstrukturknoten: organisation.id,
-                    rollenart: RollenArt.LEHR,
-                }),
-            );
-
-            const personpermissions: DeepMocked<PersonPermissions> = createMock();
-            personpermissionsRepoMock.loadPersonPermissions.mockResolvedValue(personpermissions);
-            personpermissions.hasSystemrechteAtRootOrganisation.mockResolvedValueOnce(false);
-
-            const response: Response = await request(app.getHttpServer() as App)
-                .post('/dbiam/personenkontext')
-                .send({
-                    personId: person.id,
-                    username: undefined,
-                    organisationId: organisation.id,
-                    rolleId: rolle.id,
-                    email: 'test@schule-sh.de',
-                });
-
-            expect(response.status).toBe(404);
-        });
-
-        it('should return error if Kontext Already Exists', async () => {
-            const person: Person<true> = await createPerson();
-            const organisation: Organisation<true> = await organisationRepo.save(
-                DoFactory.createOrganisation(false, { typ: OrganisationsTyp.SCHULE }),
-            );
-            const rolle: Rolle<true> = await rolleRepo.save(
-                DoFactory.createRolle(false, {
-                    administeredBySchulstrukturknoten: organisation.id,
-                    rollenart: RollenArt.LEHR,
-                }),
-            );
-
-            await personenkontextRepoInternal.save(
-                DoFactory.createPersonenkontext(false, {
-                    personId: person.id,
-                    rolleId: rolle.id,
-                    organisationId: organisation.id,
-                }),
-            );
-
-            const personpermissions: DeepMocked<PersonPermissions> = createMock();
-            personpermissionsRepoMock.loadPersonPermissions.mockResolvedValue(personpermissions);
-            personpermissions.hasSystemrechteAtRootOrganisation.mockResolvedValueOnce(true);
-
-            const response: Response = await request(app.getHttpServer() as App)
-                .post('/dbiam/personenkontext')
-                .send({
-                    personId: person.id,
-                    organisationId: organisation.id,
-                    rolleId: rolle.id,
-                    email: 'test@schule-sh.de',
-                });
-
-            expect(response.status).toBe(500);
-        });
-
-        it('should return error if Rolle Does not exist', async () => {
-            const person: Person<true> = await createPerson();
-            const organisation: Organisation<true> = await organisationRepo.save(
-                DoFactory.createOrganisation(false, { typ: OrganisationsTyp.SCHULE }),
-            );
-
-            const personpermissions: DeepMocked<PersonPermissions> = createMock();
-            personpermissionsRepoMock.loadPersonPermissions.mockResolvedValue(personpermissions);
-            personpermissions.hasSystemrechteAtRootOrganisation.mockResolvedValueOnce(true);
-
-            const response: Response = await request(app.getHttpServer() as App)
-                .post('/dbiam/personenkontext')
-                .send({
-                    personId: person.id,
-                    organisationId: organisation.id,
-                    rolleId: faker.string.uuid(),
-                    email: 'test@schule-sh.de',
-                });
-
-            expect(response.status).toBe(500);
-        });
-
-        it('should return error if Organisation Does not exist', async () => {
-            const person: Person<true> = await createPerson();
-            const organisation: Organisation<true> = await organisationRepo.save(
-                DoFactory.createOrganisation(false, { typ: OrganisationsTyp.SCHULE }),
-            );
-            const rolle: Rolle<true> = await rolleRepo.save(
-                DoFactory.createRolle(false, {
-                    administeredBySchulstrukturknoten: organisation.id,
-                    rollenart: RollenArt.LEHR,
-                }),
-            );
-
-            const personpermissions: DeepMocked<PersonPermissions> = createMock();
-            personpermissionsRepoMock.loadPersonPermissions.mockResolvedValue(personpermissions);
-            personpermissions.hasSystemrechteAtRootOrganisation.mockResolvedValueOnce(true);
-
-            const response: Response = await request(app.getHttpServer() as App)
-                .post('/dbiam/personenkontext')
-                .send({
-                    personId: person.id,
-                    organisationId: faker.string.uuid(),
-                    rolleId: rolle.id,
-                    email: 'test@schule-sh.de',
-                });
-
-            expect(response.status).toBe(500);
-        });
-
-        it('should return error if Person Does not exist', async () => {
-            const organisation: Organisation<true> = await organisationRepo.save(
-                DoFactory.createOrganisation(false, { typ: OrganisationsTyp.SCHULE }),
-            );
-            const rolle: Rolle<true> = await rolleRepo.save(
-                DoFactory.createRolle(false, {
-                    administeredBySchulstrukturknoten: organisation.id,
-                    rollenart: RollenArt.LEHR,
-                }),
-            );
-
-            const personpermissions: DeepMocked<PersonPermissions> = createMock();
-            personpermissionsRepoMock.loadPersonPermissions.mockResolvedValue(personpermissions);
-            personpermissions.hasSystemrechteAtRootOrganisation.mockResolvedValueOnce(true);
-
-            const response: Response = await request(app.getHttpServer() as App)
-                .post('/dbiam/personenkontext')
-                .send({
-                    personId: faker.string.uuid(),
-                    organisationId: organisation.id,
-                    rolleId: rolle.id,
-                    email: 'test@schule-sh.de',
-                });
-
-            expect(response.status).toBe(500);
-        });
-
-        it('should return error if No Email is Provided but Rollenart is LEHR', async () => {
-            const person: Person<true> = await createPerson();
-            const organisation: Organisation<true> = await organisationRepo.save(
-                DoFactory.createOrganisation(false, { typ: OrganisationsTyp.SCHULE }),
-            );
-            const rolle: Rolle<true> = await rolleRepo.save(
-                DoFactory.createRolle(false, {
-                    administeredBySchulstrukturknoten: organisation.id,
-                    rollenart: RollenArt.LEHR,
-                }),
-            );
-
-            const personpermissions: DeepMocked<PersonPermissions> = createMock();
-            personpermissionsRepoMock.loadPersonPermissions.mockResolvedValue(personpermissions);
-            personpermissions.hasSystemrechteAtRootOrganisation.mockResolvedValueOnce(true);
-
-            const response: Response = await request(app.getHttpServer() as App)
-                .post('/dbiam/personenkontext')
-                .send({
-                    personId: person.id,
-                    organisationId: organisation.id,
-                    rolleId: rolle.id,
-                });
-
-            expect(response.status).toBe(500);
-        });
-
-        it('should return error if Email is Provided but Rollenart is Not LEHR', async () => {
-            const person: Person<true> = await createPerson();
-            const organisation: Organisation<true> = await organisationRepo.save(
-                DoFactory.createOrganisation(false, { typ: OrganisationsTyp.SCHULE }),
-            );
-            const rolle: Rolle<true> = await rolleRepo.save(
-                DoFactory.createRolle(false, {
-                    administeredBySchulstrukturknoten: organisation.id,
-                    rollenart: RollenArt.LERN,
-                }),
-            );
-
-            const personpermissions: DeepMocked<PersonPermissions> = createMock();
-            personpermissionsRepoMock.loadPersonPermissions.mockResolvedValue(personpermissions);
-            personpermissions.hasSystemrechteAtRootOrganisation.mockResolvedValueOnce(true);
-
-            const response: Response = await request(app.getHttpServer() as App)
-                .post('/dbiam/personenkontext')
-                .send({
-                    personId: person.id,
-                    organisationId: organisation.id,
-                    rolleId: rolle.id,
-                    email: 'test@schule-sh.de',
-                });
-
-            expect(response.status).toBe(500);
+                expect(response.status).toBe(500);
+            });
         });
     });
 });

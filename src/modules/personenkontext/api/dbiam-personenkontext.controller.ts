@@ -37,6 +37,7 @@ import { PersonRepository } from '../../person/persistence/person.repository.js'
 import { Person } from '../../person/domain/person.js';
 import { ClassLogger } from '../../../core/logging/class-logger.js';
 import { RolleRepo } from '../../rolle/repo/rolle.repo.js';
+import { PersonenkontextMigrationRuntype } from '../domain/personenkontext.enums.js';
 
 @UseFilters(
     new SchulConnexValidationErrorFilter(),
@@ -183,11 +184,13 @@ export class DBiamPersonenkontextController {
         }
 
         if (
-            (params.email && rolle.rollenart != RollenArt.LEHR) ||
-            (!params.email && rolle.rollenart == RollenArt.LEHR)
+            (params.migrationRunType === PersonenkontextMigrationRuntype.STANDARD &&
+                ((params.email && rolle.rollenart != RollenArt.LEHR) ||
+                    (!params.email && rolle.rollenart == RollenArt.LEHR))) ||
+            (params.migrationRunType === PersonenkontextMigrationRuntype.ITSLEARNING && params.email)
         ) {
             this.logger.error(
-                `MIGRATION: Create Kontext Operation / personId: ${params.personId} ;  orgaId: ${params.organisationId} ;  rolleId: ${params.rolleId} / An Email Must Only Be Provided For a Lehrerkontext`,
+                `MIGRATION: Create Kontext Operation / personId: ${params.personId} ;  orgaId: ${params.organisationId} ;  rolleId: ${params.rolleId} / An Email Must Only Be Provided For a Lehrerkontext in Standard PersonenkontextMigrationRuntype`,
             );
             throw SchulConnexErrorMapper.mapSchulConnexErrorToHttpException(
                 SchulConnexErrorMapper.mapDomainErrorToSchulConnexError(
@@ -202,7 +205,14 @@ export class DBiamPersonenkontextController {
         );
 
         this.eventService.publish(
-            new PersonenkontextCreatedMigrationEvent(createdKontext, person, rolle, orga, params.email),
+            new PersonenkontextCreatedMigrationEvent(
+                params.migrationRunType,
+                createdKontext,
+                person,
+                rolle,
+                orga,
+                params.email,
+            ),
         );
 
         return new DBiamPersonenkontextResponse(createdKontext);

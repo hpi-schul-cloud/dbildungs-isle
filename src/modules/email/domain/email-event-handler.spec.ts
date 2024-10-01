@@ -41,6 +41,7 @@ import { PersonenkontextCreatedMigrationEvent } from '../../../shared/events/per
 import { Person } from '../../person/domain/person.js';
 import { Organisation } from '../../organisation/domain/organisation.js';
 import { EntityCouldNotBeCreated } from '../../../shared/error/entity-could-not-be-created.error.js';
+import { PersonenkontextMigrationRuntype } from '../../personenkontext/domain/personenkontext.enums.js';
 
 function getEmail(): EmailAddress<true> {
     const fakePersonId: PersonID = faker.string.uuid();
@@ -348,109 +349,139 @@ describe('Email Event Handler', () => {
     });
 
     describe('handlePersonenkontextCreatedMigrationEvent', () => {
-        it('should do nothing when rolle is not LEHR', async () => {
-            const personenkontext: Personenkontext<true> = createMock<Personenkontext<true>>();
-            const person: Person<true> = createMock<Person<true>>();
-            const rolle: Rolle<true> = createMock<Rolle<true>>();
-            const orga: Organisation<true> = createMock<Organisation<true>>();
+        describe('MigrationRunType: STANDARD', () => {
+            const migrationType: PersonenkontextMigrationRuntype = PersonenkontextMigrationRuntype.STANDARD;
+            it('should do nothing when rolle is not LEHR', async () => {
+                const personenkontext: Personenkontext<true> = createMock<Personenkontext<true>>();
+                const person: Person<true> = createMock<Person<true>>();
+                const rolle: Rolle<true> = createMock<Rolle<true>>();
+                const orga: Organisation<true> = createMock<Organisation<true>>();
 
-            const event: PersonenkontextCreatedMigrationEvent = new PersonenkontextCreatedMigrationEvent(
-                personenkontext,
-                person,
-                rolle,
-                orga,
-                'test@schule-spsh.de',
-            );
+                const event: PersonenkontextCreatedMigrationEvent = new PersonenkontextCreatedMigrationEvent(
+                    migrationType,
+                    personenkontext,
+                    person,
+                    rolle,
+                    orga,
+                    'test@schule-spsh.de',
+                );
 
-            await emailEventHandler.handlePersonenkontextCreatedMigrationEvent(event);
-            expect(loggerMock.info).toHaveBeenCalledWith(
-                expect.stringContaining('Do Nothing because Rollenart is Not LEHR'),
-            );
-        });
-        it('should Create Email When None Exists and Rollenart is LEHR', async () => {
-            const inputEmailAdress: string = 'test@schule-spsh.de';
-
-            const personenkontext: Personenkontext<true> = createMock<Personenkontext<true>>();
-            const person: Person<true> = createMock<Person<true>>();
-            const rolle: Rolle<true> = createMock<Rolle<true>>();
-            const orga: Organisation<true> = createMock<Organisation<true>>();
-
-            rolle.rollenart = RollenArt.LEHR;
-
-            const event: PersonenkontextCreatedMigrationEvent = new PersonenkontextCreatedMigrationEvent(
-                personenkontext,
-                person,
-                rolle,
-                orga,
-                inputEmailAdress,
-            );
-
-            // eslint-disable-next-line @typescript-eslint/require-await
-            emailRepoMock.findByPerson.mockImplementationOnce(async () => {
-                return undefined;
+                await emailEventHandler.handlePersonenkontextCreatedMigrationEvent(event);
+                expect(loggerMock.info).toHaveBeenCalledWith(
+                    expect.stringContaining('Do Nothing because Rollenart is Not LEHR'),
+                );
             });
-            emailRepoMock.save.mockResolvedValueOnce(createMock<EmailAddress<true>>());
+            it('should Create Email When None Exists and Rollenart is LEHR', async () => {
+                const inputEmailAdress: string = 'test@schule-spsh.de';
 
-            await emailEventHandler.handlePersonenkontextCreatedMigrationEvent(event);
-            expect(loggerMock.info).toHaveBeenCalledWith(expect.stringContaining('Successfully persisted Email'));
-        });
-        it('should Log Error When Email persisting Operation fails', async () => {
-            const inputEmailAdress: string = 'test@schule-spsh.de';
+                const personenkontext: Personenkontext<true> = createMock<Personenkontext<true>>();
+                const person: Person<true> = createMock<Person<true>>();
+                const rolle: Rolle<true> = createMock<Rolle<true>>();
+                const orga: Organisation<true> = createMock<Organisation<true>>();
 
-            const personenkontext: Personenkontext<true> = createMock<Personenkontext<true>>();
-            const person: Person<true> = createMock<Person<true>>();
-            const rolle: Rolle<true> = createMock<Rolle<true>>();
-            const orga: Organisation<true> = createMock<Organisation<true>>();
+                rolle.rollenart = RollenArt.LEHR;
 
-            rolle.rollenart = RollenArt.LEHR;
+                const event: PersonenkontextCreatedMigrationEvent = new PersonenkontextCreatedMigrationEvent(
+                    migrationType,
+                    personenkontext,
+                    person,
+                    rolle,
+                    orga,
+                    inputEmailAdress,
+                );
 
-            const event: PersonenkontextCreatedMigrationEvent = new PersonenkontextCreatedMigrationEvent(
-                personenkontext,
-                person,
-                rolle,
-                orga,
-                inputEmailAdress,
-            );
+                // eslint-disable-next-line @typescript-eslint/require-await
+                emailRepoMock.findByPerson.mockImplementationOnce(async () => {
+                    return undefined;
+                });
+                emailRepoMock.save.mockResolvedValueOnce(createMock<EmailAddress<true>>());
 
-            // eslint-disable-next-line @typescript-eslint/require-await
-            emailRepoMock.findByPerson.mockImplementationOnce(async () => {
-                return undefined;
+                await emailEventHandler.handlePersonenkontextCreatedMigrationEvent(event);
+                expect(loggerMock.info).toHaveBeenCalledWith(expect.stringContaining('Successfully persisted Email'));
             });
-            emailRepoMock.save.mockResolvedValueOnce(new EntityCouldNotBeCreated(''));
+            it('should Log Error When Email persisting Operation fails', async () => {
+                const inputEmailAdress: string = 'test@schule-spsh.de';
 
-            await emailEventHandler.handlePersonenkontextCreatedMigrationEvent(event);
-            expect(loggerMock.error).toHaveBeenCalledWith(
-                expect.stringContaining('Could not persist existing email, error is'),
-            );
-        });
-        it('should Abort When email is already persisted', async () => {
-            const inputEmailAdress: string = 'test@schule-spsh.de';
+                const personenkontext: Personenkontext<true> = createMock<Personenkontext<true>>();
+                const person: Person<true> = createMock<Person<true>>();
+                const rolle: Rolle<true> = createMock<Rolle<true>>();
+                const orga: Organisation<true> = createMock<Organisation<true>>();
 
-            const personenkontext: Personenkontext<true> = createMock<Personenkontext<true>>();
-            const person: Person<true> = createMock<Person<true>>();
-            const rolle: Rolle<true> = createMock<Rolle<true>>();
-            const orga: Organisation<true> = createMock<Organisation<true>>();
+                rolle.rollenart = RollenArt.LEHR;
 
-            rolle.rollenart = RollenArt.LEHR;
+                const event: PersonenkontextCreatedMigrationEvent = new PersonenkontextCreatedMigrationEvent(
+                    migrationType,
+                    personenkontext,
+                    person,
+                    rolle,
+                    orga,
+                    inputEmailAdress,
+                );
 
-            const event: PersonenkontextCreatedMigrationEvent = new PersonenkontextCreatedMigrationEvent(
-                personenkontext,
-                person,
-                rolle,
-                orga,
-                inputEmailAdress,
-            );
+                // eslint-disable-next-line @typescript-eslint/require-await
+                emailRepoMock.findByPerson.mockImplementationOnce(async () => {
+                    return undefined;
+                });
+                emailRepoMock.save.mockResolvedValueOnce(new EntityCouldNotBeCreated(''));
 
-            // eslint-disable-next-line @typescript-eslint/require-await
-            emailRepoMock.findByPerson.mockImplementationOnce(async () => {
-                return createMock<EmailAddress<true>>();
+                await emailEventHandler.handlePersonenkontextCreatedMigrationEvent(event);
+                expect(loggerMock.error).toHaveBeenCalledWith(
+                    expect.stringContaining('Could not persist existing email, error is'),
+                );
             });
-            emailRepoMock.save.mockResolvedValueOnce(createMock<EmailAddress<true>>());
+            it('should Abort When email is already persisted', async () => {
+                const inputEmailAdress: string = 'test@schule-spsh.de';
 
-            await emailEventHandler.handlePersonenkontextCreatedMigrationEvent(event);
-            expect(loggerMock.info).toHaveBeenCalledWith(
-                expect.stringContaining('Aborting persist Email Operation, Email already exists'),
-            );
+                const personenkontext: Personenkontext<true> = createMock<Personenkontext<true>>();
+                const person: Person<true> = createMock<Person<true>>();
+                const rolle: Rolle<true> = createMock<Rolle<true>>();
+                const orga: Organisation<true> = createMock<Organisation<true>>();
+
+                rolle.rollenart = RollenArt.LEHR;
+
+                const event: PersonenkontextCreatedMigrationEvent = new PersonenkontextCreatedMigrationEvent(
+                    migrationType,
+                    personenkontext,
+                    person,
+                    rolle,
+                    orga,
+                    inputEmailAdress,
+                );
+
+                // eslint-disable-next-line @typescript-eslint/require-await
+                emailRepoMock.findByPerson.mockImplementationOnce(async () => {
+                    return createMock<EmailAddress<true>>();
+                });
+                emailRepoMock.save.mockResolvedValueOnce(createMock<EmailAddress<true>>());
+
+                await emailEventHandler.handlePersonenkontextCreatedMigrationEvent(event);
+                expect(loggerMock.info).toHaveBeenCalledWith(
+                    expect.stringContaining('Aborting persist Email Operation, Email already exists'),
+                );
+            });
+        });
+        describe('MigrationRunType: ITSLEARNING', () => {
+            const migrationType: PersonenkontextMigrationRuntype = PersonenkontextMigrationRuntype.ITSLEARNING;
+            it('should do nothing', async () => {
+                const personenkontext: Personenkontext<true> = createMock<Personenkontext<true>>();
+                const person: Person<true> = createMock<Person<true>>();
+                const rolle: Rolle<true> = createMock<Rolle<true>>();
+                const orga: Organisation<true> = createMock<Organisation<true>>();
+
+                const event: PersonenkontextCreatedMigrationEvent = new PersonenkontextCreatedMigrationEvent(
+                    migrationType,
+                    personenkontext,
+                    person,
+                    rolle,
+                    orga,
+                    'test@schule-spsh.de',
+                );
+
+                await emailEventHandler.handlePersonenkontextCreatedMigrationEvent(event);
+                expect(loggerMock.info).toHaveBeenCalledWith(
+                    expect.stringContaining('Do Nothing because PersonenkontextMigrationRuntype is Not STANDARD'),
+                );
+            });
         });
     });
 
@@ -470,7 +501,12 @@ describe('Email Event Handler', () => {
             fakePersonId = faker.string.uuid();
             fakeRolleId = faker.string.uuid();
             fakeEmailAddress = faker.internet.email();
-            event = new PersonRenamedEvent(fakePersonId);
+            event = new PersonRenamedEvent(
+                fakePersonId,
+                faker.person.firstName(),
+                faker.person.lastName(),
+                faker.internet.userName(),
+            );
             personenkontext = createMock<Personenkontext<true>>({ rolleId: fakeRolleId });
             rolle = createMock<Rolle<true>>({ id: fakeRolleId });
             rollenMap = new Map<string, Rolle<true>>();

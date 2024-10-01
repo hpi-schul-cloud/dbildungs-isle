@@ -4,9 +4,11 @@ import { type Personenkontext } from '../../modules/personenkontext/domain/perso
 import { Person } from '../../modules/person/domain/person.js';
 import { Rolle } from '../../modules/rolle/domain/rolle.js';
 import { Organisation } from '../../modules/organisation/domain/organisation.js';
+import { PersonenkontextMigrationRuntype } from '../../modules/personenkontext/domain/personenkontext.enums.js';
 
 export class PersonenkontextCreatedMigrationEvent extends BaseEvent {
     public constructor(
+        public readonly migrationRunType: PersonenkontextMigrationRuntype,
         public readonly createdKontext: Personenkontext<true>,
         public readonly createdKontextPerson: Person<true>,
         public readonly createdKontextRolle: Rolle<true>,

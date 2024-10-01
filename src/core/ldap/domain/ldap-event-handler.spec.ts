@@ -34,6 +34,7 @@ import { Personenkontext } from '../../../modules/personenkontext/domain/persone
 import { Person } from '../../../modules/person/domain/person.js';
 import { PersonenkontextCreatedMigrationEvent } from '../../../shared/events/personenkontext-created-migration.event.js';
 import { Rolle } from '../../../modules/rolle/domain/rolle.js';
+import { PersonenkontextMigrationRuntype } from '../../../modules/personenkontext/domain/personenkontext.enums.js';
 
 describe('LDAP Event Handler', () => {
     let app: INestApplication;
@@ -98,179 +99,216 @@ describe('LDAP Event Handler', () => {
     });
 
     describe('handlePersonenkontextCreatedMigrationEvent', () => {
-        it('should do nothing when rolle is not LEHR', async () => {
-            const personenkontext: Personenkontext<true> = createMock<Personenkontext<true>>();
-            const person: Person<true> = createMock<Person<true>>();
-            const rolle: Rolle<true> = createMock<Rolle<true>>();
-            const orga: Organisation<true> = createMock<Organisation<true>>();
+        describe('MigrationRunType: STANDARD', () => {
+            const migrationType: PersonenkontextMigrationRuntype = PersonenkontextMigrationRuntype.STANDARD;
+            it('should do nothing when rolle is not LEHR', async () => {
+                const personenkontext: Personenkontext<true> = createMock<Personenkontext<true>>();
+                const person: Person<true> = createMock<Person<true>>();
+                const rolle: Rolle<true> = createMock<Rolle<true>>();
+                const orga: Organisation<true> = createMock<Organisation<true>>();
 
-            const event: PersonenkontextCreatedMigrationEvent = new PersonenkontextCreatedMigrationEvent(
-                personenkontext,
-                person,
-                rolle,
-                orga,
-                'test@schule-spsh.de',
-            );
+                const event: PersonenkontextCreatedMigrationEvent = new PersonenkontextCreatedMigrationEvent(
+                    migrationType,
+                    personenkontext,
+                    person,
+                    rolle,
+                    orga,
+                    'test@schule-spsh.de',
+                );
 
-            await ldapEventHandler.handlePersonenkontextCreatedMigrationEvent(event);
-            expect(loggerMock.info).toHaveBeenCalledWith(
-                expect.stringContaining('Do Nothing because Rollenart is Not LEHR'),
-            );
-        });
-
-        it('should created LDAP entry', async () => {
-            const personenkontext: Personenkontext<true> = createMock<Personenkontext<true>>();
-            const person: Person<true> = createMock<Person<true>>();
-            const rolle: Rolle<true> = createMock<Rolle<true>>();
-            const orga: Organisation<true> = createMock<Organisation<true>>();
-
-            rolle.rollenart = RollenArt.LEHR;
-            person.referrer = 'user123';
-            orga.kennung = '12345678';
-
-            const event: PersonenkontextCreatedMigrationEvent = new PersonenkontextCreatedMigrationEvent(
-                personenkontext,
-                person,
-                rolle,
-                orga,
-                'test@schule-spsh.de',
-            );
-
-            await ldapEventHandler.handlePersonenkontextCreatedMigrationEvent(event);
-            expect(loggerMock.info).toHaveBeenCalledWith(
-                expect.stringContaining('Successfully created LDAP Entry Lehrer'),
-            );
-        });
-
-        it('should log error if username is missing', async () => {
-            const personenkontext: Personenkontext<true> = createMock<Personenkontext<true>>();
-            const person: Person<true> = createMock<Person<true>>();
-            const rolle: Rolle<true> = createMock<Rolle<true>>();
-            const orga: Organisation<true> = createMock<Organisation<true>>();
-
-            rolle.rollenart = RollenArt.LEHR;
-            person.referrer = undefined;
-
-            const event: PersonenkontextCreatedMigrationEvent = new PersonenkontextCreatedMigrationEvent(
-                personenkontext,
-                person,
-                rolle,
-                orga,
-                'test@schule-spsh.de',
-            );
-
-            await ldapEventHandler.handlePersonenkontextCreatedMigrationEvent(event);
-            expect(loggerMock.error).toHaveBeenCalledWith(expect.stringContaining('Username missing'));
-        });
-
-        it('should log error if kennung is missing', async () => {
-            const personenkontext: Personenkontext<true> = createMock<Personenkontext<true>>();
-            const person: Person<true> = createMock<Person<true>>();
-            const rolle: Rolle<true> = createMock<Rolle<true>>();
-            const orga: Organisation<true> = createMock<Organisation<true>>();
-
-            rolle.rollenart = RollenArt.LEHR;
-            person.referrer = 'user123';
-            orga.kennung = undefined;
-
-            const event: PersonenkontextCreatedMigrationEvent = new PersonenkontextCreatedMigrationEvent(
-                personenkontext,
-                person,
-                rolle,
-                orga,
-                'test@schule-spsh.de',
-            );
-
-            await ldapEventHandler.handlePersonenkontextCreatedMigrationEvent(event);
-            expect(loggerMock.error).toHaveBeenCalledWith(expect.stringContaining('Orga Kennung missing'));
-        });
-
-        it('should log error if isLehrerExisting check fails', async () => {
-            const personenkontext: Personenkontext<true> = createMock<Personenkontext<true>>();
-            const person: Person<true> = createMock<Person<true>>();
-            const rolle: Rolle<true> = createMock<Rolle<true>>();
-            const orga: Organisation<true> = createMock<Organisation<true>>();
-
-            rolle.rollenart = RollenArt.LEHR;
-            person.referrer = 'user123';
-            orga.kennung = '12345678';
-
-            const event: PersonenkontextCreatedMigrationEvent = new PersonenkontextCreatedMigrationEvent(
-                personenkontext,
-                person,
-                rolle,
-                orga,
-                'test@schule-spsh.de',
-            );
-
-            ldapClientServiceMock.isLehrerExisting.mockResolvedValueOnce({
-                ok: false,
-                error: new LdapSearchError(LdapEntityType.LEHRER),
+                await ldapEventHandler.handlePersonenkontextCreatedMigrationEvent(event);
+                expect(loggerMock.info).toHaveBeenCalledWith(
+                    expect.stringContaining('Do Nothing because Rollenart is Not LEHR'),
+                );
             });
 
-            await ldapEventHandler.handlePersonenkontextCreatedMigrationEvent(event);
-            expect(loggerMock.error).toHaveBeenCalledWith(expect.stringContaining('Check Lehrer existing call failed'));
+            it('should created LDAP entry', async () => {
+                const personenkontext: Personenkontext<true> = createMock<Personenkontext<true>>();
+                const person: Person<true> = createMock<Person<true>>();
+                const rolle: Rolle<true> = createMock<Rolle<true>>();
+                const orga: Organisation<true> = createMock<Organisation<true>>();
+
+                rolle.rollenart = RollenArt.LEHR;
+                person.referrer = 'user123';
+                orga.kennung = '12345678';
+
+                const event: PersonenkontextCreatedMigrationEvent = new PersonenkontextCreatedMigrationEvent(
+                    migrationType,
+                    personenkontext,
+                    person,
+                    rolle,
+                    orga,
+                    'test@schule-spsh.de',
+                );
+
+                await ldapEventHandler.handlePersonenkontextCreatedMigrationEvent(event);
+                expect(loggerMock.info).toHaveBeenCalledWith(
+                    expect.stringContaining('Successfully created LDAP Entry Lehrer'),
+                );
+            });
+
+            it('should log error if username is missing', async () => {
+                const personenkontext: Personenkontext<true> = createMock<Personenkontext<true>>();
+                const person: Person<true> = createMock<Person<true>>();
+                const rolle: Rolle<true> = createMock<Rolle<true>>();
+                const orga: Organisation<true> = createMock<Organisation<true>>();
+
+                rolle.rollenart = RollenArt.LEHR;
+                person.referrer = undefined;
+
+                const event: PersonenkontextCreatedMigrationEvent = new PersonenkontextCreatedMigrationEvent(
+                    migrationType,
+                    personenkontext,
+                    person,
+                    rolle,
+                    orga,
+                    'test@schule-spsh.de',
+                );
+
+                await ldapEventHandler.handlePersonenkontextCreatedMigrationEvent(event);
+                expect(loggerMock.error).toHaveBeenCalledWith(expect.stringContaining('Username missing'));
+            });
+
+            it('should log error if kennung is missing', async () => {
+                const personenkontext: Personenkontext<true> = createMock<Personenkontext<true>>();
+                const person: Person<true> = createMock<Person<true>>();
+                const rolle: Rolle<true> = createMock<Rolle<true>>();
+                const orga: Organisation<true> = createMock<Organisation<true>>();
+
+                rolle.rollenart = RollenArt.LEHR;
+                person.referrer = 'user123';
+                orga.kennung = undefined;
+
+                const event: PersonenkontextCreatedMigrationEvent = new PersonenkontextCreatedMigrationEvent(
+                    migrationType,
+                    personenkontext,
+                    person,
+                    rolle,
+                    orga,
+                    'test@schule-spsh.de',
+                );
+
+                await ldapEventHandler.handlePersonenkontextCreatedMigrationEvent(event);
+                expect(loggerMock.error).toHaveBeenCalledWith(expect.stringContaining('Orga Kennung missing'));
+            });
+
+            it('should log error if isLehrerExisting check fails', async () => {
+                const personenkontext: Personenkontext<true> = createMock<Personenkontext<true>>();
+                const person: Person<true> = createMock<Person<true>>();
+                const rolle: Rolle<true> = createMock<Rolle<true>>();
+                const orga: Organisation<true> = createMock<Organisation<true>>();
+
+                rolle.rollenart = RollenArt.LEHR;
+                person.referrer = 'user123';
+                orga.kennung = '12345678';
+
+                const event: PersonenkontextCreatedMigrationEvent = new PersonenkontextCreatedMigrationEvent(
+                    migrationType,
+                    personenkontext,
+                    person,
+                    rolle,
+                    orga,
+                    'test@schule-spsh.de',
+                );
+
+                ldapClientServiceMock.isLehrerExisting.mockResolvedValueOnce({
+                    ok: false,
+                    error: new LdapSearchError(LdapEntityType.LEHRER),
+                });
+
+                await ldapEventHandler.handlePersonenkontextCreatedMigrationEvent(event);
+                expect(loggerMock.error).toHaveBeenCalledWith(
+                    expect.stringContaining('Check Lehrer existing call failed'),
+                );
+            });
+
+            it('should abort creatingLehrer if already exists', async () => {
+                const personenkontext: Personenkontext<true> = createMock<Personenkontext<true>>();
+                const person: Person<true> = createMock<Person<true>>();
+                const rolle: Rolle<true> = createMock<Rolle<true>>();
+                const orga: Organisation<true> = createMock<Organisation<true>>();
+
+                rolle.rollenart = RollenArt.LEHR;
+                person.referrer = 'user123';
+                orga.kennung = '12345678';
+
+                const event: PersonenkontextCreatedMigrationEvent = new PersonenkontextCreatedMigrationEvent(
+                    migrationType,
+                    personenkontext,
+                    person,
+                    rolle,
+                    orga,
+                    'test@schule-spsh.de',
+                );
+
+                ldapClientServiceMock.isLehrerExisting.mockResolvedValueOnce({
+                    ok: true,
+                    value: true,
+                });
+
+                await ldapEventHandler.handlePersonenkontextCreatedMigrationEvent(event);
+                expect(loggerMock.info).toHaveBeenCalledWith(
+                    expect.stringContaining('Aborting createLehrer Operation, LDAP Entry already exists'),
+                );
+            });
+
+            it('should log error if createLehrer Operation fails', async () => {
+                const personenkontext: Personenkontext<true> = createMock<Personenkontext<true>>();
+                const person: Person<true> = createMock<Person<true>>();
+                const rolle: Rolle<true> = createMock<Rolle<true>>();
+                const orga: Organisation<true> = createMock<Organisation<true>>();
+
+                rolle.rollenart = RollenArt.LEHR;
+                person.referrer = 'user123';
+                orga.kennung = '12345678';
+
+                const event: PersonenkontextCreatedMigrationEvent = new PersonenkontextCreatedMigrationEvent(
+                    migrationType,
+                    personenkontext,
+                    person,
+                    rolle,
+                    orga,
+                    'test@schule-spsh.de',
+                );
+
+                ldapClientServiceMock.isLehrerExisting.mockResolvedValueOnce({
+                    ok: true,
+                    value: false,
+                });
+
+                ldapClientServiceMock.createLehrer.mockResolvedValueOnce({
+                    ok: false,
+                    error: new LdapSearchError(LdapEntityType.LEHRER),
+                });
+
+                await ldapEventHandler.handlePersonenkontextCreatedMigrationEvent(event);
+                expect(loggerMock.error).toHaveBeenCalledWith(
+                    expect.stringContaining('Create Lehrer Operation failed'),
+                );
+            });
         });
 
-        it('should abort creatingLehrer if already exists', async () => {
-            const personenkontext: Personenkontext<true> = createMock<Personenkontext<true>>();
-            const person: Person<true> = createMock<Person<true>>();
-            const rolle: Rolle<true> = createMock<Rolle<true>>();
-            const orga: Organisation<true> = createMock<Organisation<true>>();
+        describe('MigrationRunType: ITSLEARNING', () => {
+            const migrationType: PersonenkontextMigrationRuntype = PersonenkontextMigrationRuntype.ITSLEARNING;
+            it('should do nothing', async () => {
+                const personenkontext: Personenkontext<true> = createMock<Personenkontext<true>>();
+                const person: Person<true> = createMock<Person<true>>();
+                const rolle: Rolle<true> = createMock<Rolle<true>>();
+                const orga: Organisation<true> = createMock<Organisation<true>>();
 
-            rolle.rollenart = RollenArt.LEHR;
-            person.referrer = 'user123';
-            orga.kennung = '12345678';
+                const event: PersonenkontextCreatedMigrationEvent = new PersonenkontextCreatedMigrationEvent(
+                    migrationType,
+                    personenkontext,
+                    person,
+                    rolle,
+                    orga,
+                );
 
-            const event: PersonenkontextCreatedMigrationEvent = new PersonenkontextCreatedMigrationEvent(
-                personenkontext,
-                person,
-                rolle,
-                orga,
-                'test@schule-spsh.de',
-            );
-
-            ldapClientServiceMock.isLehrerExisting.mockResolvedValueOnce({
-                ok: true,
-                value: true,
+                await ldapEventHandler.handlePersonenkontextCreatedMigrationEvent(event);
+                expect(loggerMock.info).toHaveBeenCalledWith(
+                    expect.stringContaining('Do Nothing because PersonenkontextMigrationRuntype is Not STANDARD'),
+                );
             });
-
-            await ldapEventHandler.handlePersonenkontextCreatedMigrationEvent(event);
-            expect(loggerMock.info).toHaveBeenCalledWith(
-                expect.stringContaining('Aborting createLehrer Operation, LDAP Entry already exists'),
-            );
-        });
-
-        it('should log error if createLehrer Operation fails', async () => {
-            const personenkontext: Personenkontext<true> = createMock<Personenkontext<true>>();
-            const person: Person<true> = createMock<Person<true>>();
-            const rolle: Rolle<true> = createMock<Rolle<true>>();
-            const orga: Organisation<true> = createMock<Organisation<true>>();
-
-            rolle.rollenart = RollenArt.LEHR;
-            person.referrer = 'user123';
-            orga.kennung = '12345678';
-
-            const event: PersonenkontextCreatedMigrationEvent = new PersonenkontextCreatedMigrationEvent(
-                personenkontext,
-                person,
-                rolle,
-                orga,
-                'test@schule-spsh.de',
-            );
-
-            ldapClientServiceMock.isLehrerExisting.mockResolvedValueOnce({
-                ok: true,
-                value: false,
-            });
-
-            ldapClientServiceMock.createLehrer.mockResolvedValueOnce({
-                ok: false,
-                error: new LdapSearchError(LdapEntityType.LEHRER),
-            });
-
-            await ldapEventHandler.handlePersonenkontextCreatedMigrationEvent(event);
-            expect(loggerMock.error).toHaveBeenCalledWith(expect.stringContaining('Create Lehrer Operation failed'));
         });
     });
 

@@ -10,6 +10,7 @@ import { PersonenkontextEventKontextData } from '../../../shared/events/personen
 import { PersonDeletedEvent } from '../../../shared/events/person-deleted.event.js';
 import { PersonID } from '../../../shared/types/aggregate-ids.types.js';
 import { PersonenkontextCreatedMigrationEvent } from '../../../shared/events/personenkontext-created-migration.event.js';
+import { PersonenkontextMigrationRuntype } from '../../../modules/personenkontext/domain/personenkontext.enums.js';
 
 @Injectable()
 export class LdapEventHandler {
@@ -70,7 +71,10 @@ export class LdapEventHandler {
             `MIGRATION: Create Kontext Operation / personId: ${event.createdKontextPerson.id} ;  orgaId: ${event.createdKontextOrga.id} ;  rolleId: ${event.createdKontextRolle.id} / Received PersonenkontextCreatedMigrationEvent`,
         );
 
-        if (event.createdKontextRolle.rollenart == RollenArt.LEHR) {
+        if (
+            event.createdKontextRolle.rollenart == RollenArt.LEHR &&
+            event.migrationRunType === PersonenkontextMigrationRuntype.STANDARD
+        ) {
             this.logger.info(
                 `MIGRATION: Create Kontext Operation / personId: ${event.createdKontextPerson.id} ;  orgaId: ${event.createdKontextOrga.id} ;  rolleId: ${event.createdKontextRolle.id} / RollenArt is LEHR, trying to create Lehrer`,
             );
@@ -129,9 +133,15 @@ export class LdapEventHandler {
                 `MIGRATION: Create Kontext Operation / personId: ${event.createdKontextPerson.id} ;  orgaId: ${event.createdKontextOrga.id} ;  rolleId: ${event.createdKontextRolle.id} / Successfully created LDAP Entry Lehrer`,
             );
         } else {
-            this.logger.info(
-                `MIGRATION: Create Kontext Operation / personId: ${event.createdKontextPerson.id} ;  orgaId: ${event.createdKontextOrga.id} ;  rolleId: ${event.createdKontextRolle.id} / 'Do Nothing because Rollenart is Not LEHR'`,
-            );
+            if (event.migrationRunType !== PersonenkontextMigrationRuntype.STANDARD) {
+                this.logger.info(
+                    `MIGRATION: Create Kontext Operation / personId: ${event.createdKontextPerson.id} ;  orgaId: ${event.createdKontextOrga.id} ;  rolleId: ${event.createdKontextRolle.id} / Do Nothing because PersonenkontextMigrationRuntype is Not STANDARD`,
+                );
+            } else if (event.createdKontextRolle.rollenart !== RollenArt.LEHR) {
+                this.logger.info(
+                    `MIGRATION: Create Kontext Operation / personId: ${event.createdKontextPerson.id} ;  orgaId: ${event.createdKontextOrga.id} ;  rolleId: ${event.createdKontextRolle.id} / Do Nothing because Rollenart is Not LEHR`,
+                );
+            }
         }
     }
 

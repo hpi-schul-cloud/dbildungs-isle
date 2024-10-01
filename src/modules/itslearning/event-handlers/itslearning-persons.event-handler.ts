@@ -7,6 +7,7 @@ import { EventHandler } from '../../../core/eventbus/decorators/event-handler.de
 import { ClassLogger } from '../../../core/logging/class-logger.js';
 import { ItsLearningConfig, ServerConfig } from '../../../shared/config/index.js';
 import { DomainError } from '../../../shared/error/domain.error.js';
+import { PersonRenamedEvent } from '../../../shared/events/person-renamed-event.js';
 import {
     PersonenkontextUpdatedData,
     PersonenkontextUpdatedEvent,
@@ -69,6 +70,45 @@ export class ItsLearningPersonsEventHandler {
         const itsLearningConfig: ItsLearningConfig = configService.getOrThrow<ItsLearningConfig>('ITSLEARNING');
 
         this.ENABLED = itsLearningConfig.ENABLED === 'true';
+    }
+
+    @EventHandler(PersonRenamedEvent)
+    public async personRenamedEventHandler(event: PersonRenamedEvent): Promise<void> {
+        this.logger.info(`Received PersonRenamedEvent, ${event.personId}`);
+
+        if (!this.ENABLED) {
+            return this.logger.info('Not enabled, ignoring event.');
+        }
+
+        return this.mutex.runExclusive(async () => {
+            if (!event.referrer) {
+                return this.logger.error(`Person with ID ${event.personId} has no username!`);
+            }
+
+            const readPersonResult: Result<PersonResponse, DomainError> = await this.itsLearningService.send(
+                new ReadPersonAction(event.personId),
+            );
+
+            if (!readPersonResult.ok) {
+                return this.logger.info(`Person with ID ${event.personId} is not in itslearning, ignoring.`);
+            }
+
+            const createAction: CreatePersonAction = new CreatePersonAction({
+                id: event.personId,
+                firstName: event.vorname,
+                lastName: event.familienname,
+                username: event.referrer,
+                institutionRoleType: readPersonResult.value.institutionRole,
+            });
+
+            const createPersonResult: Result<void, DomainError> = await this.itsLearningService.send(createAction);
+
+            if (!createPersonResult.ok) {
+                return this.logger.error(`Person with ID ${event.personId} could not be updated in itsLearning!`);
+            }
+
+            this.logger.info(`Person with ID ${event.personId} updated in itsLearning!`);
+        });
     }
 
     @EventHandler(PersonenkontextUpdatedEvent)
