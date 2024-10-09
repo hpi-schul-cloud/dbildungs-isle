@@ -1,6 +1,6 @@
 import { AutoMap } from '@automapper/classes';
 import { DoBase } from '../../../shared/types/index.js';
-import { Jahrgangsstufe, Personenstatus, Rolle, SichtfreigabeType } from './personenkontext.enums.js';
+import { Jahrgangsstufe, Personenstatus, SichtfreigabeType } from './personenkontext.enums.js';
 
 export class PersonenkontextDo<WasPersisted extends boolean> implements DoBase<WasPersisted> {
     /**
@@ -33,9 +33,6 @@ export class PersonenkontextDo<WasPersisted extends boolean> implements DoBase<W
     // TODO EW-636: get from access_token, see SchulConneX / and the the entity only stores the ID
     @AutoMap()
     public organisationId!: string;
-
-    @AutoMap(() => String)
-    public rolle!: Rolle;
 
     @AutoMap(() => String)
     public personenstatus?: Personenstatus;

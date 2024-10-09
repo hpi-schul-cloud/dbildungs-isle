@@ -5,7 +5,6 @@ import { Injectable } from '@nestjs/common';
 import { OrganisationID, PersonID, RolleID } from '../../../shared/types/aggregate-ids.types.js';
 import { PersonEntity } from '../../person/persistence/person.entity.js';
 import { RolleEntity } from '../../rolle/entity/rolle.entity.js';
-import { Rolle } from '../domain/personenkontext.enums.js';
 import { PersonenkontextFactory } from '../domain/personenkontext.factory.js';
 import { Personenkontext } from '../domain/personenkontext.js';
 import { PersonenkontextEntity } from './personenkontext.entity.js';
@@ -19,7 +18,6 @@ export function mapAggregateToData(
         personId: rel(PersonEntity, personenKontext.personId),
         organisationId: personenKontext.organisationId,
         rolleId: rel(RolleEntity, personenKontext.rolleId),
-        rolle: Rolle.LERNENDER, // Placeholder, until rolle is removed from entity
         befristung: personenKontext.befristung,
     };
 }

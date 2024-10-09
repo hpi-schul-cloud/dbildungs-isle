@@ -2514,23 +2514,6 @@
           "nullable": true,
           "mappedType": "string"
         },
-        "rolle": {
-          "name": "rolle",
-          "type": "text",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": false,
-          "enumItems": [
-            "LERN",
-            "LEHR",
-            "EXTERN",
-            "ORGADMIN",
-            "LEIT",
-            "SYSADMIN"
-          ],
-          "mappedType": "enum"
-        },
         "personenstatus": {
           "name": "personenstatus",
           "type": "personenstatus_enum",
@@ -3719,6 +3702,15 @@
             "ITSLEARNING"
           ],
           "mappedType": "enum"
+        },
+        "requires2fa": {
+          "name": "requires2fa",
+          "type": "boolean",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "boolean"
         }
       },
       "name": "service_provider",

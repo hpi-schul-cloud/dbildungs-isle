@@ -23,7 +23,6 @@ export class PersonenkontextScope extends ScopeBase<PersonenkontextEntity> {
             {
                 personId: findProps.personId,
                 referrer: findProps.referrer,
-                rolle: findProps.rolle,
                 personenstatus: findProps.personenstatus,
                 sichtfreigabe: findProps.sichtfreigabe,
             },

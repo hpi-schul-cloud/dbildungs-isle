@@ -51,7 +51,6 @@ import { PersonenkontextFactory } from '../../personenkontext/domain/personenkon
 import { DBiamPersonenkontextRepoInternal } from '../../personenkontext/persistence/internal-dbiam-personenkontext.repo.js';
 import { RolleRepo } from '../../rolle/repo/rolle.repo.js';
 import { Rolle } from '../../rolle/domain/rolle.js';
-import { Rolle as SchulConnexRolle } from '../../personenkontext/domain/personenkontext.enums.js';
 import { OrganisationRepository } from '../../organisation/persistence/organisation.repository.js';
 import { ServiceProviderRepo } from '../../service-provider/repo/service-provider.repo.js';
 import { PersonUpdateOutdatedError } from '../domain/update-outdated.error.js';
@@ -1000,7 +999,6 @@ describe('PersonRepository Integration', () => {
                     organisationId: organisation.id,
                     personId: person1.id,
                     rolleId: rolleEntity.id,
-                    rolle: SchulConnexRolle.LEHRENDER,
                 };
                 const personenkontextEntity: PersonenkontextEntity = em.create(
                     PersonenkontextEntity,
@@ -1152,7 +1150,6 @@ describe('PersonRepository Integration', () => {
                     organisationId: organisation.id,
                     personId: person1.id,
                     rolleId: rolleEntity.id,
-                    rolle: SchulConnexRolle.LEHRENDER,
                 };
                 const personenkontextEntity: PersonenkontextEntity = em.create(
                     PersonenkontextEntity,

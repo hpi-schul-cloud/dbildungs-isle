@@ -4,7 +4,6 @@ import { OrganisationsTyp, Traegerschaft } from '../../src/modules/organisation/
 import {
     Jahrgangsstufe,
     Personenstatus,
-    Rolle,
     SichtfreigabeType,
 } from '../../src/modules/personenkontext/domain/personenkontext.enums.js';
 import { RollenArt, RollenMerkmal, RollenSystemRecht } from '../../src/modules/rolle/domain/rolle.enums.js';
@@ -179,7 +178,6 @@ export class DoFactory {
             updatedAt: withId ? faker.date.recent() : undefined,
             organisationId: faker.string.uuid(),
             revision: '1',
-            rolle: Rolle.LEHRENDER,
             rolleId: faker.string.uuid(),
             jahrgangsstufe: Jahrgangsstufe.JAHRGANGSSTUFE_1,
             personenstatus: Personenstatus.AKTIV,
