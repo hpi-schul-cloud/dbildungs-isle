@@ -368,7 +368,7 @@ describe('Email Event Handler', () => {
 
                 await emailEventHandler.handlePersonenkontextCreatedMigrationEvent(event);
                 expect(loggerMock.info).toHaveBeenCalledWith(
-                    expect.stringContaining('Do Nothing because Rollenart is Not LEHR'),
+                    expect.stringContaining('No Action because Rollenart is Not LEHR'),
                 );
             });
             it('should Create Email When None Exists and Rollenart is LEHR', async () => {
@@ -479,7 +479,7 @@ describe('Email Event Handler', () => {
 
                 await emailEventHandler.handlePersonenkontextCreatedMigrationEvent(event);
                 expect(loggerMock.info).toHaveBeenCalledWith(
-                    expect.stringContaining('Do Nothing because PersonenkontextMigrationRuntype is Not STANDARD'),
+                    expect.stringContaining('No Action because PersonenkontextMigrationRuntype is Not STANDARD'),
                 );
             });
         });

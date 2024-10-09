@@ -26,8 +26,10 @@ import { PersonenkontextUpdatedEvent } from '../../../shared/events/personenkont
 import { PersonenkontextEventKontextData } from '../../../shared/events/personenkontext-event.types.js';
 import { DuplicatePersonalnummerError } from '../../../shared/error/duplicate-personalnummer.error.js';
 import { EmailAddressStatus } from '../../email/domain/email-address.js';
+import { PersonUpdateOutdatedError } from '../domain/update-outdated.error.js';
+import { UsernameGeneratorService } from '../domain/username-generator.service.js';
 import { PersonalnummerRequiredError } from '../domain/personalnummer-required.error.js';
-import { PersonalnummerUpdateOutdatedError } from '../domain/update-outdated.error.js';
+import { toDIN91379SearchForm } from '../../../shared/util/din-91379-validation.js';
 
 export function getEnabledEmailAddress(entity: PersonEntity): string | undefined {
     for (const emailAddress of entity.emailAddresses) {
@@ -117,6 +119,7 @@ export class PersonRepository {
         private readonly kcUserService: KeycloakUserService,
         private readonly em: EntityManager,
         private readonly eventService: EventService,
+        private usernameGenerator: UsernameGeneratorService,
         config: ConfigService<ServerConfig>,
     ) {
         this.ROOT_ORGANISATION_ID = config.getOrThrow<DataConfig>('DATA').ROOT_ORGANISATION_ID;
@@ -124,10 +127,10 @@ export class PersonRepository {
 
     private async getPersonScopeWithPermissions(
         permissions: PersonPermissions,
-        requiredRight: RollenSystemRecht = RollenSystemRecht.PERSONEN_VERWALTEN,
+        requiredRights: RollenSystemRecht[],
     ): Promise<PersonScope> {
         // Find all organisations where user has the required permission
-        const permittedOrgas: PermittedOrgas = await permissions.getOrgIdsWithSystemrecht([requiredRight], true);
+        const permittedOrgas: PermittedOrgas = await permissions.getOrgIdsWithSystemrecht(requiredRights, true);
 
         // Check if user has permission on root organisation
         if (permittedOrgas.all) {
@@ -188,8 +191,12 @@ export class PersonRepository {
         return personEntities.map((entity: PersonEntity) => mapEntityToAggregate(entity));
     }
 
-    public async getPersonIfAllowed(personId: string, permissions: PersonPermissions): Promise<Result<Person<true>>> {
-        const scope: PersonScope = await this.getPersonScopeWithPermissions(permissions);
+    public async getPersonIfAllowed(
+        personId: string,
+        permissions: PersonPermissions,
+        requiredRights: RollenSystemRecht[] = [RollenSystemRecht.PERSONEN_VERWALTEN],
+    ): Promise<Result<Person<true>>> {
+        const scope: PersonScope = await this.getPersonScopeWithPermissions(permissions, requiredRights);
         scope.findBy({ ids: [personId] }).sortBy('vorname', ScopeOrder.ASC);
 
         const [persons]: Counted<Person<true>> = await this.findBy(scope);
@@ -234,10 +241,9 @@ export class PersonRepository {
         permissions: PersonPermissions,
     ): Promise<Result<Person<true>>> {
         // Check if the user has permission to delete immediately
-        const scope: PersonScope = await this.getPersonScopeWithPermissions(
-            permissions,
+        const scope: PersonScope = await this.getPersonScopeWithPermissions(permissions, [
             RollenSystemRecht.PERSONEN_SOFORT_LOESCHEN,
-        );
+        ]);
         scope.findBy({ ids: [personId] }).sortBy('vorname', ScopeOrder.ASC);
 
         const [persons]: Counted<Person<true>> = await this.findBy(scope);
@@ -493,50 +499,144 @@ export class PersonRepository {
         return !!person;
     }
 
-    public async updatePersonalnummer(
+    public async updatePersonMetadata(
         personId: string,
-        newPersonalnummer: string,
+        familienname: string,
+        vorname: string,
+        personalnummer: string | undefined,
         lastModified: Date,
         revision: string,
         permissions: PersonPermissions,
     ): Promise<Person<true> | DomainError> {
         const personFound: Option<Person<true>> = await this.findById(personId);
-
         if (!personFound) {
             return new EntityNotFoundError('Person', personId);
         }
 
-        //Permissions: Only the admin can update the personalnummer.
+        //Permissions: Only the admin can update the person metadata.
         if (!(await permissions.canModifyPerson(personId))) {
-            return new MissingPermissionsError('Not allowed to update the Personalnummer for the person.');
+            return new MissingPermissionsError('Not allowed to update the person metadata for the person.');
         }
 
-        {
-            //Specifications
-            if (!newPersonalnummer) {
-                return new PersonalnummerRequiredError();
-            }
+        const hasNameChanged: boolean = this.hasNameChanged(
+            personFound.vorname,
+            personFound.familienname,
+            vorname,
+            familienname,
+        );
 
-            if (await this.isPersonalnummerAlreadayAssigned(newPersonalnummer)) {
-                return new DuplicatePersonalnummerError(`Personalnummer ${newPersonalnummer} already exists.`);
-            }
+        const hasUsernameChanged: boolean = this.hasUsernameChanged(
+            personFound.vorname,
+            personFound.familienname,
+            vorname,
+            familienname,
+        );
 
-            if (personFound.updatedAt.getTime() > lastModified.getTime()) {
-                // The existing data is newer than the incoming update
-                return new PersonalnummerUpdateOutdatedError();
-            }
+        if (!hasNameChanged && !personalnummer) {
+            return new PersonalnummerRequiredError();
+        }
 
-            const newRevisionResult: Result<string, DomainError> = personFound.tryToUpdateRevision(revision);
-            if (!newRevisionResult.ok) {
-                return newRevisionResult.error;
-            }
+        if (personFound.updatedAt.getTime() > lastModified.getTime()) {
+            return new PersonUpdateOutdatedError();
+        }
 
-            //Update
-            personFound.revision = newRevisionResult.value;
-            personFound.personalnummer = newPersonalnummer;
+        let newPersonalnummer: string | undefined = undefined;
+        let newVorname: string | undefined = undefined;
+        let newFamilienname: string | undefined = undefined;
+        const oldUsername: string = personFound.referrer!;
+        let username: string = oldUsername;
+
+        //Update personalnummer
+        if (personalnummer) {
+            if (await this.isPersonalnummerAlreadayAssigned(personalnummer)) {
+                return new DuplicatePersonalnummerError(`Personalnummer ${personalnummer} already exists.`);
+            }
+            newPersonalnummer = personalnummer;
+        }
+        //Update name
+        if (hasNameChanged) {
+            newVorname = vorname;
+            newFamilienname = familienname;
+
+            if (hasUsernameChanged) {
+                //Generate new username
+                const result: Result<string, DomainError> = await this.usernameGenerator.generateUsername(
+                    vorname,
+                    familienname,
+                );
+                if (!result.ok) {
+                    return result.error;
+                }
+                username = result.value;
+            }
+        }
+
+        const error: void | DomainError = personFound.update(
+            revision,
+            newFamilienname,
+            newVorname,
+            username,
+            personFound.stammorganisation,
+            personFound.initialenFamilienname,
+            personFound.initialenVorname,
+            personFound.rufname,
+            personFound.nameTitel,
+            personFound.nameAnrede,
+            personFound.namePraefix,
+            personFound.nameSuffix,
+            personFound.nameSortierindex,
+            personFound.geburtsdatum,
+            personFound.geburtsort,
+            personFound.geschlecht,
+            personFound.lokalisierung,
+            personFound.vertrauensstufe,
+            personFound.auskunftssperre,
+            newPersonalnummer,
+            personFound.lockInfo,
+            personFound.isLocked,
+            personFound.email,
+        );
+        if (error instanceof DomainError) {
+            return error;
+        }
+
+        //Update username in kc
+        if (hasUsernameChanged) {
+            const kcUsernameUpdated: Result<void, DomainError> = await this.kcUserService.updateUsername(
+                oldUsername,
+                username,
+            );
+            if (!kcUsernameUpdated.ok) {
+                return kcUsernameUpdated.error;
+            }
         }
 
         const savedPerson: Person<true> | DomainError = await this.save(personFound);
         return savedPerson;
+    }
+
+    private hasNameChanged(
+        oldVorname: string,
+        oldFamilienname: string,
+        newVorname: string,
+        newFamilienname: string,
+    ): boolean {
+        return oldVorname !== newVorname || oldFamilienname !== newFamilienname;
+    }
+
+    private hasUsernameChanged(
+        oldVorname: string,
+        oldFamilienname: string,
+        newVorname: string,
+        newFamilienname: string,
+    ): boolean {
+        const oldVornameLowerCase: string = toDIN91379SearchForm(oldVorname).toLowerCase();
+        const oldFamiliennameLowerCase: string = toDIN91379SearchForm(oldFamilienname).toLowerCase();
+        const newVornameLowerCase: string = toDIN91379SearchForm(newVorname).toLowerCase();
+        const newFamiliennameLowerCase: string = toDIN91379SearchForm(newFamilienname).toLowerCase();
+
+        if (oldVornameLowerCase[0] !== newVornameLowerCase[0]) return true;
+
+        return oldFamiliennameLowerCase !== newFamiliennameLowerCase;
     }
 }

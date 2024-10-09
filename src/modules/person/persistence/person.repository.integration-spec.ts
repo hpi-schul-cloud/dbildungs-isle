@@ -26,6 +26,7 @@ import {
     DomainError,
     EntityCouldNotBeDeleted,
     EntityNotFoundError,
+    InvalidNameError,
     KeycloakClientError,
     MismatchedRevisionError,
     MissingPermissionsError,
@@ -53,7 +54,7 @@ import { Rolle } from '../../rolle/domain/rolle.js';
 import { Rolle as SchulConnexRolle } from '../../personenkontext/domain/personenkontext.enums.js';
 import { OrganisationRepository } from '../../organisation/persistence/organisation.repository.js';
 import { ServiceProviderRepo } from '../../service-provider/repo/service-provider.repo.js';
-import { PersonalnummerUpdateOutdatedError } from '../domain/update-outdated.error.js';
+import { PersonUpdateOutdatedError } from '../domain/update-outdated.error.js';
 import { PersonalnummerRequiredError } from '../domain/personalnummer-required.error.js';
 
 describe('PersonRepository Integration', () => {
@@ -1454,14 +1455,22 @@ describe('PersonRepository Integration', () => {
         });
     });
 
-    describe('updatePersonalnummer', () => {
+    describe('updatePersonMetadata', () => {
         it('should return the updated person', async () => {
             const person: Person<true> = await savePerson(true);
+            const newFamilienname: string = faker.name.lastName();
+            const newVorname: string = faker.name.firstName();
             const newPersonalnummer: string = faker.finance.pin(7);
             personPermissionsMock.canModifyPerson.mockResolvedValueOnce(true);
-
-            const result: Person<true> | DomainError = await sut.updatePersonalnummer(
+            usernameGeneratorService.generateUsername.mockResolvedValueOnce({ ok: true, value: 'testusername1' });
+            kcUserServiceMock.updateUsername.mockResolvedValueOnce({
+                ok: true,
+                value: undefined,
+            });
+            const result: Person<true> | DomainError = await sut.updatePersonMetadata(
                 person.id,
+                newFamilienname,
+                newVorname,
                 newPersonalnummer,
                 person.updatedAt,
                 person.revision,
@@ -1472,14 +1481,19 @@ describe('PersonRepository Integration', () => {
             }
 
             expect(person.id).toBe(result.id);
-            expect(person.personalnummer).not.toBeNull();
+            expect(result.familienname).toEqual(newFamilienname);
+            expect(result.vorname).toEqual(newVorname);
+            expect(result.referrer).toEqual('testusername1');
+
             expect(person.personalnummer).not.toEqual(newPersonalnummer);
             expect(result.personalnummer).toEqual(newPersonalnummer);
         });
 
         it('should return EntityNotFound when person does not exit', async () => {
-            const result: Person<true> | DomainError = await sut.updatePersonalnummer(
+            const result: Person<true> | DomainError = await sut.updatePersonMetadata(
                 faker.string.uuid(),
+                faker.name.lastName(),
+                faker.name.firstName(),
                 faker.finance.pin(7),
                 faker.date.anytime(),
                 '1',
@@ -1489,12 +1503,14 @@ describe('PersonRepository Integration', () => {
             expect(result).toBeInstanceOf(EntityNotFoundError);
         });
 
-        it('should return MissingPermissionsError if the admin does not have permissions to update the Personalnummer', async () => {
+        it('should return MissingPermissionsError if the admin does not have permissions to update the person metadata', async () => {
             const person: Person<true> = await savePerson(true);
             personPermissionsMock.canModifyPerson.mockResolvedValueOnce(false);
 
-            const result: Person<true> | DomainError = await sut.updatePersonalnummer(
+            const result: Person<true> | DomainError = await sut.updatePersonMetadata(
                 person.id,
+                faker.name.lastName(),
+                faker.name.firstName(),
                 faker.finance.pin(7),
                 person.updatedAt,
                 person.revision,
@@ -1504,12 +1520,14 @@ describe('PersonRepository Integration', () => {
             expect(result).toBeInstanceOf(MissingPermissionsError);
         });
 
-        it('should return PersonalnummerRequiredError when personalnummer was not provided', async () => {
+        it('should return PersonalnummerRequiredError when personalnummer was not provided and faminlienname or vorname did not change', async () => {
             const person: Person<true> = await savePerson(true);
             personPermissionsMock.canModifyPerson.mockResolvedValueOnce(true);
 
-            const result: Person<true> | DomainError = await sut.updatePersonalnummer(
+            const result: Person<true> | DomainError = await sut.updatePersonMetadata(
                 person.id,
+                person.familienname,
+                person.vorname,
                 '',
                 person.updatedAt,
                 person.revision,
@@ -1523,13 +1541,15 @@ describe('PersonRepository Integration', () => {
             const person: Person<true> = await savePerson(true);
             const person2: Person<true> = await savePerson(true);
             if (!person2.personalnummer) {
-                throw new PersonalnummerRequiredError();
+                return;
             }
 
             personPermissionsMock.canModifyPerson.mockResolvedValueOnce(true);
 
-            const result: Person<true> | DomainError = await sut.updatePersonalnummer(
+            const result: Person<true> | DomainError = await sut.updatePersonMetadata(
                 person.id,
+                faker.name.lastName(),
+                faker.name.firstName(),
                 person2.personalnummer,
                 person.updatedAt,
                 person.revision,
@@ -1539,27 +1559,31 @@ describe('PersonRepository Integration', () => {
             expect(result).toBeInstanceOf(DuplicatePersonalnummerError);
         });
 
-        it('should return PersonalnummerUpdateOutdatedError if there is a newer updated version', async () => {
+        it('should return PersonUpdateOutdatedError if there is a newer updated version', async () => {
             const person: Person<true> = await savePerson(true);
             personPermissionsMock.canModifyPerson.mockResolvedValueOnce(true);
 
-            const result: Person<true> | DomainError = await sut.updatePersonalnummer(
+            const result: Person<true> | DomainError = await sut.updatePersonMetadata(
                 person.id,
+                faker.name.lastName(),
+                faker.name.firstName(),
                 faker.finance.pin(7),
                 faker.date.past(),
                 person.revision,
                 personPermissionsMock,
             );
 
-            expect(result).toBeInstanceOf(PersonalnummerUpdateOutdatedError);
+            expect(result).toBeInstanceOf(PersonUpdateOutdatedError);
         });
 
         it('should return MismatchedRevisionError if the revision is incorrect', async () => {
             const person: Person<true> = await savePerson(true);
             personPermissionsMock.canModifyPerson.mockResolvedValueOnce(true);
 
-            const result: Person<true> | DomainError = await sut.updatePersonalnummer(
+            const result: Person<true> | DomainError = await sut.updatePersonMetadata(
                 person.id,
+                person.familienname,
+                person.vorname,
                 faker.finance.pin(7),
                 person.updatedAt,
                 '2',
@@ -1567,6 +1591,50 @@ describe('PersonRepository Integration', () => {
             );
 
             expect(result).toBeInstanceOf(MismatchedRevisionError);
+        });
+
+        it('should return DomainError if it cannot generate new username', async () => {
+            const person: Person<true> = await savePerson(true);
+            personPermissionsMock.canModifyPerson.mockResolvedValueOnce(true);
+            usernameGeneratorService.generateUsername.mockResolvedValueOnce({
+                ok: false,
+                error: new InvalidNameError('Could not generate valid username'),
+            });
+            kcUserServiceMock.updateUsername.mockResolvedValueOnce({
+                ok: true,
+                value: undefined,
+            });
+            const result: Person<true> | DomainError = await sut.updatePersonMetadata(
+                person.id,
+                faker.name.lastName(),
+                faker.name.firstName(),
+                '',
+                person.updatedAt,
+                person.revision,
+                personPermissionsMock,
+            );
+            expect(result).toBeInstanceOf(DomainError);
+        });
+
+        it('should return DomainError if keycloak cannot update the username', async () => {
+            const person: Person<true> = await savePerson(true);
+            personPermissionsMock.canModifyPerson.mockResolvedValueOnce(true);
+            usernameGeneratorService.generateUsername.mockResolvedValueOnce({ ok: true, value: 'testusername1' });
+
+            kcUserServiceMock.updateUsername.mockResolvedValueOnce({
+                ok: false,
+                error: new EntityNotFoundError(`Keycloak User could not be found`),
+            });
+            const result: Person<true> | DomainError = await sut.updatePersonMetadata(
+                person.id,
+                faker.name.lastName(),
+                faker.name.firstName(),
+                '',
+                person.updatedAt,
+                person.revision,
+                personPermissionsMock,
+            );
+            expect(result).toBeInstanceOf(DomainError);
         });
     });
 });

@@ -152,12 +152,15 @@ export class EmailEventHandler {
         } else {
             if (event.migrationRunType !== PersonenkontextMigrationRuntype.STANDARD) {
                 this.logger.info(
-                    `MIGRATION: Create Kontext Operation / personId: ${event.createdKontextPerson.id} ;  orgaId: ${event.createdKontextOrga.id} ;  rolleId: ${event.createdKontextRolle.id} / Do Nothing because PersonenkontextMigrationRuntype is Not STANDARD`,
+                    `MIGRATION: Create Kontext Operation / personId: ${event.createdKontextPerson.id} ;  orgaId: ${event.createdKontextOrga.id} ;  rolleId: ${event.createdKontextRolle.id} / No Action because PersonenkontextMigrationRuntype is Not STANDARD`,
                 );
-            } else if (event.createdKontextRolle.rollenart !== RollenArt.LEHR) {
+                return;
+            }
+            if (event.createdKontextRolle.rollenart !== RollenArt.LEHR) {
                 this.logger.info(
-                    `MIGRATION: Create Kontext Operation / personId: ${event.createdKontextPerson.id} ;  orgaId: ${event.createdKontextOrga.id} ;  rolleId: ${event.createdKontextRolle.id} / Do Nothing because Rollenart is Not LEHR`,
+                    `MIGRATION: Create Kontext Operation / personId: ${event.createdKontextPerson.id} ;  orgaId: ${event.createdKontextOrga.id} ;  rolleId: ${event.createdKontextRolle.id} / No Action because Rollenart is Not LEHR`,
                 );
+                return;
             }
         }
     }

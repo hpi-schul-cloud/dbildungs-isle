@@ -53,6 +53,7 @@
         "ENDPOINT": "https://itslearning.example.com",
         "USERNAME": "username",
         "PASSWORD": "password",
+        "ROOT": "sh",
         "ROOT_OEFFENTLICH": "oeffentlich",
         "ROOT_ERSATZ": "ersatz"
     },

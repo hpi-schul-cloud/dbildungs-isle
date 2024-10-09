@@ -1,11 +1,7 @@
 import { PersonDomainError } from './person-domain.error.js';
 
-export class PersonalnummerUpdateOutdatedError extends PersonDomainError {
+export class PersonUpdateOutdatedError extends PersonDomainError {
     public constructor(details?: unknown[] | Record<string, undefined>) {
-        super(
-            `Personalnummer could not be updated because newer versions of personalnummer for this person exist.`,
-            undefined,
-            details,
-        );
+        super(`Person could not be updated because newer version of person exist.`, undefined, details);
     }
 }

@@ -14,6 +14,9 @@ export class ItsLearningConfig {
     public readonly PASSWORD!: string;
 
     @IsString()
+    public readonly ROOT!: string;
+
+    @IsString()
     public readonly ROOT_OEFFENTLICH!: string;
 
     @IsString()
