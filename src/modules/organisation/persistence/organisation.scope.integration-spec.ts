@@ -133,4 +133,49 @@ describe('OrganisationScope', () => {
             });
         });
     });
+
+    describe('filterByIds', () => {
+        describe('when filtering organizations by specific IDs', () => {
+            let organisations: OrganisationEntity[] = [];
+
+            beforeEach(async () => {
+                // Create and persist 10 organizations with different names
+                organisations = Array.from({ length: 10 }, (_v: unknown, i: number) =>
+                    mapper.map(
+                        DoFactory.createOrganisation(false, {
+                            name: `Organization #${i}`,
+                            typ: OrganisationsTyp.SCHULE,
+                        }),
+                        OrganisationDo,
+                        OrganisationEntity,
+                    ),
+                );
+                await em.persistAndFlush(organisations);
+            });
+
+            it('should return only the organizations with the specified IDs', async () => {
+                // Define a set of IDs to filter by
+                if (organisations && organisations.length > 0) {
+                    const orgaIdsToFilter: string[] = [
+                        organisations[1]?.id,
+                        organisations[3]?.id,
+                        organisations[5]?.id,
+                    ].filter((id: string | undefined): id is string => !!id);
+
+                    const scope: OrganisationScope = new OrganisationScope()
+                        .filterByIds(orgaIdsToFilter)
+                        .sortBy('name', ScopeOrder.ASC);
+
+                    const [foundOrganisations]: Counted<OrganisationEntity> = await scope.executeQuery(em);
+
+                    // Check that the correct organizations are returned
+                    expect(foundOrganisations).toHaveLength(3);
+
+                    // Ensure that the organizations match the filtered IDs
+                    const foundIds: string[] = foundOrganisations.map((org: OrganisationEntity) => org.id);
+                    expect(foundIds).toEqual(expect.arrayContaining(orgaIdsToFilter));
+                }
+            });
+        });
+    });
 });

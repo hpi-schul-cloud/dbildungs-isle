@@ -465,6 +465,69 @@ describe('PersonenkontextWorkflow', () => {
 
             expect(result.length).toEqual(2);
         });
+
+        it('should call findByNameOrKennungAndExcludeByOrganisationType with undefined orgaIds when all permissions are granted', async () => {
+            const organisation: Organisation<true> = DoFactory.createOrganisation(true);
+            const organisations: Organisation<true>[] = [organisation];
+
+            organisationRepoMock.findByNameOrKennungAndExcludeByOrganisationType.mockResolvedValue(organisations);
+            personpermissionsMock.getOrgIdsWithSystemrecht.mockResolvedValue({
+                all: true,
+            });
+
+            const result: Organisation<true>[] = await anlage.findAllSchulstrukturknoten(
+                personpermissionsMock,
+                undefined,
+            );
+
+            // Ensure that the method is called with undefined orgaIds
+            expect(organisationRepoMock.findByNameOrKennungAndExcludeByOrganisationType).toHaveBeenCalledWith(
+                OrganisationsTyp.KLASSE,
+                undefined,
+                undefined,
+                undefined,
+            );
+
+            expect(result).toEqual(organisations);
+        });
+
+        it('should return an empty array if no organisations are found', async () => {
+            organisationRepoMock.findByNameOrKennungAndExcludeByOrganisationType.mockResolvedValue([]);
+            personpermissionsMock.getOrgIdsWithSystemrecht.mockResolvedValueOnce({ all: false, orgaIds: ['someId'] });
+
+            const result: Organisation<true>[] = await anlage.findAllSchulstrukturknoten(
+                personpermissionsMock,
+                undefined,
+            );
+
+            expect(result.length).toBe(0); // Verify that the result is empty
+        });
+
+        it('should filter organisations by permittedOrgaIds when all permissions are not granted', async () => {
+            const organisation1: Organisation<true> = DoFactory.createOrganisation(true, { name: 'Org 1' });
+            const organisation2: Organisation<true> = DoFactory.createOrganisation(true, { name: 'Org 2' });
+            const permittedOrgaIds: string[] = [organisation1.id]; // Only Org 1 is permitted
+
+            // Mock the repository to return both organisations
+            organisationRepoMock.findByNameOrKennungAndExcludeByOrganisationType.mockResolvedValue([
+                organisation1,
+                organisation2,
+            ]);
+
+            // Mock permissions to indicate that all organisations are not permitted
+            personpermissionsMock.getOrgIdsWithSystemrecht.mockResolvedValueOnce({
+                all: false,
+                orgaIds: permittedOrgaIds, // Only permit Org 1
+            });
+
+            const result: Organisation<true>[] = await anlage.findAllSchulstrukturknoten(
+                personpermissionsMock,
+                undefined,
+            );
+
+            // Ensure only the permitted organisation is returned
+            expect(result.length).toEqual(1); // Only Org 1 should be returned
+        });
     });
 
     describe('findRollenForOrganisation', () => {

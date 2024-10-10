@@ -72,4 +72,13 @@ export class OrganisationScope extends ScopeBase<OrganisationEntity> {
 
         return this;
     }
+
+    public filterByIds(orgaIds: string[]): this {
+        if (orgaIds && orgaIds.length > 0) {
+            this.findByQuery({
+                id: { $in: orgaIds },
+            });
+        }
+        return this;
+    }
 }

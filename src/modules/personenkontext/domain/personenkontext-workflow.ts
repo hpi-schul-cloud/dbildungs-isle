@@ -49,22 +49,27 @@ export class PersonenkontextWorkflowAggregate {
         organisationId?: string, // Add organisationId as an optional parameter
         limit?: number,
     ): Promise<Organisation<true>[]> {
-        let allOrganisationsExceptKlassen: Organisation<true>[] = [];
-
-        // If the search string for organisation is present then search for Name or Kennung
-        allOrganisationsExceptKlassen =
-            await this.organisationRepository.findByNameOrKennungAndExcludeByOrganisationType(
-                OrganisationsTyp.KLASSE,
-                organisationName,
-                limit,
-            );
-
-        if (allOrganisationsExceptKlassen.length === 0) return [];
-
         const permittedOrgas: PermittedOrgas = await permissions.getOrgIdsWithSystemrecht(
             [RollenSystemRecht.PERSONEN_VERWALTEN],
             true,
         );
+
+        // If there are no permitted orgas, return an empty array early
+        if (!permittedOrgas.all && permittedOrgas.orgaIds.length === 0) return [];
+
+        let allOrganisationsExceptKlassen: Organisation<true>[] = [];
+
+        // Fetch organisations based on the permitted organization IDs and the search string
+        allOrganisationsExceptKlassen =
+            await this.organisationRepository.findByNameOrKennungAndExcludeByOrganisationType(
+                OrganisationsTyp.KLASSE,
+                organisationName,
+                permittedOrgas.all ? undefined : permittedOrgas.orgaIds, // Only fetch permitted organizations if restricted
+                limit,
+            );
+
+        // If no organizations were found, return an empty array
+        if (allOrganisationsExceptKlassen.length === 0) return [];
 
         // Return only the orgas that the admin have rights on
         let filteredOrganisations: Organisation<boolean>[] = allOrganisationsExceptKlassen.filter(
