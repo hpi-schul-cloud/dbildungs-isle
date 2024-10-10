@@ -10,9 +10,7 @@ import {
 import { SchulConnexValidationErrorFilter } from '../../../shared/error/schulconnex-validation-error.filter.js';
 import { ApiOkResponsePaginated, DisablePagingInterceptor, RawPagedResponse } from '../../../shared/paging/index.js';
 import { PersonenQueryParams } from './personen-query.param.js';
-import { ScopeOperator, ScopeOrder } from '../../../shared/persistence/scope.enums.js';
 import { Person } from '../domain/person.js';
-import { PersonScope } from '../persistence/person.scope.js';
 import { PersonendatensatzResponse } from './personendatensatz.response.js';
 import { PersonRepository } from '../persistence/person.repository.js';
 import { PermittedOrgas, PersonPermissions } from '../../authentication/domain/person-permissions.js';
@@ -61,24 +59,10 @@ export class PersonFrontendController {
             throw new UnauthorizedException('NOT_AUTHORIZED');
         }
 
-        const scope: PersonScope = new PersonScope()
-            .setScopeWhereOperator(ScopeOperator.AND)
-            .findBy({
-                vorname: queryParams.vorname,
-                familienname: queryParams.familienname,
-                geburtsdatum: undefined,
-                organisationen: permittedOrgas.all ? undefined : permittedOrgas.orgaIds,
-            })
-            .findByPersonenKontext(queryParams.organisationIDs, queryParams.rolleIDs)
-
-            .sortBy('vorname', ScopeOrder.ASC)
-            .paged(queryParams.offset, queryParams.limit);
-
-        if (queryParams.suchFilter) {
-            scope.findBySearchString(queryParams.suchFilter);
-        }
-
-        const [persons, total]: Counted<Person<true>> = await this.personRepository.findBy(scope);
+        const [persons, total]: Counted<Person<true>> = await this.personRepository.findbyPersonFrontend(
+            queryParams,
+            permittedOrgas,
+        );
 
         const response: RawPagedResponse<PersonendatensatzResponse> = new RawPagedResponse({
             offset: queryParams.offset ?? 0,

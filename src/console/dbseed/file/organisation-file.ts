@@ -20,4 +20,6 @@ export class OrganisationFile {
     public traegerschaft?: Traegerschaft;
 
     public emailDomain?: string;
+
+    public emailAdress?: string;
 }

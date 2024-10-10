@@ -33,6 +33,8 @@ import { NameForOrganisationWithTrailingSpaceError } from '../specification/erro
 import { KennungForOrganisationWithTrailingSpaceError } from '../specification/error/kennung-with-trailing-space.error.js';
 import { Organisation } from './organisation.js';
 import { OrganisationRepository } from '../persistence/organisation.repository.js';
+import { EmailAdressOnOrganisationTyp } from '../specification/email-on-organisation-type.js';
+import { EmailAdressOnOrganisationTypError } from '../specification/error/email-adress-on-organisation-typ-error.js';
 
 @Injectable()
 export class OrganisationService {
@@ -72,14 +74,19 @@ export class OrganisationService {
         if (!validationResult.ok) {
             return { ok: false, error: validationResult.error };
         }
+        validationResult = await this.validateEmailAdressOnOrganisationTyp(organisationDo);
+        if (!validationResult.ok) {
+            return { ok: false, error: validationResult.error };
+        }
 
         const validateKlassen: Result<boolean, DomainError> = await this.validateKlassenSpecifications(organisationDo);
         if (!validateKlassen.ok) {
             return { ok: false, error: validateKlassen.error };
         }
 
-        const organisation: Organisation<true> = await this.organisationRepo.save(organisationDo);
-        if (organisation) {
+        const organisation: Organisation<true> | OrganisationSpecificationError =
+            await this.organisationRepo.save(organisationDo);
+        if (organisation instanceof Organisation) {
             return { ok: true, value: organisation };
         }
         return { ok: false, error: new EntityCouldNotBeCreated(`Organization could not be created`) };
@@ -110,14 +117,19 @@ export class OrganisationService {
         if (!validationResult.ok) {
             return { ok: false, error: validationResult.error };
         }
+        validationResult = await this.validateEmailAdressOnOrganisationTyp(organisationDo);
+        if (!validationResult.ok) {
+            return { ok: false, error: validationResult.error };
+        }
 
         const validateKlassen: Result<boolean, DomainError> = await this.validateKlassenSpecifications(organisationDo);
         if (!validateKlassen.ok) {
             return { ok: false, error: validateKlassen.error };
         }
 
-        const organisation: Organisation<true> = await this.organisationRepo.save(organisationDo);
-        if (organisation) {
+        const organisation: Organisation<true> | OrganisationSpecificationError =
+            await this.organisationRepo.save(organisationDo);
+        if (organisation instanceof Organisation) {
             return { ok: true, value: organisation };
         }
 
@@ -125,6 +137,16 @@ export class OrganisationService {
             ok: false,
             error: new EntityCouldNotBeUpdated(`Organization could not be updated`, organisationDo.id),
         };
+    }
+
+    private async validateEmailAdressOnOrganisationTyp(
+        organisation: Organisation<boolean>,
+    ): Promise<Result<void, DomainError>> {
+        const emailAdressOnOrganisationTyp: EmailAdressOnOrganisationTyp = new EmailAdressOnOrganisationTyp();
+        if (!(await emailAdressOnOrganisationTyp.isSatisfiedBy(organisation))) {
+            return { ok: false, error: new EmailAdressOnOrganisationTypError() };
+        }
+        return { ok: true, value: undefined };
     }
 
     private async validateKennungRequiredForSchule(

@@ -45,4 +45,7 @@ export class OrganisationEntity extends TimestampedEntity {
 
     @Property({ nullable: true })
     public emailDomain?: string;
+
+    @Property({ nullable: true })
+    public emailAddress?: string;
 }

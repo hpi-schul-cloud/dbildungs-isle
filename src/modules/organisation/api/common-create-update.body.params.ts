@@ -45,4 +45,9 @@ export class CommonCreateUpdateOrganisationBodyParams {
     @ApiProperty({ enum: Traegerschaft, enumName: TraegerschaftTypName, required: false })
     @IsOptional()
     public traegerschaft?: Traegerschaft;
+
+    @IsOptional()
+    @IsString()
+    @ApiPropertyOptional()
+    public readonly emailAdress?: string;
 }

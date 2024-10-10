@@ -99,13 +99,13 @@ describe('PersonFrontendController', () => {
                 all: true,
             });
 
-            personRepositoryMock.findBy.mockResolvedValue([[person1, person2], 2]);
+            personRepositoryMock.findbyPersonFrontend.mockResolvedValue([[person1, person2], 2]);
 
             const result: PagedResponse<PersonendatensatzResponse> = await personController.findPersons(
                 queryParams,
                 personPermissions,
             );
-            expect(personRepositoryMock.findBy).toHaveBeenCalledTimes(1);
+            expect(personRepositoryMock.findbyPersonFrontend).toHaveBeenCalledTimes(1);
             expect(result.total).toEqual(2);
             expect(result.limit).toEqual(2);
             expect(result.offset).toEqual(0);
@@ -120,14 +120,14 @@ describe('PersonFrontendController', () => {
             personPermissions.getOrgIdsWithSystemrecht.mockResolvedValueOnce({
                 all: true,
             });
-            personRepositoryMock.findBy.mockResolvedValue([[person1], 1]);
+            personRepositoryMock.findbyPersonFrontend.mockResolvedValue([[person1], 1]);
 
             const result: PagedResponse<PersonendatensatzResponse> = await personController.findPersons(
                 { ...queryParams, suchFilter },
                 personPermissions,
             );
 
-            expect(personRepositoryMock.findBy).toHaveBeenCalledTimes(1);
+            expect(personRepositoryMock.findbyPersonFrontend).toHaveBeenCalledTimes(1);
             expect(result.total).toEqual(1);
             expect(result.limit).toEqual(1);
             expect(result.offset).toEqual(0);
@@ -141,14 +141,14 @@ describe('PersonFrontendController', () => {
                 all: true,
             });
 
-            personRepositoryMock.findBy.mockResolvedValue([[person1], 1]);
+            personRepositoryMock.findbyPersonFrontend.mockResolvedValue([[person1], 1]);
             const rolleID: string = personenkontext1.rolleId;
             const result: PagedResponse<PersonendatensatzResponse> = await personController.findPersons(
                 { ...queryParams, rolleIDs: [rolleID] },
                 personPermissions,
             );
 
-            expect(personRepositoryMock.findBy).toHaveBeenCalledTimes(1);
+            expect(personRepositoryMock.findbyPersonFrontend).toHaveBeenCalledTimes(1);
             expect(result.total).toEqual(1);
             expect(result.limit).toEqual(1);
             expect(result.offset).toEqual(0);
@@ -163,14 +163,14 @@ describe('PersonFrontendController', () => {
                 all: true,
             });
 
-            personRepositoryMock.findBy.mockResolvedValue([[person1], 1]);
+            personRepositoryMock.findbyPersonFrontend.mockResolvedValue([[person1], 1]);
 
             const result: PagedResponse<PersonendatensatzResponse> = await personController.findPersons(
                 { ...queryParams, rolleIDs: undefined },
                 personPermissions,
             );
 
-            expect(personRepositoryMock.findBy).toHaveBeenCalledTimes(1);
+            expect(personRepositoryMock.findbyPersonFrontend).toHaveBeenCalledTimes(1);
             expect(result.total).toEqual(1);
             expect(result.limit).toEqual(1);
             expect(result.offset).toEqual(0);
@@ -187,14 +187,14 @@ describe('PersonFrontendController', () => {
                 orgaIds: [organisationID],
             });
 
-            personRepositoryMock.findBy.mockResolvedValue([[person1], 1]);
+            personRepositoryMock.findbyPersonFrontend.mockResolvedValue([[person1], 1]);
 
             const result: PagedResponse<PersonendatensatzResponse> = await personController.findPersons(
                 { ...queryParams, organisationIDs: [organisationID] },
                 personPermissions,
             );
 
-            expect(personRepositoryMock.findBy).toHaveBeenCalledTimes(1);
+            expect(personRepositoryMock.findbyPersonFrontend).toHaveBeenCalledTimes(1);
             expect(result.total).toEqual(1);
             expect(result.limit).toEqual(1);
             expect(result.offset).toEqual(0);

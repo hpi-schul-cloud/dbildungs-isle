@@ -4,8 +4,6 @@ import { PagedQueryParams } from '../../../../shared/paging/paged.query.params.j
 import {
     Personenstatus,
     PersonenstatusTypName,
-    Rolle,
-    RolleTypName,
     SichtfreigabeType,
     SichtfreigabeTypName,
 } from '../../domain/personenkontext.enums.js';
@@ -29,17 +27,6 @@ export class PersonenkontextQueryParams extends PagedQueryParams {
         nullable: true,
     })
     public readonly referrer?: string;
-
-    @AutoMap()
-    @IsOptional()
-    @IsEnum(Rolle)
-    @ApiProperty({
-        required: false,
-        nullable: true,
-        enum: Rolle,
-        enumName: RolleTypName,
-    })
-    public readonly rolle?: Rolle;
 
     @AutoMap()
     @IsOptional()

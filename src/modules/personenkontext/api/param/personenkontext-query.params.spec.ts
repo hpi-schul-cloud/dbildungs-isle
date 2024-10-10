@@ -1,6 +1,6 @@
 import { plainToInstance } from 'class-transformer';
 import 'reflect-metadata';
-import { Personenstatus, Rolle, SichtfreigabeType } from '../../domain/personenkontext.enums.js';
+import { Personenstatus, SichtfreigabeType } from '../../domain/personenkontext.enums.js';
 import { PersonenkontextQueryParams } from './personenkontext-query.params.js';
 
 describe('PersonenkontextQueryParams', () => {
@@ -8,7 +8,6 @@ describe('PersonenkontextQueryParams', () => {
         sichtfreigabe: SichtfreigabeType.JA,
         personenstatus: Personenstatus.AKTIV,
         referrer: 'referrer',
-        rolle: Rolle.LERNENDER,
     };
 
     it('should convert a plain object to a class of PersonenkontextQueryParams', () => {
@@ -16,7 +15,6 @@ describe('PersonenkontextQueryParams', () => {
             sichtfreigabe: SichtfreigabeType.JA,
             personenstatus: Personenstatus.AKTIV,
             referrer: 'referrer',
-            rolle: Rolle.LERNENDER,
         };
         const mappedParams: PersonenkontextQueryParams = plainToInstance(
             PersonenkontextQueryParams,

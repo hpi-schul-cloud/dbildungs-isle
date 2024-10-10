@@ -4,7 +4,7 @@ import { HttpException, NotImplementedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { DoFactory, MapperTestModule } from '../../../../test/utils/index.js';
 import { Paged, PagedResponse } from '../../../shared/paging/index.js';
-import { Personenstatus, Rolle, SichtfreigabeType } from '../../personenkontext/domain/personenkontext.enums.js';
+import { Personenstatus, SichtfreigabeType } from '../../personenkontext/domain/personenkontext.enums.js';
 import { CreatePersonMigrationBodyParams } from './create-person.body.params.js';
 import { PersonByIdParams } from './person-by-id.param.js';
 import { PersonController } from './person.controller.js';
@@ -409,7 +409,6 @@ describe('PersonController', () => {
                     referrer: 'referrer',
                     sichtfreigabe: SichtfreigabeType.NEIN,
                     personenstatus: Personenstatus.AKTIV,
-                    rolle: Rolle.LERNENDER,
                 };
                 const personenkontextResponse: Personenkontext<true> = DoFactory.createPersonenkontext(true, {
                     getRolle: () => rolleRepoMock.findById(faker.string.uuid()),
@@ -445,7 +444,6 @@ describe('PersonController', () => {
                     referrer: 'referrer',
                     sichtfreigabe: SichtfreigabeType.NEIN,
                     personenstatus: Personenstatus.AKTIV,
-                    rolle: Rolle.LERNENDER,
                 };
                 const personenkontextResponse: Personenkontext<true> = DoFactory.createPersonenkontext(true);
 

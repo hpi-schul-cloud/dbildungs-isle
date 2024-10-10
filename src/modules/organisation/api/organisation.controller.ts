@@ -94,6 +94,8 @@ export class OrganisationController {
             params.kuerzel,
             params.typ,
             params.traegerschaft,
+            undefined,
+            params.emailAdress,
         );
         if (organisation instanceof DomainError) {
             throw organisation;
@@ -144,6 +146,7 @@ export class OrganisationController {
         existingOrganisation.kuerzel = body.kuerzel;
         existingOrganisation.typ = body.typ;
         existingOrganisation.traegerschaft = body.traegerschaft;
+        existingOrganisation.emailAdress = body.emailAdress;
         existingOrganisation.updatedAt = new Date();
 
         const result: Result<Organisation<true>, DomainError> = await this.organisationService.updateOrganisation(

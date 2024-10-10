@@ -19,6 +19,7 @@ import { OrganisationRepository } from '../persistence/organisation.repository.j
 import { Organisation } from './organisation.js';
 import { NameForOrganisationWithTrailingSpaceError } from '../specification/error/name-with-trailing-space.error.js';
 import { KennungForOrganisationWithTrailingSpaceError } from '../specification/error/kennung-with-trailing-space.error.js';
+import { EmailAdressOnOrganisationTypError } from '../specification/error/email-adress-on-organisation-typ-error.js';
 
 describe('OrganisationService', () => {
     let module: TestingModule;
@@ -126,6 +127,23 @@ describe('OrganisationService', () => {
             expect(result).toEqual<Result<Organisation<true>>>({
                 ok: false,
                 error: new NameRequiredForSchuleError(),
+            });
+        });
+
+        it('should return a domain error if type is klasse and email is set', async () => {
+            const organisation: Organisation<false> = DoFactory.createOrganisation(false, {
+                typ: OrganisationsTyp.KLASSE,
+                emailAdress: 'klassenmail123@spsh.de',
+                name: 'Klasse123',
+            });
+            organisationRepositoryMock.save.mockResolvedValue(organisation as unknown as Organisation<true>);
+            mapperMock.map.mockReturnValue(organisation as unknown as Dictionary<unknown>);
+
+            const result: Result<Organisation<true>> = await organisationService.createOrganisation(organisation);
+
+            expect(result).toEqual<Result<Organisation<true>>>({
+                ok: false,
+                error: new EmailAdressOnOrganisationTypError(),
             });
         });
 
@@ -260,6 +278,22 @@ describe('OrganisationService', () => {
             expect(result).toEqual<Result<Organisation<true>>>({
                 ok: false,
                 error: new NameRequiredForSchuleError(),
+            });
+        });
+
+        it('should return a domain error if type is klasse and email is set', async () => {
+            const organisation: Organisation<true> = DoFactory.createOrganisation(true, {
+                typ: OrganisationsTyp.KLASSE,
+                emailAdress: 'klassenmail123@spsh.de',
+                name: 'Klasse123',
+            });
+            organisationRepositoryMock.findById.mockResolvedValue(organisation as unknown as Organisation<true>);
+
+            const result: Result<Organisation<true>> = await organisationService.updateOrganisation(organisation);
+
+            expect(result).toEqual<Result<Organisation<true>>>({
+                ok: false,
+                error: new EmailAdressOnOrganisationTypError(),
             });
         });
 

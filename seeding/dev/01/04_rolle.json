@@ -13,7 +13,8 @@
         "SCHULEN_VERWALTEN",
         "KLASSEN_VERWALTEN",
         "SCHULTRAEGER_VERWALTEN",
-        "PERSONEN_SOFORT_LOESCHEN"
+        "PERSONEN_SOFORT_LOESCHEN",
+        "PERSON_SYNCHRONISIEREN"
       ],
       "serviceProviderIds": [
         0,
@@ -114,7 +115,8 @@
           "SCHULEN_VERWALTEN",
           "KLASSEN_VERWALTEN",
           "SCHULTRAEGER_VERWALTEN",
-          "MIGRATION_DURCHFUEHREN"
+          "MIGRATION_DURCHFUEHREN",
+          "PERSON_SYNCHRONISIEREN"
         ],
         "serviceProviderIds": [],
         "istTechnisch": true

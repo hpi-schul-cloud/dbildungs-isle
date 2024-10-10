@@ -5,7 +5,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { DoFactory, MapperTestModule } from '../../../../test/utils/index.js';
 import { Paged } from '../../../shared/paging/paged.js';
 import { PagedResponse } from '../../../shared/paging/paged.response.js';
-import { Personenstatus, Rolle, SichtfreigabeType } from '../domain/personenkontext.enums.js';
+import { Personenstatus, SichtfreigabeType } from '../domain/personenkontext.enums.js';
 import { FindPersonenkontextByIdParams } from './param/find-personenkontext-by-id.params.js';
 
 import { PersonendatensatzResponseAutomapper } from '../../person/api/personendatensatz.response-automapper.js';
@@ -232,7 +232,6 @@ describe('PersonenkontextController', () => {
                     referrer: 'referrer',
                     sichtfreigabe: SichtfreigabeType.JA,
                     personenstatus: Personenstatus.AKTIV,
-                    rolle: Rolle.LERNENDER,
                     offset: 0,
                     limit: 10,
                 };
@@ -276,7 +275,6 @@ describe('PersonenkontextController', () => {
                     referrer: 'referrer',
                     sichtfreigabe: SichtfreigabeType.JA,
                     personenstatus: Personenstatus.AKTIV,
-                    rolle: Rolle.LERNENDER,
                     offset: 0,
                     limit: 10,
                 };

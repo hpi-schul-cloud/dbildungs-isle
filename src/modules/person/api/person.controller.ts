@@ -458,8 +458,7 @@ export class PersonController {
         const personResult: Result<Person<true>> = await this.personRepository.getPersonIfAllowed(
             personId,
             permissions,
-            // TODO SPSH-1136 Update the RollenSystemRecht
-            [RollenSystemRecht.PERSONEN_VERWALTEN],
+            [RollenSystemRecht.PERSON_SYNCHRONISIEREN],
         );
         if (!personResult.ok) {
             throw new NotFoundOrNoPermissionError(personId);
