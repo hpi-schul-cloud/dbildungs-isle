@@ -2,7 +2,7 @@ import { faker } from '@faker-js/faker';
 
 import { GetDataForUserAction, GetDataForUserResponseBody } from './get-data-user.action.js';
 
-describe('GetDataForUserAction', () => {
+describe('GetDataUserAction', () => {
     describe('buildRequest', () => {
         it('should return object', () => {
             const action: GetDataForUserAction = new GetDataForUserAction({
@@ -28,7 +28,7 @@ describe('GetDataForUserAction', () => {
             const body: GetDataForUserResponseBody = {
                 getDataResponse: {
                     return: {
-                        aliases: [],
+                        aliases: ['alias1', 'alias2'],
                         email1: 'string',
                         email2: 'string',
                         email3: 'string',
@@ -45,6 +45,7 @@ describe('GetDataForUserAction', () => {
             expect(action.parseBody(body)).toEqual({
                 ok: true,
                 value: {
+                    aliases: ['alias1', 'alias2'],
                     firstname: 'firstname',
                     lastname: 'lastname',
                     username: 'username',
@@ -53,6 +54,19 @@ describe('GetDataForUserAction', () => {
                     mailenabled: true,
                 },
             });
+        });
+    });
+
+    describe('isArrayOverride', () => {
+        it('should return true for tag "aliases"', () => {
+            const action: GetDataForUserAction = new GetDataForUserAction({
+                contextId: faker.string.uuid(),
+                userId: faker.string.uuid(),
+                login: '',
+                password: '',
+            });
+
+            expect(action.isArrayOverride('aliases')).toBe(true);
         });
     });
 });

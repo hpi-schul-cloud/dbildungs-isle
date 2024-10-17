@@ -76,6 +76,19 @@ describe('EmailAddress Aggregate', () => {
         });
     });
 
+    describe('setFailed', () => {
+        it('should set status to failed', () => {
+            const emailAddress: EmailAddress<false> = EmailAddress.createNew(
+                personId,
+                faker.internet.email(),
+                EmailAddressStatus.ENABLED,
+            );
+            emailAddress.failed();
+
+            expect(emailAddress.status).toStrictEqual(EmailAddressStatus.FAILED);
+        });
+    });
+
     describe('setAddress', () => {
         describe('when called', () => {
             it('should set address', () => {
@@ -90,6 +103,24 @@ describe('EmailAddress Aggregate', () => {
                 const result: string = emailAddress.setAddress(newFakeEmail);
                 expect(result).toStrictEqual(newFakeEmail);
                 expect(emailAddress.address).toStrictEqual(newFakeEmail);
+            });
+        });
+    });
+
+    describe('setOxUserId', () => {
+        describe('when called', () => {
+            it('should set oxUserId', () => {
+                const oxUserId: string = faker.string.numeric();
+                const fakeEmail: string = faker.internet.email();
+                const emailAddress: EmailAddress<false> = EmailAddress.createNew(
+                    personId,
+                    fakeEmail,
+                    EmailAddressStatus.ENABLED,
+                );
+
+                emailAddress.oxUserID = oxUserId;
+
+                expect(emailAddress.oxUserID).toStrictEqual(oxUserId);
             });
         });
     });

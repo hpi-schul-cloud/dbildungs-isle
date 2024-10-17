@@ -1,4 +1,4 @@
-import { EntityManager, rel, RequiredEntityData } from '@mikro-orm/core';
+import { EntityManager, QueryOrder, ref, RequiredEntityData } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
 import { PersonID } from '../../../shared/types/index.js';
 import { EmailAddressEntity } from './email-address.entity.js';
@@ -7,13 +7,16 @@ import { EmailAddressNotFoundError } from '../error/email-address-not-found.erro
 import { ClassLogger } from '../../../core/logging/class-logger.js';
 import { DomainError } from '../../../shared/error/index.js';
 import { PersonEntity } from '../../person/persistence/person.entity.js';
+import { PersonAlreadyHasEnabledEmailAddressError } from '../error/person-already-has-enabled-email-address.error.js';
 
-function mapAggregateToData(emailAddress: EmailAddress<boolean>): RequiredEntityData<EmailAddressEntity> {
+export function mapAggregateToData(emailAddress: EmailAddress<boolean>): RequiredEntityData<EmailAddressEntity> {
+    const oxUserIdStr: string | undefined = emailAddress.oxUserID ? emailAddress.oxUserID + '' : undefined;
     return {
         // Don't assign createdAt and updatedAt, they are auto-generated!
         id: emailAddress.id,
-        personId: rel(PersonEntity, emailAddress.personId),
+        personId: ref(PersonEntity, emailAddress.personId),
         address: emailAddress.address,
+        oxUserId: oxUserIdStr,
         status: emailAddress.status,
     };
 }
@@ -26,6 +29,7 @@ function mapEntityToAggregate(entity: EmailAddressEntity): EmailAddress<boolean>
         entity.personId.id,
         entity.address,
         entity.status,
+        entity.oxUserId,
     );
 }
 
@@ -36,17 +40,54 @@ export class EmailRepo {
         private readonly logger: ClassLogger,
     ) {}
 
-    public async findByPerson(personId: PersonID): Promise<Option<EmailAddress<true>>> {
+    public async findEnabledByPerson(personId: PersonID): Promise<Option<EmailAddress<true>>> {
         const emailAddressEntity: Option<EmailAddressEntity> = await this.em.findOne(
             EmailAddressEntity,
             {
                 personId: { $eq: personId },
+                status: { $eq: EmailAddressStatus.ENABLED },
             },
             {},
         );
         if (!emailAddressEntity) return undefined;
 
         return mapEntityToAggregate(emailAddressEntity);
+    }
+
+    public async findRequestedByPerson(personId: PersonID): Promise<Option<EmailAddress<true>>> {
+        const emailAddressEntity: Option<EmailAddressEntity> = await this.em.findOne(
+            EmailAddressEntity,
+            {
+                personId: { $eq: personId },
+                status: { $eq: EmailAddressStatus.REQUESTED },
+            },
+            {},
+        );
+        if (!emailAddressEntity) return undefined;
+
+        return mapEntityToAggregate(emailAddressEntity);
+    }
+
+    public async findByPersonSortedByUpdatedAtDesc(
+        personId: PersonID,
+        status?: EmailAddressStatus,
+    ): Promise<Option<EmailAddress<true>[]>> {
+        const emailAddressEntities: Option<EmailAddressEntity[]> = await this.em.find(
+            EmailAddressEntity,
+            {
+                personId: { $eq: personId },
+            },
+            { orderBy: { updatedAt: QueryOrder.DESC } },
+        );
+        if (!emailAddressEntities || emailAddressEntities.length === 0) return undefined;
+
+        if (status) {
+            const filtered: EmailAddress<true>[] = emailAddressEntities
+                .map(mapEntityToAggregate)
+                .filter((ea: EmailAddress<true>) => ea.status === status);
+            return filtered.length === 0 ? undefined : filtered;
+        }
+        return emailAddressEntities.map(mapEntityToAggregate);
     }
 
     public async existsEmailAddress(address: string): Promise<boolean> {
@@ -73,7 +114,19 @@ export class EmailRepo {
         return emailAddressEntity;
     }
 
+    /**
+     * Creates or updates entity in database. If the emailAddress parameter has status enabled or requested
+     * and the referenced person already has an enabled email-address, PersonAlreadyHasEnabledEmailAddressError is returned.
+     * @param emailAddress
+     */
     public async save(emailAddress: EmailAddress<boolean>): Promise<EmailAddress<true> | DomainError> {
+        if (emailAddress.enabledOrRequested) {
+            const enabledEmailAddressExists: Option<EmailAddress<true>> = await this.findEnabledByPerson(
+                emailAddress.personId,
+            );
+            if (enabledEmailAddressExists)
+                return new PersonAlreadyHasEnabledEmailAddressError(emailAddress.personId, emailAddress.address);
+        }
         if (emailAddress.id) {
             return this.update(emailAddress);
         } else {

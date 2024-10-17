@@ -23,6 +23,7 @@ import { OrganisationID } from '../../../shared/types/index.js';
 import { DomainError } from '../../../shared/error/domain.error.js';
 import { RollenMerkmal, RollenSystemRecht } from '../domain/rolle.enums.js';
 import { UpdateMerkmaleError } from '../domain/update-merkmale.error.js';
+import { RolleUpdateOutdatedError } from '../domain/update-outdated.error.js';
 
 describe('RolleRepo', () => {
     let module: TestingModule;
@@ -75,12 +76,12 @@ describe('RolleRepo', () => {
 
         it('should update an existing rolle', async () => {
             const existingRolle: Rolle<true> = await sut.save(DoFactory.createRolle(false));
-            const update: Rolle<false> = DoFactory.createRolle(false);
-            update.id = existingRolle.id;
+            existingRolle.name = faker.name.firstName();
 
             const savedRolle: Rolle<true> = await sut.save(existingRolle);
 
-            expect(savedRolle).toEqual(existingRolle);
+            expect(savedRolle.id).toEqual(existingRolle.id);
+            expect(savedRolle.name).toEqual(existingRolle.name);
         });
 
         it('should save with service provider', async () => {
@@ -93,6 +94,15 @@ describe('RolleRepo', () => {
 
             expect(savedRolle.id).toBeDefined();
             expect(savedRolle.serviceProviderIds).toContain(serviceProvider.id);
+        });
+
+        it('should throw RolleUpdateOutdatedError if the version does not match', async () => {
+            const existingRolle: Rolle<true> = await sut.save(DoFactory.createRolle(false));
+            const update: Rolle<false> = DoFactory.createRolle(false);
+            update.id = existingRolle.id;
+            update.version = 2;
+
+            await expect(sut.save(update)).rejects.toBeInstanceOf(RolleUpdateOutdatedError);
         });
     });
 
@@ -420,6 +430,7 @@ describe('RolleRepo', () => {
                 newMermale,
                 newSystemrechte,
                 [],
+                1,
                 false,
                 permissions,
             );
@@ -446,6 +457,7 @@ describe('RolleRepo', () => {
                 [],
                 [],
                 [],
+                1,
                 false,
                 permissions,
             );
@@ -467,6 +479,7 @@ describe('RolleRepo', () => {
                 [],
                 [],
                 [faker.string.uuid()],
+                1,
                 false,
                 permissions,
             );
@@ -488,6 +501,7 @@ describe('RolleRepo', () => {
                 [faker.helpers.enumValue(RollenMerkmal)],
                 [],
                 [],
+                1,
                 true,
                 permissions,
             );
@@ -512,6 +526,7 @@ describe('RolleRepo', () => {
                 [],
                 [],
                 [],
+                1,
                 true,
                 permissions,
             );

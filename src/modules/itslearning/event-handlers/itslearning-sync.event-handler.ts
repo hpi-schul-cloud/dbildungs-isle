@@ -100,6 +100,7 @@ export class ItsLearningSyncEventHandler {
                 lastName: person.familienname,
                 username: person.referrer,
                 institutionRoleType: rollenartToIMSESInstitutionRole(targetRole),
+                email: person.email,
             });
 
             if (creationError) {

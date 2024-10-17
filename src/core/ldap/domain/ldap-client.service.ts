@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ClassLogger } from '../../logging/class-logger.js';
-import { Client, Control, SearchResult } from 'ldapts';
+import { Attribute, Change, Client, Control, SearchResult } from 'ldapts';
 import { LdapEntityType, LdapOrganisationEntry, LdapPersonEntry, LdapRoleEntry } from './ldap.types.js';
 import { KennungRequiredForSchuleError } from '../../../modules/organisation/specification/error/kennung-required-for-schule.error.js';
 import { LdapClient } from './ldap-client.js';
@@ -9,6 +9,8 @@ import { UsernameRequiredError } from '../../../modules/person/domain/username-r
 import { Mutex } from 'async-mutex';
 import { LdapSearchError } from '../error/ldap-search.error.js';
 import { PersonID } from '../../../shared/types/aggregate-ids.types.js';
+import { EventService } from '../../eventbus/services/event.service.js';
+import { LdapPersonEntryChangedEvent } from '../../../shared/events/ldap-person-entry-changed.event.js';
 
 export type PersonData = {
     vorname: string;
@@ -30,6 +32,7 @@ export class LdapClientService {
         private readonly ldapClient: LdapClient,
         private readonly ldapInstanceConfig: LdapInstanceConfig,
         private readonly logger: ClassLogger,
+        private readonly eventService: EventService,
     ) {
         this.mutex = new Mutex();
     }
@@ -155,17 +158,15 @@ export class LdapClientService {
             const entry: LdapPersonEntry = {
                 cn: person.vorname,
                 sn: person.familienname,
-                employeeNumber: person.id,
-                mail: [mail ?? `${person.referrer}@schule-sh.de`],
-                objectclass: ['inetOrgPerson'],
+                objectclass: ['inetOrgPerson', 'univentionMail'],
+                mailPrimaryAddress: mail ?? ``,
+                mailAlternativeAddress: mail ?? ``,
             };
 
             const controls: Control[] = [];
-            if (person.ldapEntryUUID) {
-                const relaxRulesControlOID: string = '1.3.6.1.4.1.4203.666.5.12';
-                entry.entryUUID = person.ldapEntryUUID;
-                controls.push(new Control(relaxRulesControlOID));
-            }
+            const relaxRulesControlOID: string = '1.3.6.1.4.1.4203.666.5.12';
+            entry.entryUUID = person.ldapEntryUUID ?? person.id;
+            controls.push(new Control(relaxRulesControlOID));
 
             await client.add(lehrerUid, entry, controls);
             this.logger.info(`LDAP: Successfully created lehrer ${lehrerUid}`);
@@ -207,7 +208,7 @@ export class LdapClientService {
 
             const searchResultLehrer: SearchResult = await client.search(`ou=oeffentlicheSchulen,dc=schule-sh,dc=de`, {
                 scope: 'sub',
-                filter: `(employeeNumber=${personId})`,
+                filter: `(entryUUID=${personId})`,
             });
             if (!searchResultLehrer.searchEntries[0]) {
                 return {
@@ -241,6 +242,53 @@ export class LdapClientService {
             this.logger.info(`LDAP: Successfully deleted lehrer ${lehrerUid}`);
 
             return { ok: true, value: person };
+        });
+    }
+
+    public async changeEmailAddressByPersonId(personId: PersonID, newEmailAddress: string): Promise<Result<PersonID>> {
+        return this.mutex.runExclusive(async () => {
+            this.logger.info('LDAP: changeEmailAddress');
+            const client: Client = this.ldapClient.getClient();
+            const bindResult: Result<boolean> = await this.bind();
+            if (!bindResult.ok) return bindResult;
+
+            const searchResult: SearchResult = await client.search(`ou=oeffentlicheSchulen,dc=schule-sh,dc=de`, {
+                scope: 'sub',
+                filter: `(entryUUID=${personId})`,
+                attributes: ['mailPrimaryAddress', 'mailAlternativeAddress'],
+                returnAttributeValues: true,
+            });
+            if (!searchResult.searchEntries[0]) {
+                return {
+                    ok: false,
+                    error: new LdapSearchError(LdapEntityType.LEHRER),
+                };
+            }
+
+            const currentEmailAddressString: string | undefined = searchResult.searchEntries[0][
+                'mailPrimaryAddress'
+            ] as string;
+            const currentEmailAddress: string = currentEmailAddressString ?? newEmailAddress;
+
+            await client.modify(searchResult.searchEntries[0].dn, [
+                new Change({
+                    operation: 'replace',
+                    modification: new Attribute({ type: 'mailPrimaryAddress', values: [newEmailAddress] }),
+                }),
+            ]);
+            await client.modify(searchResult.searchEntries[0].dn, [
+                new Change({
+                    operation: 'replace',
+                    modification: new Attribute({ type: 'mailAlternativeAddress', values: [currentEmailAddress] }),
+                }),
+            ]);
+            this.logger.info(
+                `LDAP: Successfully modified mailPrimaryAddress and mailAlternativeAddress for personId:${personId}`,
+            );
+
+            this.eventService.publish(new LdapPersonEntryChangedEvent(personId, newEmailAddress, currentEmailAddress));
+
+            return { ok: true, value: personId };
         });
     }
 }

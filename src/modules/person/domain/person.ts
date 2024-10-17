@@ -75,6 +75,7 @@ export class Person<WasPersisted extends boolean> {
         public lockInfo?: LockInfo,
         public isLocked?: boolean,
         public email?: string,
+        public oxUserId?: string,
     ) {
         this.mandant = Person.CREATE_PERSON_DTO_MANDANT_UUID;
     }
@@ -116,6 +117,7 @@ export class Person<WasPersisted extends boolean> {
         lockInfo?: LockInfo,
         isLocked?: boolean,
         email?: string,
+        oxUserId?: string,
     ): Person<WasPersisted> {
         return new Person(
             id,
@@ -146,6 +148,7 @@ export class Person<WasPersisted extends boolean> {
             lockInfo,
             isLocked,
             email,
+            oxUserId,
         );
     }
 

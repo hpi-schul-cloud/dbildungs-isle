@@ -7,7 +7,6 @@ import { RolleRepo } from '../repo/rolle.repo.js';
 import { RolleFactory } from '../domain/rolle.factory.js';
 import { ServiceProviderRepo } from '../../service-provider/repo/service-provider.repo.js';
 import { Rolle } from '../domain/rolle.js';
-import { RolleServiceProviderQueryParams } from './rolle-service-provider.query.params.js';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { RolleController } from './rolle.controller.js';
 import { FindRolleByIdParams } from './find-rolle-by-id.params.js';
@@ -19,6 +18,7 @@ import { RollenArt, RollenMerkmal, RollenSystemRecht } from '../domain/rolle.enu
 
 import { NameForRolleWithTrailingSpaceError } from '../domain/name-with-trailing-space.error.js';
 import { Organisation } from '../../organisation/domain/organisation.js';
+import { RolleServiceProviderBodyParams } from './rolle-service-provider.body.params.js';
 
 describe('Rolle API with mocked ServiceProviderRepo', () => {
     let rolleRepoMock: DeepMocked<RolleRepo>;
@@ -84,8 +84,9 @@ describe('Rolle API with mocked ServiceProviderRepo', () => {
                 const rolleByIdParams: FindRolleByIdParams = {
                     rolleId: rolleId,
                 };
-                const params: RolleServiceProviderQueryParams = {
+                const params: RolleServiceProviderBodyParams = {
                     serviceProviderIds: [faker.string.uuid()],
+                    version: 1,
                 };
                 //mock get-rolle
                 rolleRepoMock.findById.mockResolvedValueOnce(createMock<Rolle<true>>());

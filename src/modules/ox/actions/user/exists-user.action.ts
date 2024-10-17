@@ -1,13 +1,7 @@
 import { DomainError } from '../../../../shared/error/domain.error.js';
 import { NS2_SCHEMA, NS6_SCHEMA, TNS_SCHEMA } from '../../schemas.js';
-import { AuthParams, OxBaseAction } from '../ox-base-action.js';
-
-// Incomplete
-export type ExistsUserParams = AuthParams & {
-    contextId: string;
-
-    username: string;
-};
+import { UserNameParams } from './ox-user.types.js';
+import { OxBaseAction } from '../ox-base-action.js';
 
 export type ExistsUserResponse = {
     exists: boolean;
@@ -24,7 +18,7 @@ export class ExistsUserAction extends OxBaseAction<ExistsUserResponseBody, Exist
 
     public override soapServiceName: string = 'OXUserService';
 
-    public constructor(private readonly params: ExistsUserParams) {
+    public constructor(private readonly params: UserNameParams) {
         super();
     }
 
@@ -41,7 +35,7 @@ export class ExistsUserAction extends OxBaseAction<ExistsUserResponseBody, Exist
 
                 'tns:user': {
                     //either display_name or name have to be provided to verify existence in OX
-                    'ns6:name': this.params.username,
+                    'ns6:name': this.params.userName,
                 },
 
                 'tns:auth': {

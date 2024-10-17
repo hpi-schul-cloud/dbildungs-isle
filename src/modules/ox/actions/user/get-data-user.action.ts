@@ -10,13 +10,14 @@ export type GetDataForUserResponse = {
     username: string;
     primaryEmail: string;
     mailenabled: boolean;
+    aliases: string[];
 };
 
 export type GetDataForUserResponseBody = {
     getDataResponse: {
         return: {
             id: string;
-            aliases: [];
+            aliases: string[];
             email1: string;
             email2: string;
             email3: string;
@@ -62,6 +63,10 @@ export class GetDataForUserAction extends OxBaseAction<GetDataForUserResponseBod
         };
     }
 
+    public override isArrayOverride(tagName: string): boolean {
+        return ['aliases'].includes(tagName);
+    }
+
     public override parseBody(body: GetDataForUserResponseBody): Result<GetDataForUserResponse, DomainError> {
         return {
             ok: true,
@@ -72,6 +77,7 @@ export class GetDataForUserAction extends OxBaseAction<GetDataForUserResponseBod
                 username: body.getDataResponse.return.name,
                 primaryEmail: body.getDataResponse.return.primaryEmail,
                 mailenabled: body.getDataResponse.return.mailenabled,
+                aliases: body.getDataResponse.return.aliases,
             },
         };
     }

@@ -34,6 +34,10 @@ describe('Itslearning Person Repo', () => {
         itsLearningServiceMock = module.get(ItsLearningIMSESService);
     });
 
+    beforeEach(() => {
+        jest.resetAllMocks();
+    });
+
     afterAll(async () => {
         await module.close();
     });
@@ -50,7 +54,9 @@ describe('Itslearning Person Repo', () => {
 
         it('should return the result', async () => {
             const personResponse: PersonResponse = {
-                userId: faker.string.uuid(),
+                username: faker.string.uuid(),
+                firstName: faker.person.firstName(),
+                lastName: faker.person.lastName(),
                 institutionRole: faker.helpers.enumValue(IMSESInstitutionRoleType),
                 primaryRoleType: true,
             };
@@ -59,7 +65,7 @@ describe('Itslearning Person Repo', () => {
                 value: personResponse,
             });
 
-            const result: Option<PersonResponse> = await sut.readPerson(personResponse.userId);
+            const result: Option<PersonResponse> = await sut.readPerson(personResponse.username);
 
             expect(result).toEqual(personResponse);
         });
@@ -76,6 +82,61 @@ describe('Itslearning Person Repo', () => {
         });
     });
 
+    describe('updateEmail', () => {
+        it('should call itslearning', async () => {
+            const personId: string = faker.string.uuid();
+            const email: string = faker.internet.email();
+            const personResponse: PersonResponse = {
+                firstName: faker.person.firstName(),
+                lastName: faker.person.lastName(),
+                username: faker.internet.userName(),
+                institutionRole: faker.helpers.enumValue(IMSESInstitutionRoleType),
+                primaryRoleType: true,
+            };
+            itsLearningServiceMock.send.mockResolvedValueOnce({
+                ok: true,
+                value: personResponse,
+            }); // ReadPersonAction
+            itsLearningServiceMock.send.mockResolvedValueOnce({
+                ok: true,
+                value: undefined,
+            }); // CreatePersonAction
+
+            await sut.updateEmail(personId, email);
+
+            expect(itsLearningServiceMock.send).toHaveBeenNthCalledWith(1, expect.objectContaining({ id: personId }));
+            expect(itsLearningServiceMock.send).toHaveBeenNthCalledWith(1, expect.any(ReadPersonAction));
+            expect(itsLearningServiceMock.send).toHaveBeenNthCalledWith(
+                2,
+                expect.objectContaining({
+                    params: {
+                        id: personId,
+                        firstName: personResponse.firstName,
+                        lastName: personResponse.lastName,
+                        username: personResponse.username,
+                        institutionRoleType: personResponse.institutionRole,
+                        email,
+                    },
+                }),
+            );
+            expect(itsLearningServiceMock.send).toHaveBeenNthCalledWith(2, expect.any(CreatePersonAction));
+        });
+
+        it('should not update email, if person was not found', async () => {
+            const personId: string = faker.string.uuid();
+            const email: string = faker.internet.email();
+            itsLearningServiceMock.send.mockResolvedValueOnce({
+                ok: false,
+                error: new ItsLearningError('Not Found'),
+            }); // ReadPersonAction
+
+            await sut.updateEmail(personId, email);
+
+            expect(itsLearningServiceMock.send).toHaveBeenCalledTimes(1);
+            expect(itsLearningServiceMock.send).not.toHaveBeenCalledWith(expect.any(CreatePersonAction));
+        });
+    });
+
     describe('createOrUpdatePerson', () => {
         it('should call the itslearning API', async () => {
             const createParams: CreatePersonParams = {
@@ -85,6 +146,10 @@ describe('Itslearning Person Repo', () => {
                 username: faker.internet.userName(),
                 institutionRoleType: faker.helpers.enumValue(IMSESInstitutionRoleType),
             };
+            itsLearningServiceMock.send.mockResolvedValueOnce({
+                ok: true,
+                value: undefined,
+            }); // CreatePersonAction
 
             await sut.createOrUpdatePerson(createParams);
 
@@ -133,6 +198,10 @@ describe('Itslearning Person Repo', () => {
     describe('deletePerson', () => {
         it('should call the itslearning API', async () => {
             const personId: string = faker.string.uuid();
+            itsLearningServiceMock.send.mockResolvedValueOnce({
+                ok: true,
+                value: undefined,
+            }); // DeletePersonAction
 
             await sut.deletePerson(personId);
 

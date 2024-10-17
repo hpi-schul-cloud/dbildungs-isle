@@ -1,0 +1,12 @@
+# add custom schema
+dn: cn=ucsMail,cn=schema,cn=config
+objectClass: olcSchemaConfig
+cn: ucsMail
+olcAttributeTypes: ( 1.3.6.1.4.1.10176.1010.1.1 NAME 'mailPrimaryAddress' DESC 'Primary mailaddresses for the user' EQUALITY caseIgnoreIA5Match SUBSTR caseIgnoreSubstringsMatch SYNTAX 1.3.6.1.4.1.1466.115.121.1.26 SINGLE-VALUE )
+olcAttributeTypes: ( 1.3.6.1.4.1.10176.1010.1.2 NAME 'mailAlternativeAddress' DESC 'Secondary (alias) mailaddresses for the same user' EQUALITY caseIgnoreIA5Match SUBSTR caseIgnoreSubstringsMatch SYNTAX 1.3.6.1.4.1.1466.115.121.1.26 )
+olcAttributeTypes: ( 1.3.6.1.4.1.10176.1010.1.3 NAME 'mailGlobalSpamFolder'DESC 'Move Spam to global spam folder instead of local spam folder' EQUALITY caseIgnoreIA5Match SYNTAX 1.3.6.1.4.1.1466.115.121.1.26 )
+olcAttributeTypes: ( 1.3.6.1.4.1.10176.1010.1.47 NAME 'mailForwardAddress'DESC 'External mail addresses to forward the users emails to' EQUALITY caseIgnoreMatch SUBSTR caseIgnoreSubstringsMatch SYNTAX 1.3.6.1.4.1.1466.115.121.1.15 )
+olcAttributeTypes: ( 1.3.6.1.4.1.10176.1010.1.51 NAME 'mailForwardCopyToSelf' EQUALITY caseIgnoreMatch SUBSTR caseIgnoreSubstringsMatch SYNTAX 1.3.6.1.4.1.1466.115.121.1.15{10} SINGLE-VALUE )
+olcAttributeTypes: ( 1.3.6.1.4.1.10176.1010.1.60 NAME 'univentionMailHomeServer' DESC 'home server of users mailbox' EQUALITY caseIgnoreMatch SUBSTR caseIgnoreSubstringsMatch SYNTAX 1.3.6.1.4.1.1466.115.121.1.15{256} SINGLE-VALUE )
+olcAttributeTypes: ( 1.3.6.1.4.1.10176.1010.1.92 NAME 'univentionMailUserQuota' DESC 'Mailbox hard quota limit in MB' EQUALITY caseIgnoreMatch SUBSTR caseIgnoreSubstringsMatch SYNTAX 1.3.6.1.4.1.1466.115.121.1.15 )
+olcObjectClasses: ( 1.3.6.1.4.1.10176.1010.2.1 NAME 'univentionMail' DESC 'Univention Mail Preferences' SUP top AUXILIARY MUST uid MAY ( univentionMailHomeServer $ mailPrimaryAddress $ mailAlternativeAddress $ mailGlobalSpamFolder $ univentionMailUserQuota $ mailForwardAddress $ mailForwardCopyToSelf ) )

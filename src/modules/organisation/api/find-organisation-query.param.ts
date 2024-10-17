@@ -95,6 +95,8 @@ export class FindOrganisationQueryParams extends PagedQueryParams {
         required: false,
         nullable: true,
         isArray: true,
+        description:
+            'Liefert Organisationen mit den angegebenen IDs, selbst wenn andere Filterkriterien nicht zutreffen (ODER-verknüpft mit anderen Kriterien).',
     })
     public readonly organisationIds?: string[];
 }

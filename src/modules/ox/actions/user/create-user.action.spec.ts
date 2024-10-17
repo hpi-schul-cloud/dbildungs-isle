@@ -5,6 +5,7 @@ import { CreateUserAction, CreateUserResponseBody } from './create-user.action.j
 describe('CreateUserAction', () => {
     describe('buildRequest', () => {
         it('should return object', () => {
+            const username: string = faker.internet.userName();
             const firstname: string = faker.person.firstName();
             const lastname: string = faker.person.lastName();
             const email: string = firstname + '.' + lastname + '@test.de';
@@ -13,7 +14,7 @@ describe('CreateUserAction', () => {
                 contextId: faker.string.uuid(),
                 displayName: firstname,
                 email1: email,
-                givenname: firstname,
+                username: username,
                 mailEnabled: true,
                 firstname: firstname,
                 lastname: lastname,
@@ -29,6 +30,7 @@ describe('CreateUserAction', () => {
 
     describe('parseBody', () => {
         it('should return CreateUserResponse', () => {
+            const username: string = faker.internet.userName();
             const firstname: string = faker.person.firstName();
             const lastname: string = faker.person.lastName();
             const email: string = firstname + '.' + lastname + '@test.de';
@@ -37,7 +39,7 @@ describe('CreateUserAction', () => {
                 contextId: faker.string.uuid(),
                 displayName: firstname,
                 email1: email,
-                givenname: firstname,
+                username: username,
                 mailEnabled: true,
                 firstname: firstname,
                 lastname: lastname,

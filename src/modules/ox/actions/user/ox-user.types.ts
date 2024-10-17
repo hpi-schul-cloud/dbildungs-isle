@@ -12,3 +12,9 @@ export type UserIdParams = AuthParams & {
 
     userId: string;
 };
+
+export type UserNameParams = AuthParams & {
+    contextId: string;
+
+    userName: string;
+};

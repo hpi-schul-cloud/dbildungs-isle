@@ -12,6 +12,7 @@ describe('CreatePersonAction', () => {
                 lastName: faker.person.lastName(),
                 username: faker.internet.userName(),
                 institutionRoleType: faker.helpers.enumValue(IMSESInstitutionRoleType),
+                email: faker.internet.email(),
             });
 
             expect(action.buildRequest()).toBeDefined();
@@ -26,6 +27,7 @@ describe('CreatePersonAction', () => {
                 lastName: faker.person.lastName(),
                 username: faker.internet.userName(),
                 institutionRoleType: faker.helpers.enumValue(IMSESInstitutionRoleType),
+                email: faker.internet.email(),
             });
 
             expect(action.parseBody()).toEqual({

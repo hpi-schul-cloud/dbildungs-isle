@@ -8,7 +8,7 @@ describe('ExistsUserAction', () => {
 
             const action: ExistsUserAction = new ExistsUserAction({
                 contextId: faker.string.uuid(),
-                username: username,
+                userName: username,
                 login: '',
                 password: '',
             });
@@ -23,7 +23,7 @@ describe('ExistsUserAction', () => {
 
             const action: ExistsUserAction = new ExistsUserAction({
                 contextId: faker.string.uuid(),
-                username: username,
+                userName: username,
                 login: '',
                 password: '',
             });

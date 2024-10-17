@@ -6,7 +6,7 @@ describe('EmailAdressOnOrganisationTypError', () => {
             it('should set message and code', () => {
                 const error: EmailAdressOnOrganisationTypError = new EmailAdressOnOrganisationTypError({});
                 expect(error.message).toBe(
-                    'Schule could not be created/updated because this organisation typ can not have an email adress',
+                    'Organisation Entity Could not be created/updated because this organisation typ can not have an email adress',
                 );
                 expect(error.code).toBe('ENTITY_COULD_NOT_BE_UPDATED');
             });

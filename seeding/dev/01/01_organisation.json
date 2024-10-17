@@ -107,50 +107,40 @@
         },
         {
             "id": 10,
-            "kennung": "0703754-11a",
             "name": "11a Geographisches Profil",
             "namensergaenzung": "Keine",
-            "kuerzel": "A-Sieveking-11a-Geo",
             "typ": "KLASSE",
             "administriertVon": 3,
             "zugehoerigZu": 3
         },
         {
             "id": 11,
-            "kennung": "0702948-9a",
             "name": "9a",
             "namensergaenzung": "Keine",
-            "kuerzel": "C-Orff-9a",
             "typ": "KLASSE",
             "administriertVon": 4,
             "zugehoerigZu": 4
         },
         {
             "id": 12,
-            "kennung": "0703754-9a",
             "name": "9a",
             "namensergaenzung": "Keine",
-            "kuerzel": "A-Sieveking-9a",
             "typ": "KLASSE",
             "administriertVon": 3,
             "zugehoerigZu": 3
         },
         {
             "id": 13,
-            "kennung": "1111111-3a",
             "name": "Playwright3a",
             "namensergaenzung": "Keine",
-            "kuerzel": "Testschule-3a",
             "typ": "KLASSE",
             "administriertVon": 9,
             "zugehoerigZu": 9
         },
         {
             "id": 14,
-            "kennung": "1111111-4b",
             "name": "Playwright4b",
             "namensergaenzung": "Keine",
-            "kuerzel": "Testschule-4b",
             "typ": "KLASSE",
             "administriertVon": 9,
             "zugehoerigZu": 9

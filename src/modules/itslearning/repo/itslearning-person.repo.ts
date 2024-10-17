@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 
-import { DomainError } from '../../../shared/error/index.js';
+import { DomainError, ItsLearningError } from '../../../shared/error/index.js';
 import { PersonID } from '../../../shared/types/aggregate-ids.types.js';
 import { CreatePersonAction, CreatePersonParams } from '../actions/create-person.action.js';
 import { DeletePersonAction } from '../actions/delete-person.action.js';
@@ -33,6 +33,22 @@ export class ItslearningPersonRepo {
         }
 
         return undefined;
+    }
+
+    public async updateEmail(personId: PersonID, email: string): Promise<Option<DomainError>> {
+        const person: Option<PersonResponse> = await this.readPerson(personId);
+
+        // Person is not in itslearning, should not update the e-mail
+        if (!person) return new ItsLearningError(`[updateEmail] person with ID ${personId} not found.`);
+
+        return this.createOrUpdatePerson({
+            id: personId,
+            firstName: person.firstName,
+            lastName: person.lastName,
+            institutionRoleType: person.institutionRole,
+            username: person.username,
+            email,
+        });
     }
 
     public async deletePerson(id: PersonID): Promise<Option<DomainError>> {

@@ -23,6 +23,10 @@ import { LdapClient } from './ldap-client.js';
 import { Client, Entry, SearchResult } from 'ldapts';
 import { KennungRequiredForSchuleError } from '../../../modules/organisation/specification/error/kennung-required-for-schule.error.js';
 import { PersonID } from '../../../shared/types/aggregate-ids.types.js';
+import { LdapSearchError } from '../error/ldap-search.error.js';
+import { LdapEntityType } from './ldap.types.js';
+import { ClassLogger } from '../../logging/class-logger.js';
+import { EventService } from '../../eventbus/services/event.service.js';
 
 describe('LDAP Client Service', () => {
     let app: INestApplication;
@@ -31,6 +35,8 @@ describe('LDAP Client Service', () => {
     let em: EntityManager;
     let ldapClientService: LdapClientService;
     let ldapClientMock: DeepMocked<LdapClient>;
+    let loggerMock: DeepMocked<ClassLogger>;
+    let eventServiceMock: DeepMocked<EventService>;
     let clientMock: DeepMocked<Client>;
 
     let organisation: Organisation<true>;
@@ -58,12 +64,18 @@ describe('LDAP Client Service', () => {
             .useModule(LdapTestModule.forRoot({ isLdapRequired: true }))
             .overrideProvider(LdapClient)
             .useValue(createMock<LdapClient>())
+            .overrideProvider(ClassLogger)
+            .useValue(createMock<ClassLogger>())
+            .overrideProvider(EventService)
+            .useValue(createMock<EventService>())
             .compile();
 
         orm = module.get(MikroORM);
         em = module.get(EntityManager);
         ldapClientService = module.get(LdapClientService);
         ldapClientMock = module.get(LdapClient);
+        loggerMock = module.get(ClassLogger);
+        eventServiceMock = module.get(EventService);
         clientMock = createMock<Client>();
 
         ouKennung = faker.string.numeric({ length: 7 });
@@ -481,6 +493,138 @@ describe('LDAP Client Service', () => {
                 });
 
                 expect(result.ok).toBeFalsy();
+            });
+        });
+    });
+
+    describe('changeEmailAddressByPersonId', () => {
+        describe('when bind returns error', () => {
+            it('should return falsy result', async () => {
+                ldapClientMock.getClient.mockImplementation(() => {
+                    clientMock.bind.mockRejectedValueOnce(new Error());
+                    return clientMock;
+                });
+                const result: Result<PersonID> = await ldapClientService.changeEmailAddressByPersonId(
+                    faker.string.uuid(),
+                    faker.internet.email(),
+                );
+
+                expect(result.ok).toBeFalsy();
+            });
+        });
+
+        describe('when person cannot be found by personID', () => {
+            it('should return LdapSearchError', async () => {
+                ldapClientMock.getClient.mockImplementation(() => {
+                    clientMock.bind.mockResolvedValueOnce();
+                    clientMock.search.mockResolvedValueOnce(
+                        createMock<SearchResult>({
+                            searchEntries: [],
+                        }),
+                    );
+                    return clientMock;
+                });
+
+                const result: Result<PersonID> = await ldapClientService.changeEmailAddressByPersonId(
+                    faker.string.uuid(),
+                    faker.internet.email(),
+                );
+
+                expect(result.ok).toBeFalsy();
+                expect(result).toEqual({
+                    ok: false,
+                    error: new LdapSearchError(LdapEntityType.LEHRER),
+                });
+            });
+        });
+
+        describe('when person can be found and modified', () => {
+            let fakePersonID: string;
+            let fakeDN: string;
+            let newEmailAddress: string;
+            let currentEmailAddress: string;
+
+            beforeEach(() => {
+                fakePersonID = faker.string.uuid();
+                fakeDN = faker.string.alpha();
+                newEmailAddress = faker.internet.email();
+                currentEmailAddress = faker.internet.email();
+            });
+
+            describe('and already has a mailPrimaryAddress', () => {
+                it('should set mailAlternativeAddress as current mailPrimaryAddress and throw LdapPersonEntryChangedEvent', async () => {
+                    ldapClientMock.getClient.mockImplementation(() => {
+                        clientMock.bind.mockResolvedValueOnce();
+                        clientMock.search.mockResolvedValueOnce(
+                            createMock<SearchResult>({
+                                searchEntries: [
+                                    createMock<Entry>({
+                                        dn: fakeDN,
+                                        mailPrimaryAddress: currentEmailAddress,
+                                    }),
+                                ],
+                            }),
+                        );
+                        clientMock.modify.mockResolvedValue();
+
+                        return clientMock;
+                    });
+
+                    const result: Result<PersonID> = await ldapClientService.changeEmailAddressByPersonId(
+                        fakePersonID,
+                        newEmailAddress,
+                    );
+
+                    expect(result.ok).toBeTruthy();
+                    expect(loggerMock.info).toHaveBeenLastCalledWith(
+                        `LDAP: Successfully modified mailPrimaryAddress and mailAlternativeAddress for personId:${fakePersonID}`,
+                    );
+                    expect(eventServiceMock.publish).toHaveBeenCalledWith(
+                        expect.objectContaining({
+                            personId: fakePersonID,
+                            mailPrimaryAddress: newEmailAddress,
+                            mailAlternativeAddress: currentEmailAddress,
+                        }),
+                    );
+                });
+            });
+
+            describe('but does NOT have a mailPrimaryAddress', () => {
+                it('should set mailAlternativeAddress to same value as mailPrimaryAddress and throw LdapPersonEntryChangedEvent', async () => {
+                    ldapClientMock.getClient.mockImplementation(() => {
+                        clientMock.bind.mockResolvedValueOnce();
+                        clientMock.search.mockResolvedValueOnce(
+                            createMock<SearchResult>({
+                                searchEntries: [
+                                    createMock<Entry>({
+                                        dn: fakeDN,
+                                        mailPrimaryAddress: undefined,
+                                    }),
+                                ],
+                            }),
+                        );
+                        clientMock.modify.mockResolvedValue();
+
+                        return clientMock;
+                    });
+
+                    const result: Result<PersonID> = await ldapClientService.changeEmailAddressByPersonId(
+                        fakePersonID,
+                        newEmailAddress,
+                    );
+
+                    expect(result.ok).toBeTruthy();
+                    expect(loggerMock.info).toHaveBeenLastCalledWith(
+                        `LDAP: Successfully modified mailPrimaryAddress and mailAlternativeAddress for personId:${fakePersonID}`,
+                    );
+                    expect(eventServiceMock.publish).toHaveBeenCalledWith(
+                        expect.objectContaining({
+                            personId: fakePersonID,
+                            mailPrimaryAddress: newEmailAddress,
+                            mailAlternativeAddress: newEmailAddress,
+                        }),
+                    );
+                });
             });
         });
     });

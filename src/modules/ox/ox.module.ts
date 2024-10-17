@@ -8,6 +8,7 @@ import { RolleModule } from '../rolle/rolle.module.js';
 import { PersonModule } from '../person/person.module.js';
 import { ServiceProviderModule } from '../service-provider/service-provider.module.js';
 import { PersonenKontextModule } from '../personenkontext/personenkontext.module.js';
+import { EmailModule } from '../email/email.module.js';
 
 @Module({
     imports: [
@@ -15,6 +16,7 @@ import { PersonenKontextModule } from '../personenkontext/personenkontext.module
         PersonModule,
         PersonenKontextModule,
         ServiceProviderModule,
+        EmailModule,
         LoggerModule.register(OxModule.name),
         HttpModule,
     ],

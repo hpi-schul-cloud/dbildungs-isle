@@ -7,6 +7,7 @@ import { RolleDomainError } from '../domain/rolle-domain.error.js';
 import { RolleHatPersonenkontexteError } from '../domain/rolle-hat-personenkontexte.error.js';
 import { UpdateMerkmaleError } from '../domain/update-merkmale.error.js';
 import { NameForRolleWithTrailingSpaceError } from '../domain/name-with-trailing-space.error.js';
+import { RolleUpdateOutdatedError } from '../domain/update-outdated.error.js';
 
 @Catch(RolleDomainError)
 export class RolleExceptionFilter implements ExceptionFilter<RolleDomainError> {
@@ -37,6 +38,13 @@ export class RolleExceptionFilter implements ExceptionFilter<RolleDomainError> {
             new DbiamRolleError({
                 code: 400,
                 i18nKey: RolleErrorI18nTypes.ROLLENNAME_ENTHAELT_LEERZEICHEN,
+            }),
+        ],
+        [
+            RolleUpdateOutdatedError.name,
+            new DbiamRolleError({
+                code: 400,
+                i18nKey: RolleErrorI18nTypes.NEWER_VERSION_OF_ROLLE_AVAILABLE,
             }),
         ],
     ]);

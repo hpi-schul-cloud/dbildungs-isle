@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto';
-import { EntityManager, FilterQuery, Loaded, RequiredEntityData } from '@mikro-orm/postgresql';
+import { EntityManager, FilterQuery, Loaded, QBFilterQuery, RequiredEntityData } from '@mikro-orm/postgresql';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { DataConfig } from '../../../shared/config/data.config.js';
@@ -13,9 +13,9 @@ import {
 } from '../../../shared/error/index.js';
 import { ScopeOperator, ScopeOrder } from '../../../shared/persistence/scope.enums.js';
 import { PersonID } from '../../../shared/types/aggregate-ids.types.js';
-import { PersonPermissions, PermittedOrgas } from '../../authentication/domain/person-permissions.js';
+import { PermittedOrgas, PersonPermissions } from '../../authentication/domain/person-permissions.js';
 import { KeycloakUserService, LockKeys, PersonHasNoKeycloakId, User } from '../../keycloak-administration/index.js';
-import { RollenSystemRecht } from '../../rolle/domain/rolle.enums.js';
+import { RollenMerkmal, RollenSystemRecht } from '../../rolle/domain/rolle.enums.js';
 import { Person, LockInfo } from '../domain/person.js';
 import { PersonEntity } from './person.entity.js';
 import { PersonScope } from './person.scope.js';
@@ -34,7 +34,15 @@ import { toDIN91379SearchForm } from '../../../shared/util/din-91379-validation.
 
 export function getEnabledEmailAddress(entity: PersonEntity): string | undefined {
     for (const emailAddress of entity.emailAddresses) {
+        // Email-Repo is responsible to avoid persisting multiple enabled email-addresses for same user
         if (emailAddress.status === EmailAddressStatus.ENABLED) return emailAddress.address;
+    }
+    return undefined;
+}
+
+export function getOxUserId(entity: PersonEntity): string | undefined {
+    for (const emailAddress of entity.emailAddresses) {
+        if (emailAddress.status !== EmailAddressStatus.FAILED) return emailAddress.oxUserId;
     }
     return undefined;
 }
@@ -97,6 +105,7 @@ export function mapEntityToAggregate(entity: PersonEntity): Person<true> {
         undefined,
         undefined,
         getEnabledEmailAddress(entity),
+        getOxUserId(entity),
     );
 }
 
@@ -432,8 +441,8 @@ export class PersonRepository {
         const newVorname: string = person.vorname.toLowerCase();
         const newFamilienname: string = person.familienname.toLowerCase();
 
-        //only look for first letter, because username is firstname[0] + lastname
-        if (oldVorname[0] !== newVorname[0]) return true;
+        //NOT only look for first letter, because email-address is full-firstname.full-lastname@domain.de
+        if (oldVorname !== newVorname) return true;
 
         return oldFamilienname !== newFamilienname;
     }
@@ -685,5 +694,29 @@ export class PersonRepository {
         if (oldVornameLowerCase[0] !== newVornameLowerCase[0]) return true;
 
         return oldFamiliennameLowerCase !== newFamiliennameLowerCase;
+    }
+
+    public async getKoPersUserLockList(): Promise<string[]> {
+        const daysAgo: Date = new Date();
+        daysAgo.setDate(daysAgo.getDate() - 56);
+
+        const filters: QBFilterQuery<PersonEntity> = {
+            $and: [
+                { personalnummer: { $eq: null } },
+                {
+                    personenKontexte: {
+                        $some: {
+                            createdAt: { $lte: daysAgo }, //Check that createdAt is older than 56 days
+                            rolleId: {
+                                merkmale: { merkmal: RollenMerkmal.KOPERS_PFLICHT },
+                            },
+                        },
+                    },
+                },
+            ],
+        };
+
+        const personEntities: PersonEntity[] = await this.em.find(PersonEntity, filters);
+        return personEntities.map((person: PersonEntity) => person.keycloakUserId);
     }
 }

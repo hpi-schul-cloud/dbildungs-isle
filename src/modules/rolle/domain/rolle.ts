@@ -15,6 +15,7 @@ export class Rolle<WasPersisted extends boolean> {
         public id: Persisted<string, WasPersisted>,
         public createdAt: Persisted<Date, WasPersisted>,
         public updatedAt: Persisted<Date, WasPersisted>,
+        public version: Persisted<number, WasPersisted>,
         public name: string,
         public administeredBySchulstrukturknoten: string,
         public rollenart: RollenArt,
@@ -47,6 +48,7 @@ export class Rolle<WasPersisted extends boolean> {
             undefined,
             undefined,
             undefined,
+            undefined,
             name,
             administeredBySchulstrukturknoten,
             rollenart,
@@ -64,6 +66,7 @@ export class Rolle<WasPersisted extends boolean> {
         id: string,
         createdAt: Date,
         updatedAt: Date,
+        version: number,
         name: string,
         administeredBySchulstrukturknoten: string,
         rollenart: RollenArt,
@@ -83,6 +86,7 @@ export class Rolle<WasPersisted extends boolean> {
             id,
             createdAt,
             updatedAt,
+            version,
             name,
             administeredBySchulstrukturknoten,
             rollenart,
@@ -114,6 +118,7 @@ export class Rolle<WasPersisted extends boolean> {
         id: string,
         createdAt: Date,
         updatedAt: Date,
+        version: number,
         name: string,
         administeredBySchulstrukturknoten: string,
         rollenart: RollenArt,
@@ -129,6 +134,7 @@ export class Rolle<WasPersisted extends boolean> {
             id,
             createdAt,
             updatedAt,
+            version,
             name,
             administeredBySchulstrukturknoten,
             rollenart,
@@ -210,5 +216,9 @@ export class Rolle<WasPersisted extends boolean> {
         }
 
         this.serviceProviderIds = serviceProviderIds;
+    }
+
+    public setVersionForUpdate(version: number): void {
+        this.version = version;
     }
 }

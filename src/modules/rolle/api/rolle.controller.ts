@@ -41,7 +41,6 @@ import { AddSystemrechtBodyParams } from './add-systemrecht.body.params.js';
 import { FindRolleByIdParams } from './find-rolle-by-id.params.js';
 import { AddSystemrechtError } from './add-systemrecht.error.js';
 import { EntityNotFoundError } from '../../../shared/error/entity-not-found.error.js';
-import { RolleServiceProviderQueryParams } from './rolle-service-provider.query.params.js';
 import { RolleServiceProviderResponse } from './rolle-service-provider.response.js';
 import { ServiceProviderRepo } from '../../service-provider/repo/service-provider.repo.js';
 import { ServiceProvider } from '../../service-provider/domain/service-provider.js';
@@ -60,6 +59,7 @@ import { AuthenticationExceptionFilter } from '../../authentication/api/authenti
 import { DbiamRolleError } from './dbiam-rolle.error.js';
 import { OrganisationRepository } from '../../organisation/persistence/organisation.repository.js';
 import { Organisation } from '../../organisation/domain/organisation.js';
+import { RolleServiceProviderBodyParams } from './rolle-service-provider.body.params.js';
 
 @UseFilters(new SchulConnexValidationErrorFilter(), new RolleExceptionFilter(), new AuthenticationExceptionFilter())
 @ApiTags('rolle')
@@ -264,7 +264,7 @@ export class RolleController {
     })
     public async updateServiceProvidersById(
         @Param() findRolleByIdParams: FindRolleByIdParams,
-        @Body() spBodyParams: RolleServiceProviderQueryParams,
+        @Body() spBodyParams: RolleServiceProviderBodyParams,
     ): Promise<ServiceProviderResponse[]> {
         const rolle: Option<Rolle<true>> = await this.rolleRepo.findById(findRolleByIdParams.rolleId);
         if (!rolle) {
@@ -280,6 +280,7 @@ export class RolleController {
                 SchulConnexErrorMapper.mapDomainErrorToSchulConnexError(result),
             );
         }
+        rolle.setVersionForUpdate(spBodyParams.version);
         await this.rolleRepo.save(rolle);
 
         const serviceProviderMap: Map<string, ServiceProvider<true>> = await this.serviceProviderRepo.findByIds(
@@ -319,7 +320,7 @@ export class RolleController {
     @ApiUnauthorizedResponse({ description: 'Not authorized to retrieve service-providers for rolle.' })
     public async removeServiceProviderById(
         @Param() findRolleByIdParams: FindRolleByIdParams,
-        @Query() spBodyParams: RolleServiceProviderQueryParams,
+        @Body() spBodyParams: RolleServiceProviderBodyParams,
     ): Promise<void> {
         const rolle: Option<Rolle<true>> = await this.rolleRepo.findById(findRolleByIdParams.rolleId);
 
@@ -336,6 +337,7 @@ export class RolleController {
                 SchulConnexErrorMapper.mapDomainErrorToSchulConnexError(result),
             );
         }
+        rolle.setVersionForUpdate(spBodyParams.version);
         await this.rolleRepo.save(rolle);
     }
 
@@ -366,6 +368,7 @@ export class RolleController {
             params.merkmale,
             params.systemrechte,
             params.serviceProviderIds,
+            params.version,
             isAlreadyAssigned,
             permissions,
         );

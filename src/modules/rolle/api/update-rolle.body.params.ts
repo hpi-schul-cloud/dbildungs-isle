@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { ArrayUnique, IsEnum, IsNotEmpty, MaxLength } from 'class-validator';
+import { ArrayUnique, IsEnum, IsNotEmpty, IsNumber, MaxLength } from 'class-validator';
 
 import {
     RollenMerkmal,
@@ -29,4 +29,8 @@ export class UpdateRolleBodyParams {
     @ArrayUnique()
     @ApiProperty({ type: [String], uniqueItems: true })
     public serviceProviderIds!: string[];
+
+    @IsNumber()
+    @ApiProperty({ required: true })
+    public readonly version!: number;
 }

@@ -40,6 +40,9 @@ export class RolleResponse {
     @ApiProperty({ nullable: true })
     public administeredBySchulstrukturknotenKennung?: string;
 
+    @ApiProperty()
+    public version: number;
+
     public constructor(
         rolle: Rolle<true>,
         administeredBySchulstrukturknotenName?: string,
@@ -55,5 +58,6 @@ export class RolleResponse {
         this.systemrechte = rolle.systemrechte;
         this.administeredBySchulstrukturknotenName = administeredBySchulstrukturknotenName;
         this.administeredBySchulstrukturknotenKennung = administeredBySchulstrukturknotenKennung;
+        this.version = rolle.version;
     }
 }

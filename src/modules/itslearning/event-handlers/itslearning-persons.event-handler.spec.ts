@@ -6,6 +6,7 @@ import { ConfigTestModule, DoFactory, LoggingTestModule } from '../../../../test
 import { ClassLogger } from '../../../core/logging/class-logger.js';
 import { DomainError } from '../../../shared/error/domain.error.js';
 import { ItsLearningError } from '../../../shared/error/its-learning.error.js';
+import { OxUserChangedEvent } from '../../../shared/events/ox-user-changed.event.js';
 import { PersonRenamedEvent } from '../../../shared/events/person-renamed-event.js';
 import {
     PersonenkontextUpdatedData,
@@ -142,7 +143,9 @@ describe('ItsLearning Persons Event Handler', () => {
             const person: Person<true> = DoFactory.createPerson(true, params);
 
             const readPersonResponse: PersonResponse = {
-                userId: person.id,
+                username: person.id,
+                firstName: faker.person.firstName(),
+                lastName: faker.person.lastName(),
                 primaryRoleType: true,
                 institutionRole: faker.helpers.enumValue(IMSESInstitutionRoleType),
             };
@@ -256,6 +259,46 @@ describe('ItsLearning Persons Event Handler', () => {
 
                 expect(loggerMock.error).toHaveBeenCalledWith(`Person with ID ${person.id} has no username!`);
             });
+        });
+    });
+
+    describe('oxUserChangedEventHandler', () => {
+        const personId: string = faker.string.uuid();
+        const email: string = faker.internet.email();
+        const generatedEvent: OxUserChangedEvent = new OxUserChangedEvent(
+            personId,
+            faker.internet.userName(),
+            faker.string.uuid(),
+            faker.internet.userName(),
+            faker.string.uuid(),
+            faker.string.uuid(),
+            email,
+        );
+
+        it('should update email', async () => {
+            itslearningPersonRepoMock.updateEmail.mockResolvedValueOnce(undefined); // Update email
+
+            await sut.oxUserChangedEventHandler(generatedEvent);
+
+            expect(itslearningPersonRepoMock.updateEmail).toHaveBeenCalledWith(personId, email);
+            expect(loggerMock.info).toHaveBeenCalledWith(`Updated E-Mail for person with ID ${personId}!`);
+        });
+
+        it('should log error, if email could not be updated', async () => {
+            itslearningPersonRepoMock.updateEmail.mockResolvedValueOnce(new ItsLearningError('Test Error')); // Update email
+
+            await sut.oxUserChangedEventHandler(generatedEvent);
+
+            expect(loggerMock.error).toHaveBeenCalledWith(`Could not update E-Mail for person with ID ${personId}!`);
+        });
+
+        it('should skip event, if not enabled', async () => {
+            sut.ENABLED = false;
+            itslearningPersonRepoMock.updateEmail.mockResolvedValueOnce(undefined); // Update email
+
+            await sut.oxUserChangedEventHandler(generatedEvent);
+
+            expect(loggerMock.info).toHaveBeenCalledWith('Not enabled, ignoring email update.');
         });
     });
 

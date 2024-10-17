@@ -13,7 +13,7 @@ via the ldap client library functions (ldapts).
 
 - Add a new entry, based on certain file
 ```bash
-ldapadd -x -H ldap://localhost -D "cn=admin,dc=example,dc=org" -f config/spsh.ldif -W
+ldapadd -x -H ldap://localhost -D "cn=admin,dc=example,dc=org" -f config/02_spsh.ldif -W
 ```
 
 - Search all entries from BASE_DN `dc=example,dc=org` downwards:

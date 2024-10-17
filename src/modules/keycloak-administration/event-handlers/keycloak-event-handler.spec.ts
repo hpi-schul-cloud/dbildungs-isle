@@ -4,11 +4,11 @@ import { ClassLogger } from '../../../core/logging/class-logger.js';
 import { ConfigTestModule, LoggingTestModule } from '../../../../test/utils/index.js';
 import { KeycloakUserService } from '../domain/keycloak-user.service.js';
 import { KeycloakEventHandler } from './keycloak-event-handler.js';
-import { OxUserCreatedEvent } from '../../../shared/events/ox-user-created.event.js';
 import { faker } from '@faker-js/faker';
 import { OXContextID, OXContextName, OXUserID, OXUserName } from '../../../shared/types/ox-ids.types.js';
 import { PersonID } from '../../../shared/types/aggregate-ids.types.js';
 import { EventService } from '../../../core/eventbus/services/event.service.js';
+import { OxUserChangedEvent } from '../../../shared/events/ox-user-changed.event.js';
 
 describe('KeycloakEventHandler', () => {
     let module: TestingModule;
@@ -51,8 +51,8 @@ describe('KeycloakEventHandler', () => {
             const fakeOXUserName: OXUserName = faker.internet.userName();
             const fakeOXContextName: OXContextName = 'context1';
             const fakeEmail: string = faker.internet.email();
-            await sut.handleOxUserCreatedEvent(
-                new OxUserCreatedEvent(
+            await sut.handleOxUserChangedEvent(
+                new OxUserChangedEvent(
                     fakePersonID,
                     faker.internet.userName(),
                     fakeOXUserID,
@@ -63,7 +63,7 @@ describe('KeycloakEventHandler', () => {
                 ),
             );
             expect(loggerMock.info).toHaveBeenLastCalledWith(
-                `Received OxUserCreatedEvent personId:${fakePersonID}, userId:${fakeOXUserID}, userName:${fakeOXUserName} contextId:${fakeOXContextID}, contextName:${fakeOXContextName}`,
+                `Received OxUserChangedEvent personId:${fakePersonID}, userId:${fakeOXUserID}, userName:${fakeOXUserName} contextId:${fakeOXContextID}, contextName:${fakeOXContextName}, primaryEmail:${fakeEmail}`,
             );
             expect(keycloakUserServiceMock.updateOXUserAttributes).toHaveBeenCalledTimes(1);
         });

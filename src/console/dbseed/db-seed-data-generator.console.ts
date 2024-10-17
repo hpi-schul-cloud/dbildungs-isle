@@ -72,14 +72,11 @@ export class DbSeedDataGeneratorConsole extends CommandRunner {
                 for (let k: number = 0; k < klassen.length; k++) {
                     const klasseId: number = schoolCount + lastOrgaId + klassenIdIndex;
                     const klassenname: string = j + klassen[k]!;
-                    const klassenkennung: string = `${kennung}-${klassenname}`;
 
                     organisations.push({
                         id: klasseId,
-                        kennung: klassenkennung,
                         name: klassenname,
                         namensergaenzung: 'Keine',
-                        kuerzel: `${schulname}-${klassenname}`,
                         typ: OrganisationsTyp.KLASSE,
                         administriertVon: schuleId,
                         zugehoerigZu: schuleId,

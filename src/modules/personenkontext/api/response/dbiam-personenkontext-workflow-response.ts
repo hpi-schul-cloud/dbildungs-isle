@@ -60,6 +60,7 @@ export class PersonenkontextWorkflowResponse {
             rollenart: rolle.rollenart,
             merkmale: rolle.merkmale,
             systemrechte: rolle.systemrechte,
+            version: rolle.version,
         };
     }
 }

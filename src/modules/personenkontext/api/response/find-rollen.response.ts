@@ -18,6 +18,7 @@ export class FindRollenResponse {
             rollenart: rolle.rollenart,
             merkmale: rolle.merkmale,
             systemrechte: rolle.systemrechte,
+            version: rolle.version,
         };
     }
 

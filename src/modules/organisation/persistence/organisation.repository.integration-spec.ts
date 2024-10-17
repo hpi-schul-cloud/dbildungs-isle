@@ -997,7 +997,7 @@ describe('OrganisationRepository', () => {
     });
 
     describe('findAuthorized', () => {
-        it('should return all organisations', async () => {
+        it('should return all organisations for root', async () => {
             const orgas: OrganisationEntity[] = [];
             for (let i: number = 0; i < 5; i++) {
                 const orga: Organisation<false> | DomainError = Organisation.createNew(
@@ -1053,7 +1053,7 @@ describe('OrganisationRepository', () => {
             expect(result[1]).toBe(0);
         });
 
-        it('should return all authorized organisations', async () => {
+        it('should return all authorized organisations according to list', async () => {
             const orgas: OrganisationEntity[] = [];
             for (let i: number = 0; i < 5; i++) {
                 const orga: Organisation<false> | DomainError = Organisation.createNew(
@@ -1087,7 +1087,7 @@ describe('OrganisationRepository', () => {
             expect(result[0].some((org: Organisation<true>) => org.id === orgas[4]!.id)).toBeTruthy();
         });
 
-        it('should return all authorized organisations for searchString', async () => {
+        it('should return all authorized organisations for searchString in name', async () => {
             const orgas: OrganisationEntity[] = [];
             for (let i: number = 0; i < 3; i++) {
                 const orga: Organisation<false> | DomainError = Organisation.createNew(
@@ -1127,6 +1127,53 @@ describe('OrganisationRepository', () => {
                 personPermissions,
                 [RollenSystemRecht.SCHULEN_VERWALTEN],
                 { searchString: 'Test' },
+            );
+
+            expect(result[1]).toBe(2);
+            expect(result[0].some((org: Organisation<true>) => org.id === orgas[0]!.id)).toBeTruthy();
+            expect(result[0].some((org: Organisation<true>) => org.id === orgas[2]!.id)).toBeTruthy();
+        });
+
+        it('should return all authorized organisations for searchString in kennung', async () => {
+            const orgas: OrganisationEntity[] = [];
+            for (let i: number = 0; i < 3; i++) {
+                const orga: Organisation<false> | DomainError = Organisation.createNew(
+                    sut.ROOT_ORGANISATION_ID,
+                    sut.ROOT_ORGANISATION_ID,
+                    '1234567',
+                    faker.company.name(),
+                );
+                if (orga instanceof DomainError) {
+                    return;
+                }
+                const mappedOrga: OrganisationEntity = em.create(OrganisationEntity, mapAggregateToData(orga));
+                await em.persistAndFlush(mappedOrga);
+                orgas.push(mappedOrga);
+            }
+            for (let i: number = 0; i < 3; i++) {
+                const orga: Organisation<false> | DomainError = Organisation.createNew(
+                    sut.ROOT_ORGANISATION_ID,
+                    sut.ROOT_ORGANISATION_ID,
+                    faker.string.numeric(6),
+                    faker.company.name(),
+                );
+                if (orga instanceof DomainError) {
+                    return;
+                }
+                const mappedOrga: OrganisationEntity = em.create(OrganisationEntity, mapAggregateToData(orga));
+                await em.persistAndFlush(mappedOrga);
+                orgas.push(mappedOrga);
+            }
+            const personPermissions: DeepMocked<PersonPermissions> = createMock<PersonPermissions>();
+            personPermissions.getOrgIdsWithSystemrecht.mockResolvedValue({
+                all: false,
+                orgaIds: [orgas[0]!.id, orgas[2]!.id, orgas[4]!.id],
+            });
+
+            const result: Counted<Organisation<true>> = await sut.findAuthorized(
+                personPermissions,
+                [RollenSystemRecht.SCHULEN_VERWALTEN],
+                { searchString: '23456' },
             );
 
             expect(result[1]).toBe(2);
