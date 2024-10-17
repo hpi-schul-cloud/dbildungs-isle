@@ -36,7 +36,7 @@ import { FindOrganisationQueryParams } from './find-organisation-query.param.js'
 import { OrganisationByIdParams } from './organisation-by-id.params.js';
 import { UpdateOrganisationBodyParams } from './update-organisation.body.params.js';
 import { OrganisationByIdBodyParams } from './organisation-by-id.body.params.js';
-import { OrganisationRepository } from '../persistence/organisation.repository.js';
+import { OrganisationRepository, OrganisationSeachOptions } from '../persistence/organisation.repository.js';
 import { Organisation } from '../domain/organisation.js';
 import { OrganisationResponse } from './organisation.response.js';
 import { Permissions } from '../../authentication/api/permissions.decorator.js';
@@ -261,10 +261,17 @@ export class OrganisationController {
         @Query() queryParams: FindOrganisationQueryParams,
         @Permissions() permissions: PersonPermissions,
     ): Promise<PagedResponse<OrganisationResponse>> {
+        let organisationSeachOptions: OrganisationSeachOptions = queryParams;
+        if (queryParams.sortField && queryParams.sortOrder) {
+            organisationSeachOptions = {
+                ...queryParams,
+                sort: [{ field: queryParams.sortField, order: queryParams.sortOrder }],
+            };
+        }
         const [organisations, total]: Counted<Organisation<true>> = await this.organisationRepository.findAuthorized(
             permissions,
             queryParams.systemrechte,
-            queryParams,
+            organisationSeachOptions,
         );
 
         const organisationResponses: OrganisationResponse[] = organisations.map((organisation: Organisation<true>) => {

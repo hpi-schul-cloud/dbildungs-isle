@@ -5,7 +5,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 
 import { DoFactory, ConfigTestModule } from '../../../../test/utils/index.js';
 import { Paged } from '../../../shared/paging/paged.js';
-import { OrganisationsTyp, Traegerschaft } from '../domain/organisation.enums.js';
+import { OrganisationSortField, OrganisationsTyp, Traegerschaft } from '../domain/organisation.enums.js';
 import { CreateOrganisationBodyParams } from './create-organisation.body.params.js';
 import { FindOrganisationQueryParams } from './find-organisation-query.param.js';
 import { OrganisationByIdParams } from './organisation-by-id.params.js';
@@ -30,6 +30,7 @@ import { OrganisationByNameQueryParams } from './organisation-by-name.query.js';
 import { DBiamPersonenkontextRepo } from '../../personenkontext/persistence/dbiam-personenkontext.repo.js';
 import { ParentOrganisationenResponse } from './organisation.parents.response.js';
 import { ParentOrganisationsByIdsBodyParams } from './parent-organisations-by-ids.body.params.js';
+import { SortingOrder } from '../../../shared/domain/order.enums.js';
 
 function getFakeParamsAndBody(): [OrganisationByIdParams, OrganisationByIdBodyParams] {
     const params: OrganisationByIdParams = {
@@ -314,6 +315,81 @@ describe('OrganisationController', () => {
                 );
 
                 expect(organisationRepositoryMock.findAuthorized).toHaveBeenCalledTimes(1);
+
+                expect(result.items.length).toEqual(3);
+            });
+
+            it('should find all organizations and include sorting params', async () => {
+                const organisationIds: string[] = [faker.string.uuid(), faker.string.uuid()];
+
+                const queryParams: FindOrganisationQueryParams = {
+                    typ: OrganisationsTyp.SONSTIGE,
+                    searchString: faker.lorem.word(),
+                    systemrechte: [],
+                    administriertVon: [faker.string.uuid(), faker.string.uuid()],
+                    // Assuming you have a field for organisationIds in your query params
+                    organisationIds: organisationIds,
+                    sortField: OrganisationSortField.NAME,
+                    sortOrder: SortingOrder.ASC,
+                };
+
+                const selectedOrganisationMap: Map<string, Organisation<true>> = new Map(
+                    organisationIds.map((id: string) => [
+                        id,
+                        DoFactory.createOrganisationAggregate(true, {
+                            id: id,
+                            createdAt: faker.date.recent(),
+                            updatedAt: faker.date.recent(),
+                            administriertVon: faker.string.uuid(),
+                            zugehoerigZu: faker.string.uuid(),
+                            kennung: faker.lorem.word(),
+                            name: faker.lorem.word(),
+                            namensergaenzung: faker.lorem.word(),
+                            kuerzel: faker.lorem.word(),
+                            typ: OrganisationsTyp.SCHULE,
+                            traegerschaft: Traegerschaft.LAND,
+                        }),
+                    ]),
+                );
+
+                const mockedRepoResponse: Counted<Organisation<true>> = [
+                    [
+                        DoFactory.createOrganisationAggregate(true, {
+                            id: faker.string.uuid(),
+                            createdAt: faker.date.recent(),
+                            updatedAt: faker.date.recent(),
+                            administriertVon: faker.string.uuid(),
+                            zugehoerigZu: faker.string.uuid(),
+                            kennung: faker.lorem.word(),
+                            name: faker.lorem.word(),
+                            namensergaenzung: faker.lorem.word(),
+                            kuerzel: faker.lorem.word(),
+                            typ: OrganisationsTyp.SCHULE,
+                            traegerschaft: Traegerschaft.LAND,
+                        }),
+                        ...selectedOrganisationMap.values(),
+                    ],
+                    selectedOrganisationMap.size + 1,
+                ];
+
+                const permissionsMock: DeepMocked<PersonPermissions> = createMock<PersonPermissions>();
+
+                organisationRepositoryMock.findAuthorized.mockResolvedValue(mockedRepoResponse);
+
+                const result: Paged<OrganisationResponse> = await organisationController.findOrganizations(
+                    queryParams,
+                    permissionsMock,
+                );
+
+                expect(organisationRepositoryMock.findAuthorized).toHaveBeenCalledTimes(1);
+                expect(organisationRepositoryMock.findAuthorized).toHaveBeenCalledWith(
+                    permissionsMock,
+                    queryParams.systemrechte,
+                    {
+                        ...queryParams,
+                        sort: [{ field: OrganisationSortField.NAME, order: SortingOrder.ASC }],
+                    },
+                );
 
                 expect(result.items.length).toEqual(3);
             });

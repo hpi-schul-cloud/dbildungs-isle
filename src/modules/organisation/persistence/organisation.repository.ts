@@ -7,6 +7,8 @@ import {
     SelectQueryBuilder,
     EntityDictionary,
     QueryOrder,
+    QBQueryOrderMap,
+    EntityKey,
 } from '@mikro-orm/postgresql';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -15,7 +17,7 @@ import { OrganisationID } from '../../../shared/types/aggregate-ids.types.js';
 import { Organisation } from '../domain/organisation.js';
 import { OrganisationEntity } from './organisation.entity.js';
 import { OrganisationScope } from './organisation.scope.js';
-import { OrganisationsTyp, RootDirectChildrenType } from '../domain/organisation.enums.js';
+import { OrganisationSortField, OrganisationsTyp, RootDirectChildrenType } from '../domain/organisation.enums.js';
 import { SchuleCreatedEvent } from '../../../shared/events/schule-created.event.js';
 import { EventService } from '../../../core/eventbus/services/event.service.js';
 import { ScopeOperator } from '../../../shared/persistence/scope.enums.js';
@@ -28,6 +30,7 @@ import { KlasseUpdatedEvent } from '../../../shared/events/klasse-updated.event.
 import { KlasseCreatedEvent } from '../../../shared/events/klasse-created.event.js';
 import { PermittedOrgas, PersonPermissions } from '../../authentication/domain/person-permissions.js';
 import { RollenSystemRecht } from '../../rolle/domain/rolle.enums.js';
+import { SortingOrder } from '../../../shared/domain/order.enums.js';
 
 export function mapAggregateToData(organisation: Organisation<boolean>): RequiredEntityData<OrganisationEntity> {
     return {
@@ -63,6 +66,8 @@ export function mapEntityToAggregate(entity: OrganisationEntity): Organisation<t
     );
 }
 
+type OrganisationSortFieldOrder = { field: OrganisationSortField; order: SortingOrder };
+
 export type OrganisationSeachOptions = {
     readonly kennung?: string;
     readonly name?: string;
@@ -73,6 +78,7 @@ export type OrganisationSeachOptions = {
     readonly organisationIds?: string[];
     readonly offset?: number;
     readonly limit?: number;
+    readonly sort?: [OrganisationSortFieldOrder];
 };
 
 @Injectable()
@@ -306,6 +312,22 @@ export class OrganisationRepository {
             return [[], 0];
         }
 
+        let orderBy: QBQueryOrderMap<OrganisationEntity>[] = [
+            { kennung: QueryOrder.ASC_NULLS_FIRST },
+            { name: QueryOrder.ASC_NULLS_FIRST },
+        ];
+        if (searchOptions.sort && searchOptions.sort.length > 0) {
+            orderBy = [];
+            searchOptions.sort.forEach((sortFieldOrder: OrganisationSortFieldOrder) => {
+                const order: QueryOrder =
+                    sortFieldOrder.order === SortingOrder.ASC
+                        ? QueryOrder.ASC_NULLS_FIRST
+                        : QueryOrder.DESC_NULLS_FIRST;
+                const field: EntityKey<OrganisationEntity> = sortFieldOrder.field;
+                orderBy.push({ [field]: order });
+            });
+        }
+
         let entitiesForIds: OrganisationEntity[] = [];
         const qb: QueryBuilder<OrganisationEntity> = this.em.createQueryBuilder(OrganisationEntity);
 
@@ -316,7 +338,7 @@ export class OrganisationRepository {
             const queryForIds: SelectQueryBuilder<OrganisationEntity> = qb
                 .select('*')
                 .where({ id: { $in: organisationIds } })
-                .orderBy([{ kennung: QueryOrder.ASC_NULLS_FIRST }, { name: QueryOrder.ASC_NULLS_FIRST }])
+                .orderBy(orderBy)
                 .limit(searchOptions.limit);
             entitiesForIds = (await queryForIds.getResultAndCount())[0];
         }
@@ -358,7 +380,7 @@ export class OrganisationRepository {
             .select('*')
             .where(whereClause)
             .offset(searchOptions.offset)
-            .orderBy([{ kennung: QueryOrder.ASC_NULLS_FIRST }, { name: QueryOrder.ASC_NULLS_FIRST }])
+            .orderBy(orderBy)
             .limit(searchOptions.limit);
         const [entities, total]: Counted<OrganisationEntity> = await query.getResultAndCount();
 

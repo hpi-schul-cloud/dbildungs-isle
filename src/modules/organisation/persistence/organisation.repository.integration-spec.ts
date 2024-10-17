@@ -13,7 +13,7 @@ import { OrganisationPersistenceMapperProfile } from './organisation-persistence
 import { OrganisationEntity } from './organisation.entity.js';
 import { Organisation } from '../domain/organisation.js';
 import { OrganisationScope } from './organisation.scope.js';
-import { RootDirectChildrenType, OrganisationsTyp } from '../domain/organisation.enums.js';
+import { RootDirectChildrenType, OrganisationsTyp, OrganisationSortField } from '../domain/organisation.enums.js';
 import { ScopeOperator } from '../../../shared/persistence/index.js';
 import { ConfigService } from '@nestjs/config';
 import { ServerConfig } from '../../../shared/config/server.config.js';
@@ -26,6 +26,7 @@ import { EntityCouldNotBeUpdated } from '../../../shared/error/entity-could-not-
 import { OrganisationSpecificationError } from '../specification/error/organisation-specification.error.js';
 import { PersonPermissions } from '../../authentication/domain/person-permissions.js';
 import { RollenSystemRecht } from '../../rolle/domain/rolle.enums.js';
+import { SortingOrder } from '../../../shared/domain/order.enums.js';
 
 describe('OrganisationRepository', () => {
     let module: TestingModule;
@@ -1025,6 +1026,158 @@ describe('OrganisationRepository', () => {
             expect(result[1]).toBe(5);
         });
 
+        it('should order result by kennung and name by default', async () => {
+            const orgas: OrganisationEntity[] = [];
+            const orga1: Organisation<false> | DomainError = Organisation.createNew(
+                sut.ROOT_ORGANISATION_ID,
+                sut.ROOT_ORGANISATION_ID,
+                '7777777',
+                faker.company.name(),
+            );
+            if (orga1 instanceof DomainError) {
+                return;
+            }
+            const mappedOrga1: OrganisationEntity = em.create(OrganisationEntity, mapAggregateToData(orga1));
+            await em.persistAndFlush(mappedOrga1);
+            orgas.push(mappedOrga1);
+
+            const orga2: Organisation<false> | DomainError = Organisation.createNew(
+                sut.ROOT_ORGANISATION_ID,
+                sut.ROOT_ORGANISATION_ID,
+                undefined,
+                'eeeeeee',
+            );
+            if (orga2 instanceof DomainError) {
+                return;
+            }
+            const mappedOrga2: OrganisationEntity = em.create(OrganisationEntity, mapAggregateToData(orga2));
+            await em.persistAndFlush(mappedOrga2);
+            orgas.push(mappedOrga2);
+
+            const orga3: Organisation<false> | DomainError = Organisation.createNew(
+                sut.ROOT_ORGANISATION_ID,
+                sut.ROOT_ORGANISATION_ID,
+                undefined,
+                'aaaaaaa',
+            );
+            if (orga3 instanceof DomainError) {
+                return;
+            }
+            const mappedOrga3: OrganisationEntity = em.create(OrganisationEntity, mapAggregateToData(orga3));
+            await em.persistAndFlush(mappedOrga3);
+            orgas.push(mappedOrga3);
+
+            const orga4: Organisation<false> | DomainError = Organisation.createNew(
+                sut.ROOT_ORGANISATION_ID,
+                sut.ROOT_ORGANISATION_ID,
+                '3333333',
+                'aaaaaaa',
+            );
+            if (orga4 instanceof DomainError) {
+                return;
+            }
+            const mappedOrga4: OrganisationEntity = em.create(OrganisationEntity, mapAggregateToData(orga4));
+            await em.persistAndFlush(mappedOrga4);
+            orgas.push(mappedOrga4);
+
+            const personPermissions: DeepMocked<PersonPermissions> = createMock<PersonPermissions>();
+            personPermissions.getOrgIdsWithSystemrecht.mockResolvedValue({ all: true });
+
+            const result: Counted<Organisation<true>> = await sut.findAuthorized(
+                personPermissions,
+                [RollenSystemRecht.SCHULEN_VERWALTEN],
+                {},
+            );
+
+            expect(result[1]).toBe(4);
+            expect(result[0][0]?.name).toBe(orga3.name);
+            expect(result[0][1]?.name).toBe(orga2.name);
+            expect(result[0][2]?.kennung).toBe(orga4.kennung);
+            expect(result[0][3]?.kennung).toBe(orga1.kennung);
+        });
+
+        it('should order result by name if requested', async () => {
+            const orgas: OrganisationEntity[] = [];
+            const orga1: Organisation<false> | DomainError = Organisation.createNew(
+                sut.ROOT_ORGANISATION_ID,
+                sut.ROOT_ORGANISATION_ID,
+                '7777777',
+                'ccccccc',
+            );
+            if (orga1 instanceof DomainError) {
+                return;
+            }
+            const mappedOrga1: OrganisationEntity = em.create(OrganisationEntity, mapAggregateToData(orga1));
+            await em.persistAndFlush(mappedOrga1);
+            orgas.push(mappedOrga1);
+
+            const orga2: Organisation<false> | DomainError = Organisation.createNew(
+                sut.ROOT_ORGANISATION_ID,
+                sut.ROOT_ORGANISATION_ID,
+                undefined,
+                'eeeeeee',
+            );
+            if (orga2 instanceof DomainError) {
+                return;
+            }
+            const mappedOrga2: OrganisationEntity = em.create(OrganisationEntity, mapAggregateToData(orga2));
+            await em.persistAndFlush(mappedOrga2);
+            orgas.push(mappedOrga2);
+
+            const orga3: Organisation<false> | DomainError = Organisation.createNew(
+                sut.ROOT_ORGANISATION_ID,
+                sut.ROOT_ORGANISATION_ID,
+                undefined,
+                'aaaaaaa',
+            );
+            if (orga3 instanceof DomainError) {
+                return;
+            }
+            const mappedOrga3: OrganisationEntity = em.create(OrganisationEntity, mapAggregateToData(orga3));
+            await em.persistAndFlush(mappedOrga3);
+            orgas.push(mappedOrga3);
+
+            const orga4: Organisation<false> | DomainError = Organisation.createNew(
+                sut.ROOT_ORGANISATION_ID,
+                sut.ROOT_ORGANISATION_ID,
+                '3333333',
+                'bbbbbbb',
+            );
+            if (orga4 instanceof DomainError) {
+                return;
+            }
+            const mappedOrga4: OrganisationEntity = em.create(OrganisationEntity, mapAggregateToData(orga4));
+            await em.persistAndFlush(mappedOrga4);
+            orgas.push(mappedOrga4);
+
+            const personPermissions: DeepMocked<PersonPermissions> = createMock<PersonPermissions>();
+            personPermissions.getOrgIdsWithSystemrecht.mockResolvedValue({ all: true });
+
+            const result: Counted<Organisation<true>> = await sut.findAuthorized(
+                personPermissions,
+                [RollenSystemRecht.SCHULEN_VERWALTEN],
+                { sort: [{ field: OrganisationSortField.NAME, order: SortingOrder.ASC }] },
+            );
+
+            expect(result[1]).toBe(4);
+            expect(result[0][0]?.name).toBe(orga3.name);
+            expect(result[0][1]?.name).toBe(orga4.name);
+            expect(result[0][2]?.name).toBe(orga1.name);
+            expect(result[0][3]?.name).toBe(orga2.name);
+
+            const result2: Counted<Organisation<true>> = await sut.findAuthorized(
+                personPermissions,
+                [RollenSystemRecht.SCHULEN_VERWALTEN],
+                { sort: [{ field: OrganisationSortField.NAME, order: SortingOrder.DESC }] },
+            );
+
+            expect(result2[1]).toBe(4);
+            expect(result2[0][0]?.name).toBe(orga2.name);
+            expect(result2[0][1]?.name).toBe(orga1.name);
+            expect(result2[0][2]?.name).toBe(orga4.name);
+            expect(result2[0][3]?.name).toBe(orga3.name);
+        });
+
         it('should return no organisations if not authorized', async () => {
             const orgas: OrganisationEntity[] = [];
             for (let i: number = 0; i < 5; i++) {
@@ -1529,58 +1682,60 @@ describe('OrganisationRepository', () => {
         });
     });
 
-    it('should only return organisations with the permitted IDs', async () => {
-        const organisations: OrganisationEntity[] = [];
+    describe('findByNameOrKennungAndExcludeByOrganisationType', () => {
+        it('should only return organisations with the permitted IDs', async () => {
+            const organisations: OrganisationEntity[] = [];
 
-        // Create 5 organisations
-        for (let i: number = 0; i < 5; i++) {
-            const orga: Organisation<false> | DomainError = Organisation.createNew(
-                sut.ROOT_ORGANISATION_ID,
-                sut.ROOT_ORGANISATION_ID,
-                faker.string.numeric(6),
-                faker.company.name(),
-                OrganisationsTyp.SCHULE,
-            );
-            if (orga instanceof DomainError) {
-                fail('Could not create Organisation');
+            // Create 5 organisations
+            for (let i: number = 0; i < 5; i++) {
+                const orga: Organisation<false> | DomainError = Organisation.createNew(
+                    sut.ROOT_ORGANISATION_ID,
+                    sut.ROOT_ORGANISATION_ID,
+                    faker.string.numeric(6),
+                    faker.company.name(),
+                    OrganisationsTyp.SCHULE,
+                );
+                if (orga instanceof DomainError) {
+                    fail('Could not create Organisation');
+                }
+                const mappedOrga: OrganisationEntity = em.create(OrganisationEntity, mapAggregateToData(orga));
+                await em.persistAndFlush(mappedOrga);
+                organisations.push(mappedOrga);
             }
-            const mappedOrga: OrganisationEntity = em.create(OrganisationEntity, mapAggregateToData(orga));
-            await em.persistAndFlush(mappedOrga);
-            organisations.push(mappedOrga);
-        }
 
-        organisations.filter((orga: OrganisationEntity): orga is OrganisationEntity => orga !== undefined);
+            organisations.filter((orga: OrganisationEntity): orga is OrganisationEntity => orga !== undefined);
 
-        // Only permit the first and third organisation
-        const permittedOrgaIds: string[] = [organisations[0]?.id, organisations[2]?.id].filter(
-            (id: string | undefined): id is string => !!id,
-        );
-
-        const finalOrgas: Organisation<true>[] = [];
-
-        for (const orga of organisations) {
-            const orgaAggregate: Organisation<true> = mapEntityToAggregate(orga);
-            finalOrgas.push(orgaAggregate);
-        }
-
-        jest.spyOn(sut, 'findBy').mockResolvedValueOnce([
-            finalOrgas.filter((orga: Organisation<true>) => permittedOrgaIds.includes(orga.id)),
-            2,
-        ]);
-
-        if (permittedOrgaIds && permittedOrgaIds.length > 0) {
-            // Call the method with permitted organisation IDs
-            const result: Organisation<true>[] = await sut.findByNameOrKennungAndExcludeByOrganisationType(
-                OrganisationsTyp.KLASSE, // Exclude some type, not relevant here
-                undefined,
-                permittedOrgaIds,
-                25,
+            // Only permit the first and third organisation
+            const permittedOrgaIds: string[] = [organisations[0]?.id, organisations[2]?.id].filter(
+                (id: string | undefined): id is string => !!id,
             );
 
-            // Verify the result contains only the permitted organisations
-            expect(result.length).toBe(2);
-            expect(result.some((org: Organisation<true>) => org.id === organisations[0]?.id)).toBeTruthy();
-            expect(result.some((org: Organisation<true>) => org.id === organisations[2]?.id)).toBeTruthy();
-        }
+            const finalOrgas: Organisation<true>[] = [];
+
+            for (const orga of organisations) {
+                const orgaAggregate: Organisation<true> = mapEntityToAggregate(orga);
+                finalOrgas.push(orgaAggregate);
+            }
+
+            jest.spyOn(sut, 'findBy').mockResolvedValueOnce([
+                finalOrgas.filter((orga: Organisation<true>) => permittedOrgaIds.includes(orga.id)),
+                2,
+            ]);
+
+            if (permittedOrgaIds && permittedOrgaIds.length > 0) {
+                // Call the method with permitted organisation IDs
+                const result: Organisation<true>[] = await sut.findByNameOrKennungAndExcludeByOrganisationType(
+                    OrganisationsTyp.KLASSE, // Exclude some type, not relevant here
+                    undefined,
+                    permittedOrgaIds,
+                    25,
+                );
+
+                // Verify the result contains only the permitted organisations
+                expect(result.length).toBe(2);
+                expect(result.some((org: Organisation<true>) => org.id === organisations[0]?.id)).toBeTruthy();
+                expect(result.some((org: Organisation<true>) => org.id === organisations[2]?.id)).toBeTruthy();
+            }
+        });
     });
 });

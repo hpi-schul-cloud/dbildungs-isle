@@ -2,9 +2,10 @@ import { AutoMap } from '@automapper/classes';
 import { PagedQueryParams } from '../../../shared/paging/index.js';
 import { ArrayUnique, IsEnum, IsOptional, IsString, IsUUID } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { OrganisationsTyp, OrganisationsTypName } from '../domain/organisation.enums.js';
+import { OrganisationSortField, OrganisationsTyp, OrganisationsTypName } from '../domain/organisation.enums.js';
 import { RollenSystemRecht, RollenSystemRechtTypName } from '../../rolle/domain/rolle.enums.js';
 import { TransformToArray } from '../../../shared/util/array-transform.validator.js';
+import { SortingOrder } from '../../../shared/domain/order.enums.js';
 
 export class FindOrganisationQueryParams extends PagedQueryParams {
     @AutoMap()
@@ -99,4 +100,22 @@ export class FindOrganisationQueryParams extends PagedQueryParams {
             'Liefert Organisationen mit den angegebenen IDs, selbst wenn andere Filterkriterien nicht zutreffen (ODER-verknüpft mit anderen Kriterien).',
     })
     public readonly organisationIds?: string[];
+
+    @IsOptional()
+    @ApiProperty({
+        required: false,
+        nullable: true,
+        isArray: true,
+        description: 'Sortierung der Organisationen.',
+    })
+    public readonly sortField?: OrganisationSortField;
+
+    @IsOptional()
+    @ApiProperty({
+        required: false,
+        nullable: true,
+        isArray: true,
+        description: 'Sortierung der Organisationen.',
+    })
+    public readonly sortOrder?: SortingOrder;
 }
