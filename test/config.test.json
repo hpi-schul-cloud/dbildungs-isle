@@ -66,5 +66,8 @@
         "ENDPOINT": "https://ox_ip:ox_port/webservices/",
         "USERNAME": "username",
         "PASSWORD": "password"
+    },
+    "IMPORT": {
+        "IMPORT_FILE_MAXGROESSE_IN_MB": 1
     }
 }

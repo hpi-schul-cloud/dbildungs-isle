@@ -11,6 +11,7 @@ import { LdapConfig } from './ldap.config.js';
 import { ItsLearningConfig } from './itslearning.config.js';
 import { PrivacyIdeaConfig } from './privacyidea.config.js';
 import { OxConfig } from './ox.config.js';
+import { ImportConfig } from './import.config.js';
 
 export class JsonConfig {
     @ValidateNested()
@@ -56,4 +57,8 @@ export class JsonConfig {
     @ValidateNested()
     @Type(() => OxConfig)
     public readonly OX!: OxConfig;
+
+    @ValidateNested()
+    @Type(() => ImportConfig)
+    public readonly IMPORT!: ImportConfig;
 }

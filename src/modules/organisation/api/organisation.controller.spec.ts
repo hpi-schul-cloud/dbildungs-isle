@@ -284,7 +284,7 @@ describe('OrganisationController', () => {
                     ]),
                 );
 
-                const mockedRepoResponse: Counted<Organisation<true>> = [
+                const mockedRepoResponse: [Organisation<true>[], number, number] = [
                     [
                         DoFactory.createOrganisationAggregate(true, {
                             id: faker.string.uuid(),
@@ -302,6 +302,7 @@ describe('OrganisationController', () => {
                         ...selectedOrganisationMap.values(),
                     ],
                     selectedOrganisationMap.size + 1,
+                    3,
                 ];
 
                 const permissionsMock: DeepMocked<PersonPermissions> = createMock<PersonPermissions>();

@@ -71,5 +71,8 @@
         "PASSWORD": "admin",
         "USER_RESOLVER": "mariadb_resolver",
         "REALM": "defrealm"
+    },
+    "IMPORT": {
+        "IMPORT_FILE_MAXGROESSE_IN_MB": 10
     }
 }

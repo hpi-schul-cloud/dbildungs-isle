@@ -14,7 +14,8 @@
         "KLASSEN_VERWALTEN",
         "SCHULTRAEGER_VERWALTEN",
         "PERSONEN_SOFORT_LOESCHEN",
-        "PERSON_SYNCHRONISIEREN"
+        "PERSON_SYNCHRONISIEREN",
+        "IMPORT_DURCHFUEHREN"
       ],
       "serviceProviderIds": [
         0,
