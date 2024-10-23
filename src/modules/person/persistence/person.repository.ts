@@ -318,9 +318,9 @@ export class PersonRepository {
             [],
         );
         this.eventService.publish(personenkontextUpdatedEvent);
-        // Delete email-addresses if any, must happen before person deletion to get the referred email-address
-        if (person.email) {
-            this.eventService.publish(new PersonDeletedEvent(personId, person.email));
+
+        if (person.referrer !== undefined) {
+            this.eventService.publish(new PersonDeletedEvent(personId, person.referrer, person.email));
         }
 
         // Delete the person from the database with all their kontexte

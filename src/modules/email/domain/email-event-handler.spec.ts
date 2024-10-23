@@ -681,13 +681,15 @@ describe('Email Event Handler', () => {
 
     describe('handlePersonDeletedEvent', () => {
         let personId: string;
+        let referrer: string;
         let emailAddress: string;
         let event: PersonDeletedEvent;
 
         beforeEach(() => {
             personId = faker.string.uuid();
+            referrer = faker.string.alpha();
             emailAddress = faker.internet.email();
-            event = new PersonDeletedEvent(personId, emailAddress);
+            event = new PersonDeletedEvent(personId, referrer, emailAddress);
         });
 
         describe('when deletion is successful', () => {
@@ -700,7 +702,7 @@ describe('Email Event Handler', () => {
 
         describe('when event does not provide email-address', () => {
             it('should log info about that', async () => {
-                event = new PersonDeletedEvent(personId, undefined);
+                event = new PersonDeletedEvent(personId, referrer, undefined);
                 await emailEventHandler.handlePersonDeletedEvent(event);
 
                 expect(loggerMock.info).toHaveBeenCalledWith(

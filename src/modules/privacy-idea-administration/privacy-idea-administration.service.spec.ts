@@ -23,6 +23,7 @@ import {
     User,
     VerificationResponse,
 } from './privacy-idea-api.types.js';
+import { LoggingTestModule } from '../../../test/utils/logging-test.module.js';
 
 const mockErrorMsg: string = `Mock error`;
 
@@ -295,7 +296,7 @@ describe(`PrivacyIdeaAdministrationService`, () => {
 
     beforeEach(async () => {
         const module: TestingModule = await Test.createTestingModule({
-            imports: [ConfigTestModule],
+            imports: [ConfigTestModule, LoggingTestModule],
             providers: [
                 PrivacyIdeaAdministrationService,
                 { provide: HttpService, useValue: createMock<HttpService>() },
@@ -830,6 +831,39 @@ describe(`PrivacyIdeaAdministrationService`, () => {
             const result: boolean = await service.requires2fa(personId);
 
             expect(result).toBe(requires2fa);
+        });
+    });
+
+    describe('deleteUser', () => {
+        const referrer: string = faker.string.alpha();
+
+        it(`should delete user`, async () => {
+            httpServiceMock.post.mockReturnValue(mockJWTTokenResponse());
+            httpServiceMock.get.mockReturnValue(mockTokenResponse());
+            httpServiceMock.delete.mockReturnValue(mockEmptyPostResponse());
+
+            await expect(service.deleteUser(referrer)).resolves.toBeUndefined();
+            expect(httpServiceMock.delete).toHaveBeenCalledTimes(1);
+        });
+
+        it(`should throw an error if the delete user causes error throw`, async () => {
+            httpServiceMock.post.mockReturnValue(mockJWTTokenResponse());
+            httpServiceMock.get.mockReturnValue(mockTokenResponse());
+            httpServiceMock.delete.mockImplementationOnce(mockErrorResponse);
+
+            await expect(service.deleteUser(referrer)).rejects.toThrow(
+                `Error deleting privacyIDEA user: ${mockErrorMsg}`,
+            );
+        });
+
+        it(`should throw an error if the delete user request causes non error throw`, async () => {
+            httpServiceMock.post.mockReturnValue(mockJWTTokenResponse());
+            httpServiceMock.get.mockReturnValue(mockTokenResponse());
+            httpServiceMock.delete.mockImplementationOnce(mockNonErrorThrow);
+
+            await expect(service.deleteUser(referrer)).rejects.toThrow(
+                `Error deleting privacyIDEA user: Unknown error occurred`,
+            );
         });
     });
 });
