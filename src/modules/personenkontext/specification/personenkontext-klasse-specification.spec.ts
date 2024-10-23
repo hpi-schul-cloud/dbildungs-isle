@@ -6,7 +6,7 @@ import { GleicheRolleAnKlasseWieSchuleError } from './error/gleiche-rolle-an-kla
 import { NurLehrUndLernAnKlasseError } from './error/nur-lehr-und-lern-an-klasse.error.js';
 import { GleicheRolleAnKlasseWieSchule } from './gleiche-rolle-an-klasse-wie-schule.js';
 import { NurLehrUndLernAnKlasse } from './nur-lehr-und-lern-an-klasse.js';
-import { CheckRollenartLernSpecification } from './nur-rolle-lern.js';
+import { CheckRollenartSpecification } from './nur-gleiche-rolle.js';
 import { PersonenkontextKlasseSpecification } from './personenkontext-klasse-specification.js';
 import { DomainError } from '../../../shared/error/domain.error.js';
 import { OrganisationRepository } from '../../organisation/persistence/organisation.repository.js';
@@ -20,7 +20,7 @@ describe('PersonenkontextKlasseSpecification Integration', () => {
     let specification: PersonenkontextKlasseSpecification;
     let nurLehrUndLernAnKlasseMock: DeepMocked<NurLehrUndLernAnKlasse>;
     let gleicheRolleAnKlasseWieSchuleMock: DeepMocked<GleicheRolleAnKlasseWieSchule>;
-    let checkRollenartLernSpecificationMock: DeepMocked<CheckRollenartLernSpecification>;
+    let checkRollenartSpecificationMock: DeepMocked<CheckRollenartSpecification>;
     let befristungRequiredMock: DeepMocked<CheckBefristungSpecification>;
     let module: TestingModule;
 
@@ -36,8 +36,8 @@ describe('PersonenkontextKlasseSpecification Integration', () => {
                     useValue: createMock<GleicheRolleAnKlasseWieSchule>(),
                 },
                 {
-                    provide: CheckRollenartLernSpecification,
-                    useValue: createMock<CheckRollenartLernSpecification>(),
+                    provide: CheckRollenartSpecification,
+                    useValue: createMock<CheckRollenartSpecification>(),
                 },
                 {
                     provide: CheckBefristungSpecification,
@@ -66,7 +66,7 @@ describe('PersonenkontextKlasseSpecification Integration', () => {
         specification = module.get(PersonenkontextKlasseSpecification);
         nurLehrUndLernAnKlasseMock = module.get(NurLehrUndLernAnKlasse);
         gleicheRolleAnKlasseWieSchuleMock = module.get(GleicheRolleAnKlasseWieSchule);
-        checkRollenartLernSpecificationMock = module.get(CheckRollenartLernSpecification);
+        checkRollenartSpecificationMock = module.get(CheckRollenartSpecification);
         befristungRequiredMock = module.get(CheckBefristungSpecification);
     });
 
@@ -86,12 +86,12 @@ describe('PersonenkontextKlasseSpecification Integration', () => {
         specification = new PersonenkontextKlasseSpecification(
             nurLehrUndLernAnKlasseMock,
             gleicheRolleAnKlasseWieSchuleMock,
-            checkRollenartLernSpecificationMock,
+            checkRollenartSpecificationMock,
             befristungRequiredMock,
         );
         const personenkontextMock: DeepMocked<Personenkontext<boolean>> = createMock<Personenkontext<boolean>>();
 
-        checkRollenartLernSpecificationMock.checkRollenartLern.mockResolvedValueOnce(false);
+        checkRollenartSpecificationMock.checkRollenart.mockResolvedValueOnce(false);
         nurLehrUndLernAnKlasseMock.isSatisfiedBy.mockResolvedValueOnce(true);
         gleicheRolleAnKlasseWieSchuleMock.isSatisfiedBy.mockResolvedValueOnce(true);
         befristungRequiredMock.checkBefristung.mockResolvedValue(true);
@@ -105,12 +105,12 @@ describe('PersonenkontextKlasseSpecification Integration', () => {
         specification = new PersonenkontextKlasseSpecification(
             nurLehrUndLernAnKlasseMock,
             gleicheRolleAnKlasseWieSchuleMock,
-            checkRollenartLernSpecificationMock,
+            checkRollenartSpecificationMock,
             befristungRequiredMock,
         );
         const personenkontextMock: DeepMocked<Personenkontext<boolean>> = createMock<Personenkontext<boolean>>();
 
-        checkRollenartLernSpecificationMock.checkRollenartLern.mockResolvedValue(true);
+        checkRollenartSpecificationMock.checkRollenart.mockResolvedValue(true);
         nurLehrUndLernAnKlasseMock.isSatisfiedBy.mockResolvedValue(false);
         gleicheRolleAnKlasseWieSchuleMock.isSatisfiedBy.mockResolvedValue(true);
         befristungRequiredMock.checkBefristung.mockResolvedValue(true);
@@ -124,12 +124,12 @@ describe('PersonenkontextKlasseSpecification Integration', () => {
         specification = new PersonenkontextKlasseSpecification(
             nurLehrUndLernAnKlasseMock,
             gleicheRolleAnKlasseWieSchuleMock,
-            checkRollenartLernSpecificationMock,
+            checkRollenartSpecificationMock,
             befristungRequiredMock,
         );
         const personenkontextMock: DeepMocked<Personenkontext<boolean>> = createMock<Personenkontext<boolean>>();
 
-        checkRollenartLernSpecificationMock.checkRollenartLern.mockResolvedValue(true);
+        checkRollenartSpecificationMock.checkRollenart.mockResolvedValue(true);
         nurLehrUndLernAnKlasseMock.isSatisfiedBy.mockResolvedValue(true);
         befristungRequiredMock.checkBefristung.mockResolvedValue(true);
         gleicheRolleAnKlasseWieSchuleMock.isSatisfiedBy.mockResolvedValue(false);
@@ -143,12 +143,12 @@ describe('PersonenkontextKlasseSpecification Integration', () => {
         specification = new PersonenkontextKlasseSpecification(
             nurLehrUndLernAnKlasseMock,
             gleicheRolleAnKlasseWieSchuleMock,
-            checkRollenartLernSpecificationMock,
+            checkRollenartSpecificationMock,
             befristungRequiredMock,
         );
         const personenkontextMock: DeepMocked<Personenkontext<boolean>> = createMock<Personenkontext<boolean>>();
 
-        checkRollenartLernSpecificationMock.checkRollenartLern.mockResolvedValue(true);
+        checkRollenartSpecificationMock.checkRollenart.mockResolvedValue(true);
         nurLehrUndLernAnKlasseMock.isSatisfiedBy.mockResolvedValue(true);
         gleicheRolleAnKlasseWieSchuleMock.isSatisfiedBy.mockResolvedValue(true);
         befristungRequiredMock.checkBefristung.mockResolvedValue(true);
@@ -161,12 +161,12 @@ describe('PersonenkontextKlasseSpecification Integration', () => {
         specification = new PersonenkontextKlasseSpecification(
             nurLehrUndLernAnKlasseMock,
             gleicheRolleAnKlasseWieSchuleMock,
-            checkRollenartLernSpecificationMock,
+            checkRollenartSpecificationMock,
             befristungRequiredMock,
         );
         const personenkontextMock: DeepMocked<Personenkontext<boolean>> = createMock<Personenkontext<boolean>>();
 
-        checkRollenartLernSpecificationMock.checkRollenartLern.mockResolvedValueOnce(true);
+        checkRollenartSpecificationMock.checkRollenart.mockResolvedValueOnce(true);
         nurLehrUndLernAnKlasseMock.isSatisfiedBy.mockResolvedValueOnce(true);
         gleicheRolleAnKlasseWieSchuleMock.isSatisfiedBy.mockResolvedValueOnce(true);
         befristungRequiredMock.checkBefristung.mockResolvedValue(false);
