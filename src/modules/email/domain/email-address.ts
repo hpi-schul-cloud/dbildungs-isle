@@ -1,5 +1,7 @@
 import { PersonID } from '../../../shared/types/index.js';
 
+export const EmailAddressStatusName: string = 'EmailAddressStatus';
+
 export enum EmailAddressStatus {
     ENABLED = 'ENABLED',
     DISABLED = 'DISABLED',

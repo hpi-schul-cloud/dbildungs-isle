@@ -40,11 +40,15 @@ import { EventService } from '../../../core/eventbus/index.js';
 import { PersonExternalSystemsSyncEvent } from '../../../shared/events/person-external-systems-sync.event.js';
 import { NotFoundOrNoPermissionError } from '../domain/person-not-found-or-no-permission.error.js';
 import { PersonalnummerRequiredError } from '../domain/personalnummer-required.error.js';
+import { EmailRepo } from '../../email/persistence/email.repo.js';
+import { PersonEmailResponse } from './person-email-response.js';
+import { EmailAddressStatus } from '../../email/domain/email-address.js';
 
 describe('PersonController', () => {
     let module: TestingModule;
     let personController: PersonController;
     let personRepositoryMock: DeepMocked<PersonRepository>;
+    let emailRepoMock: DeepMocked<EmailRepo>;
     let usernameGeneratorService: DeepMocked<UsernameGeneratorService>;
     let personenkontextServiceMock: DeepMocked<PersonenkontextService>;
     let rolleRepoMock: DeepMocked<RolleRepo>;
@@ -109,10 +113,15 @@ describe('PersonController', () => {
                     provide: EventService,
                     useValue: createMock<EventService>(),
                 },
+                {
+                    provide: EmailRepo,
+                    useValue: createMock<EmailRepo>(),
+                },
             ],
         }).compile();
         personController = module.get(PersonController);
         personRepositoryMock = module.get(PersonRepository);
+        emailRepoMock = module.get(EmailRepo);
         usernameGeneratorService = module.get(UsernameGeneratorService);
         personenkontextServiceMock = module.get(PersonenkontextService);
         rolleRepoMock = module.get(RolleRepo);
@@ -303,6 +312,8 @@ describe('PersonController', () => {
         it('should get a person', async () => {
             personRepositoryMock.findById.mockResolvedValue(person);
             personRepositoryMock.getPersonIfAllowed.mockResolvedValueOnce({ ok: true, value: person });
+            emailRepoMock.getEmailAddressAndStatusForPerson.mockResolvedValue(undefined);
+
             await expect(personController.findPersonById(params, personPermissionsMock)).resolves.not.toThrow();
         });
 
@@ -312,8 +323,32 @@ describe('PersonController', () => {
                 ok: false,
                 error: new EntityNotFoundError(),
             });
+            emailRepoMock.getEmailAddressAndStatusForPerson.mockResolvedValue(undefined);
+
             await expect(personController.findPersonById(params, personPermissionsMock)).rejects.toThrow(HttpException);
             expect(personRepositoryMock.findById).toHaveBeenCalledTimes(0);
+        });
+
+        describe('when person has an email-address assigned', () => {
+            it('should get a person', async () => {
+                personRepositoryMock.findById.mockResolvedValue(person);
+                personRepositoryMock.getPersonIfAllowed.mockResolvedValueOnce({ ok: true, value: person });
+                const fakeEmailAddress: string = faker.internet.email();
+                emailRepoMock.getEmailAddressAndStatusForPerson.mockResolvedValue(
+                    createMock<PersonEmailResponse>({
+                        address: fakeEmailAddress,
+                        status: EmailAddressStatus.ENABLED,
+                    }),
+                );
+                const personResponse: PersonendatensatzResponse = await personController.findPersonById(
+                    params,
+                    personPermissionsMock,
+                );
+
+                if (!personResponse.person.email) throw Error();
+                expect(personResponse.person.email.status).toStrictEqual(EmailAddressStatus.ENABLED);
+                expect(personResponse.person.email.address).toStrictEqual(fakeEmailAddress);
+            });
         });
     });
 

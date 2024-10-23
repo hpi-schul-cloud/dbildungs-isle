@@ -8,6 +8,8 @@ import { ClassLogger } from '../../../core/logging/class-logger.js';
 import { DomainError } from '../../../shared/error/index.js';
 import { PersonEntity } from '../../person/persistence/person.entity.js';
 import { PersonAlreadyHasEnabledEmailAddressError } from '../error/person-already-has-enabled-email-address.error.js';
+import { Person } from '../../person/domain/person.js';
+import { PersonEmailResponse } from '../../person/api/person-email-response.js';
 
 export function mapAggregateToData(emailAddress: EmailAddress<boolean>): RequiredEntityData<EmailAddressEntity> {
     const oxUserIdStr: string | undefined = emailAddress.oxUserID ? emailAddress.oxUserID + '' : undefined;
@@ -112,6 +114,23 @@ export class EmailRepo {
         await this.em.persistAndFlush(emailAddressEntity);
 
         return emailAddressEntity;
+    }
+
+    public async getEmailAddressAndStatusForPerson(person: Person<true>): Promise<PersonEmailResponse | undefined> {
+        const enabledEmailAddress: Option<EmailAddress<true>> = await this.findEnabledByPerson(person.id);
+        if (enabledEmailAddress) {
+            return new PersonEmailResponse(enabledEmailAddress.status, enabledEmailAddress.address);
+        }
+        const emailAddresses: Option<EmailAddress<true>[]> = await this.findByPersonSortedByUpdatedAtDesc(person.id);
+        if (!emailAddresses || !emailAddresses[0]) return undefined;
+        /*
+        for (const ea of emailAddresses) {
+            if (ea.status === EmailAddressStatus.ENABLED) {
+                return new PersonEmailResponse(ea.status, ea.address);
+            }
+        }*/
+
+        return new PersonEmailResponse(emailAddresses[0].status, emailAddresses[0].address);
     }
 
     /**

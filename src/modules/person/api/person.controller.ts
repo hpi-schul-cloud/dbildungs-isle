@@ -72,6 +72,8 @@ import { DBiamPersonenkontextService } from '../../personenkontext/domain/dbiam-
 import { EventService } from '../../../core/eventbus/index.js';
 import { PersonExternalSystemsSyncEvent } from '../../../shared/events/person-external-systems-sync.event.js';
 import { PersonMetadataBodyParams } from './person-metadata.body.param.js';
+import { EmailRepo } from '../../email/persistence/email.repo.js';
+import { PersonEmailResponse } from './person-email-response.js';
 
 @UseFilters(SchulConnexValidationErrorFilter, new AuthenticationExceptionFilter(), new PersonExceptionFilter())
 @ApiTags('personen')
@@ -83,6 +85,7 @@ export class PersonController {
 
     public constructor(
         private readonly personRepository: PersonRepository,
+        private readonly emailRepo: EmailRepo,
         private readonly personFactory: PersonFactory,
         private readonly personenkontextService: PersonenkontextService,
         private readonly personDeleteService: PersonDeleteService,
@@ -196,7 +199,15 @@ export class PersonController {
             );
         }
 
-        const response: PersonendatensatzResponse = new PersonendatensatzResponse(personResult.value, false);
+        const personEmailResponse: Option<PersonEmailResponse> = await this.emailRepo.getEmailAddressAndStatusForPerson(
+            personResult.value,
+        );
+        const response: PersonendatensatzResponse = new PersonendatensatzResponse(
+            personResult.value,
+            false,
+            personEmailResponse ?? undefined,
+        );
+
         return response;
     }
 

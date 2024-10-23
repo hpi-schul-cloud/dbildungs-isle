@@ -3,6 +3,7 @@ import { PersonBirthParams } from './person-birth.params.js';
 import { Vertrauensstufe, VertrauensstufeTypName } from '../domain/person.enums.js';
 import { ApiProperty } from '@nestjs/swagger';
 import { LockInfo } from '../domain/person.js';
+import { PersonEmailResponse } from './person-email-response.js';
 
 export class PersonResponse {
     @ApiProperty()
@@ -53,4 +54,12 @@ export class PersonResponse {
         required: true,
     })
     public readonly lastModified!: Date;
+
+    @ApiProperty({
+        type: PersonEmailResponse,
+        nullable: true,
+        description:
+            'Contains status and address. Returns email-address verified by OX (enabled) if available, otherwise returns most recently updated one (no prioritized status)',
+    })
+    public readonly email?: PersonEmailResponse;
 }
