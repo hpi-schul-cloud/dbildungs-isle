@@ -1135,7 +1135,7 @@
               "oauth2.device.authorization.grant.enabled": "false",
               "display.on.consent.screen": "false",
               "backchannel.logout.revoke.offline.tokens": "false",
-              "acr.loa.map": "{\"silver\":\"10\",\"gold\":\"20\"}",
+              "acr.loa.map": "{\"gold\":\"10\"}",
               "default.acr.values": "0"
           },
           "authenticationFlowBindingOverrides": {
@@ -1341,7 +1341,7 @@
               "oauth2.device.authorization.grant.enabled": "false",
               "display.on.consent.screen": "false",
               "backchannel.logout.revoke.offline.tokens": "false",
-              "acr.loa.map": "{\"silver\":\"10\",\"gold\":\"20\"}",
+              "acr.loa.map": "{\"gold\":\"10\"}",
               "default.acr.values": "0"
           },
           "authenticationFlowBindingOverrides": {
