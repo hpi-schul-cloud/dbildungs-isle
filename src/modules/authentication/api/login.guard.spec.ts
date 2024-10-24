@@ -108,7 +108,17 @@ describe('LoginGuard', () => {
             canActivateSpy.mockRejectedValueOnce(new Error());
             logInSpy.mockResolvedValueOnce(undefined);
             const contextMock: DeepMocked<ExecutionContext> = createMock();
-
+            contextMock.switchToHttp().getRequest.mockReturnValue({
+                query: {
+                    requiredStepUpLevel: 'gold',
+                },
+                isAuthenticated: jest.fn().mockReturnValue(true),
+                passportUser: {
+                    access_token:
+                        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY3IiOiJnb2xkIn0.3-QcljrIgxTpgaTgsTCpHtpr3wjsy5gnfwzghi-E_Ls',
+                },
+            });
+            contextMock.switchToHttp().getResponse.mockReturnValue({});
             await expect(sut.canActivate(contextMock)).resolves.toBe(true);
         });
 
@@ -116,7 +126,16 @@ describe('LoginGuard', () => {
             canActivateSpy.mockResolvedValueOnce(true);
             logInSpy.mockRejectedValueOnce(new Error());
             const contextMock: DeepMocked<ExecutionContext> = createMock();
-
+            contextMock.switchToHttp().getRequest.mockReturnValue({
+                query: {
+                    requiredStepUpLevel: 'gold',
+                },
+                isAuthenticated: jest.fn().mockReturnValue(true),
+                passportUser: {
+                    access_token:
+                        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY3IiOiJnb2xkIn0.3-QcljrIgxTpgaTgsTCpHtpr3wjsy5gnfwzghi-E_Ls',
+                },
+            });
             await expect(sut.canActivate(contextMock)).resolves.toBe(true);
         });
 
