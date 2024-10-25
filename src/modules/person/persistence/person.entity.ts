@@ -144,4 +144,8 @@ export class PersonEntity extends TimestampedEntity {
         orderBy: { updatedAt: QueryOrder.desc },
     })
     public emailAddresses: Collection<EmailAddressEntity> = new Collection<EmailAddressEntity>(this);
+
+    @AutoMap()
+    @Property({ nullable: true, type: DateTimeType })
+    public orgUnassignmentDate?: Date;
 }

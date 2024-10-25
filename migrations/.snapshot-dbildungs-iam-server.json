@@ -1983,6 +1983,16 @@
           "primary": false,
           "nullable": true,
           "mappedType": "string"
+        },
+        "org_unassignment_date": {
+          "name": "org_unassignment_date",
+          "type": "timestamptz",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": 6,
+          "mappedType": "datetime"
         }
       },
       "name": "person",

@@ -13,6 +13,7 @@ import {
 import { PersonRepository } from '../person/persistence/person.repository.js';
 import { KeycloakUserService } from '../keycloak-administration/domain/keycloak-user.service.js';
 import { DomainError } from '../../shared/error/domain.error.js';
+import { PersonDeleteService } from '../person/person-deletion/person-delete.service.js';
 import { DBiamPersonenkontextRepo } from '../personenkontext/persistence/dbiam-personenkontext.repo.js';
 import { PersonPermissions } from '../authentication/domain/person-permissions.js';
 import { Permissions } from '../authentication/api/permissions.decorator.js';
@@ -30,6 +31,7 @@ export class CronController {
     public constructor(
         private readonly keyCloakUserService: KeycloakUserService,
         private readonly personRepository: PersonRepository,
+        private readonly personDeleteService: PersonDeleteService,
         private readonly personenKonextRepository: DBiamPersonenkontextRepo,
         private readonly personenkontextWorkflowFactory: PersonenkontextWorkflowFactory,
     ) {}
@@ -131,5 +133,35 @@ export class CronController {
             }
         });
         return personenKontexteToKeep;
+    }
+
+    @Put('person-without-org')
+    @HttpCode(HttpStatus.OK)
+    @ApiCreatedResponse({ description: 'User were successfully removed.', type: Boolean })
+    @ApiBadRequestResponse({ description: 'User are not given or not found' })
+    @ApiUnauthorizedResponse({ description: 'Not authorized to remove user.' })
+    @ApiForbiddenResponse({ description: 'Insufficient permissions to delete user.' })
+    @ApiNotFoundResponse({ description: 'Insufficient permissions to delete user.' })
+    @ApiInternalServerErrorResponse({ description: 'Internal server error while trying to remove user.' })
+    public async personWithoutOrgDelete(@Permissions() permissions: PersonPermissions): Promise<boolean> {
+        try {
+            const personIds: string[] = await this.personRepository.getPersonWithoutOrgDeleteList();
+            if (personIds.length === 0) {
+                return true;
+            }
+
+            const results: PromiseSettledResult<Result<void, DomainError>>[] = await Promise.allSettled(
+                personIds.map((id: string) => this.personDeleteService.deletePerson(id, permissions)),
+            );
+
+            const allSuccessful: boolean = results.every(
+                (result: PromiseSettledResult<Result<void, DomainError>>) =>
+                    result.status === 'fulfilled' && result.value.ok === true,
+            );
+
+            return allSuccessful;
+        } catch (error) {
+            throw new Error('Failed to remove users due to an internal server error.');
+        }
     }
 }

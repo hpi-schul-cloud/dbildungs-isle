@@ -341,6 +341,21 @@ export class PersonenkontexteUpdate {
             }
         }
 
+        // Set value with current date in database, when person has no Personenkontext anymore
+        if (existingPKsAfterUpdate.length == 0) {
+            const person: Option<Person<true>> = await this.personRepo.findById(this.personId);
+            if (person) {
+                person.orgUnassignmentDate = new Date();
+                await this.personRepo.save(person);
+            }
+        } else {
+            const person: Option<Person<true>> = await this.personRepo.findById(this.personId);
+            if (person && person.orgUnassignmentDate) {
+                person.orgUnassignmentDate = undefined;
+                await this.personRepo.save(person);
+            }
+        }
+
         await this.publishEvent(deletedPKs, createdPKs, existingPKsAfterUpdate, ldapEntryUUID);
 
         return existingPKsAfterUpdate;

@@ -445,6 +445,7 @@ describe('PersonenkontexteUpdate', () => {
             it('should return empty', async () => {
                 const newPerson: Person<true> = createMock<Person<true>>();
                 personRepoMock.findById.mockResolvedValueOnce(newPerson);
+                personRepoMock.findById.mockResolvedValueOnce(newPerson);
                 dBiamPersonenkontextRepoMock.find.mockResolvedValue(pk1);
                 dBiamPersonenkontextRepoMock.find.mockResolvedValue(pk2);
                 dBiamPersonenkontextRepoMock.findByPerson.mockResolvedValue([]); // No existing PKs
