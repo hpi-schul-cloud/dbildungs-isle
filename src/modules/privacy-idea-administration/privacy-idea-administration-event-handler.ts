@@ -21,6 +21,6 @@ export class PrivacyIdeaAdministrationEventHandler {
         if (userTokens.length > 0) {
             await this.privacyIdeaAdministrationService.resetToken(event.referrer);
         }
-        await this.privacyIdeaAdministrationService.deleteUser(event.referrer);
+        await this.privacyIdeaAdministrationService.deleteUserWrapper(event.referrer);
     }
 }

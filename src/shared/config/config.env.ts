@@ -54,6 +54,7 @@ export default (): {
         PASSWORD: process.env['PI_ADMIN_PASSWORD'],
         USER_RESOLVER: process.env['PI_USER_RESOLVER'],
         REALM: process.env['PI_REALM'],
+        RENAME_WAITING_TIME_IN_SECONDS: parseInt(process.env['PI_RENAME_WAITING_TIME'] || '0'),
     },
     OX: {
         ENABLED: process.env['OX_ENABLED']?.toLowerCase() as 'true' | 'false',

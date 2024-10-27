@@ -48,6 +48,7 @@ auth:
   pi_admin_password: ''
   pi_user_resolver: ''
   pi_user_realm: ''
+  pi_rename_waiting_time: ''
 
 backend:
   replicaCount: 1

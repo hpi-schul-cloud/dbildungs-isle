@@ -506,6 +506,7 @@ describe('Email Event Handler', () => {
                 faker.person.firstName(),
                 faker.person.lastName(),
                 faker.internet.userName(),
+                faker.internet.userName(),
             );
             personenkontext = createMock<Personenkontext<true>>({ rolleId: fakeRolleId });
             rolle = createMock<Rolle<true>>({ id: fakeRolleId });

@@ -90,13 +90,16 @@ describe('PrivacyIdeaAdministration Event Handler', () => {
             it('should reset privacyIDEA tokens and delete person', async () => {
                 privacyIdeaAdministrationServiceMock.getUserTokens.mockResolvedValueOnce([mockPrivacyIdeaToken]);
                 privacyIdeaAdministrationServiceMock.resetToken.mockResolvedValueOnce(mockResetTokenResponse);
-                privacyIdeaAdministrationServiceMock.deleteUser.mockResolvedValueOnce();
+                privacyIdeaAdministrationServiceMock.deleteUserWrapper.mockResolvedValueOnce({
+                    ok: true,
+                    value: undefined,
+                });
 
                 await sut.handlePersonDeletedEvent(event);
 
                 expect(loggerMock.info).toHaveBeenCalledWith(`Received PersonDeletedEvent, personId:${event.personId}`);
                 expect(privacyIdeaAdministrationServiceMock.resetToken).toHaveBeenCalledTimes(1);
-                expect(privacyIdeaAdministrationServiceMock.deleteUser).toHaveBeenCalledTimes(1);
+                expect(privacyIdeaAdministrationServiceMock.deleteUserWrapper).toHaveBeenCalledTimes(1);
             });
         });
 
@@ -104,13 +107,16 @@ describe('PrivacyIdeaAdministration Event Handler', () => {
             it('should delete person', async () => {
                 privacyIdeaAdministrationServiceMock.getUserTokens.mockResolvedValueOnce([]);
                 privacyIdeaAdministrationServiceMock.resetToken.mockResolvedValueOnce(mockResetTokenResponse);
-                privacyIdeaAdministrationServiceMock.deleteUser.mockResolvedValueOnce();
+                privacyIdeaAdministrationServiceMock.deleteUserWrapper.mockResolvedValueOnce({
+                    ok: true,
+                    value: undefined,
+                });
 
                 await sut.handlePersonDeletedEvent(event);
 
                 expect(loggerMock.info).toHaveBeenCalledWith(`Received PersonDeletedEvent, personId:${personId}`);
                 expect(privacyIdeaAdministrationServiceMock.resetToken).toHaveBeenCalledTimes(0);
-                expect(privacyIdeaAdministrationServiceMock.deleteUser).toHaveBeenCalledTimes(1);
+                expect(privacyIdeaAdministrationServiceMock.deleteUserWrapper).toHaveBeenCalledTimes(1);
             });
         });
     });

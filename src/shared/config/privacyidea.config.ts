@@ -1,4 +1,4 @@
-import { IsString } from 'class-validator';
+import { IsNumber, IsString } from 'class-validator';
 
 export class PrivacyIdeaConfig {
     @IsString()
@@ -15,4 +15,7 @@ export class PrivacyIdeaConfig {
 
     @IsString()
     public readonly REALM!: string;
+
+    @IsNumber()
+    public readonly RENAME_WAITING_TIME_IN_SECONDS!: number;
 }

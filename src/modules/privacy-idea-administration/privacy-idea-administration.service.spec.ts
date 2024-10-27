@@ -24,6 +24,8 @@ import {
     VerificationResponse,
 } from './privacy-idea-api.types.js';
 import { LoggingTestModule } from '../../../test/utils/logging-test.module.js';
+import { DomainError } from '../../shared/error/domain.error.js';
+import { DeleteUserError } from './api/error/delete-user.error.js';
 
 const mockErrorMsg: string = `Mock error`;
 
@@ -508,7 +510,6 @@ describe(`PrivacyIdeaAdministrationService`, () => {
             const mockJWTToken: string = 'mockJWTToken';
             const mockTwoAuthState: ResetTokenPayload = createMock<ResetTokenPayload>();
             const mockResetTokenResponse: ResetTokenResponse = createMock<ResetTokenResponse>();
-
             jest.spyOn(
                 service as unknown as { getJWTToken: () => Promise<string> },
                 'getJWTToken',
@@ -836,34 +837,179 @@ describe(`PrivacyIdeaAdministrationService`, () => {
 
     describe('deleteUser', () => {
         const referrer: string = faker.string.alpha();
+        let mockJWTToken: string;
+        beforeEach(() => {
+            mockJWTToken = faker.string.alpha();
+            jest.spyOn(
+                service as unknown as { getJWTToken: () => Promise<string> },
+                'getJWTToken',
+            ).mockResolvedValueOnce(mockJWTToken);
+        });
 
         it(`should delete user`, async () => {
             httpServiceMock.post.mockReturnValue(mockJWTTokenResponse());
             httpServiceMock.get.mockReturnValue(mockTokenResponse());
             httpServiceMock.delete.mockReturnValue(mockEmptyPostResponse());
 
-            await expect(service.deleteUser(referrer)).resolves.toBeUndefined();
+            await expect(service.deleteUserWrapper(referrer)).resolves.toEqual({ ok: true, value: undefined });
             expect(httpServiceMock.delete).toHaveBeenCalledTimes(1);
         });
 
-        it(`should throw an error if the delete user causes error throw`, async () => {
+        it(`should resole an DeleteUserError if the delete user causes error throw`, async () => {
             httpServiceMock.post.mockReturnValue(mockJWTTokenResponse());
             httpServiceMock.get.mockReturnValue(mockTokenResponse());
             httpServiceMock.delete.mockImplementationOnce(mockErrorResponse);
 
-            await expect(service.deleteUser(referrer)).rejects.toThrow(
-                `Error deleting privacyIDEA user: ${mockErrorMsg}`,
-            );
+            await expect(service.deleteUserWrapper(referrer)).resolves.toEqual({
+                ok: false,
+                error: new DeleteUserError(),
+            });
         });
 
-        it(`should throw an error if the delete user request causes non error throw`, async () => {
+        it(`should resole an DeleteUserError if the delete user request causes non error throw`, async () => {
             httpServiceMock.post.mockReturnValue(mockJWTTokenResponse());
             httpServiceMock.get.mockReturnValue(mockTokenResponse());
             httpServiceMock.delete.mockImplementationOnce(mockNonErrorThrow);
 
-            await expect(service.deleteUser(referrer)).rejects.toThrow(
-                `Error deleting privacyIDEA user: Unknown error occurred`,
-            );
+            await expect(service.deleteUserWrapper(referrer)).resolves.toEqual({
+                ok: false,
+                error: new DeleteUserError(),
+            });
+        });
+    });
+
+    describe('updateUsername', () => {
+        it('should update the username successfully', async () => {
+            const oldUserName: string = 'oldUser';
+            const newUserName: string = 'newUser';
+            const mockUserTokens: PrivacyIdeaToken[] = [mockPrivacyIdeaToken];
+            const mockJWTToken: string = 'mockJWTToken';
+            const mockResetTokenResponse: ResetTokenResponse = createMock<ResetTokenResponse>();
+
+            jest.spyOn(
+                service as unknown as { getJWTToken: () => Promise<string> },
+                'getJWTToken',
+            ).mockResolvedValueOnce(mockJWTToken);
+            jest.spyOn(
+                service as unknown as { getUserTokens: () => Promise<PrivacyIdeaToken[]> },
+                'getUserTokens',
+            ).mockResolvedValueOnce(mockUserTokens);
+            jest.spyOn(
+                service as unknown as { unassignToken: (serial: string, token: string) => Promise<ResetTokenResponse> },
+                'unassignToken',
+            ).mockResolvedValueOnce(mockResetTokenResponse);
+            jest.spyOn(
+                service as unknown as { checkUserExists: () => Promise<boolean> },
+                'checkUserExists',
+            ).mockResolvedValueOnce(false);
+            jest.spyOn(
+                service as unknown as { addUser: (username: string) => Promise<void> },
+                'addUser',
+            ).mockResolvedValueOnce();
+            jest.spyOn(
+                service as unknown as {
+                    assignToken: (serial: string, token: string, username: string) => Promise<AssignTokenResponse>;
+                },
+                'assignToken',
+            ).mockResolvedValueOnce(mockAssignTokenResponse);
+            jest.spyOn(
+                service as unknown as { deleteUser: () => Promise<Result<void, DomainError>> },
+                'deleteUser',
+            ).mockResolvedValueOnce({ ok: true, value: undefined });
+            const result: Result<void, DomainError> = await service.updateUsername(oldUserName, newUserName);
+            expect(result.ok).toBe(true);
+            // eslint-disable-next-line @typescript-eslint/dot-notation
+            expect(service['deleteUser']).toHaveBeenCalledWith(oldUserName, mockJWTToken);
+            // eslint-disable-next-line @typescript-eslint/dot-notation
+            expect(service['addUser']).toHaveBeenCalledWith(newUserName);
+        });
+
+        it('should return error if new username already exists', async () => {
+            const oldUserName: string = 'oldUser';
+            const newUserName: string = 'newUser';
+
+            jest.spyOn(
+                service as unknown as { checkUserExists: () => Promise<boolean> },
+                'checkUserExists',
+            ).mockResolvedValueOnce(true);
+
+            const result: Result<void, DomainError> = await service.updateUsername(oldUserName, newUserName);
+            expect(result.ok).toBe(false);
+        });
+
+        it('should return error if deleteUser fails', async () => {
+            const oldUserName: string = 'oldUser';
+            const newUserName: string = 'newUser';
+            const mockUserTokens: PrivacyIdeaToken[] = [mockPrivacyIdeaToken];
+            const mockJWTToken: string = 'mockJWTToken';
+            const mockResetTokenResponse: ResetTokenResponse = createMock<ResetTokenResponse>();
+
+            jest.spyOn(
+                service as unknown as { getJWTToken: () => Promise<string> },
+                'getJWTToken',
+            ).mockResolvedValueOnce(mockJWTToken);
+            jest.spyOn(
+                service as unknown as { getUserTokens: () => Promise<PrivacyIdeaToken[]> },
+                'getUserTokens',
+            ).mockResolvedValueOnce(mockUserTokens);
+            jest.spyOn(
+                service as unknown as { unassignToken: (serial: string, token: string) => Promise<ResetTokenResponse> },
+                'unassignToken',
+            ).mockResolvedValueOnce(mockResetTokenResponse);
+            jest.spyOn(
+                service as unknown as { checkUserExists: () => Promise<boolean> },
+                'checkUserExists',
+            ).mockResolvedValueOnce(false);
+            jest.spyOn(
+                service as unknown as { addUser: (username: string) => Promise<void> },
+                'addUser',
+            ).mockResolvedValueOnce();
+            jest.spyOn(
+                service as unknown as {
+                    assignToken: (serial: string, token: string, username: string) => Promise<AssignTokenResponse>;
+                },
+                'assignToken',
+            ).mockResolvedValueOnce(mockAssignTokenResponse);
+            httpServiceMock.delete.mockReturnValueOnce(throwError(() => new Error('Delete failed')));
+            const result: Result<void, DomainError> = await service.updateUsername(oldUserName, newUserName);
+            expect(result.ok).toBe(false);
+        });
+        it('should return ok if deleteUser was successfull ', async () => {
+            const oldUserName: string = 'oldUser';
+            const newUserName: string = 'newUser';
+            const mockUserTokens: PrivacyIdeaToken[] = [mockPrivacyIdeaToken];
+            const mockJWTToken: string = 'mockJWTToken';
+            const mockResetTokenResponse: ResetTokenResponse = createMock<ResetTokenResponse>();
+
+            jest.spyOn(
+                service as unknown as { getJWTToken: () => Promise<string> },
+                'getJWTToken',
+            ).mockResolvedValueOnce(mockJWTToken);
+            jest.spyOn(
+                service as unknown as { getUserTokens: () => Promise<PrivacyIdeaToken[]> },
+                'getUserTokens',
+            ).mockResolvedValueOnce(mockUserTokens);
+            jest.spyOn(
+                service as unknown as { unassignToken: (serial: string, token: string) => Promise<ResetTokenResponse> },
+                'unassignToken',
+            ).mockResolvedValueOnce(mockResetTokenResponse);
+            jest.spyOn(
+                service as unknown as { checkUserExists: () => Promise<boolean> },
+                'checkUserExists',
+            ).mockResolvedValueOnce(false);
+            jest.spyOn(
+                service as unknown as { addUser: (username: string) => Promise<void> },
+                'addUser',
+            ).mockResolvedValueOnce();
+            jest.spyOn(
+                service as unknown as {
+                    assignToken: (serial: string, token: string, username: string) => Promise<AssignTokenResponse>;
+                },
+                'assignToken',
+            ).mockResolvedValueOnce(mockAssignTokenResponse);
+            httpServiceMock.delete.mockReturnValueOnce(of({} as AxiosResponse));
+            const result: Result<void, DomainError> = await service.updateUsername(oldUserName, newUserName);
+            expect(result.ok).toBe(true);
         });
     });
 });

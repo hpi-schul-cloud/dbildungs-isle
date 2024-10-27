@@ -7,6 +7,7 @@ import { PrivacyIdeaAdministrationController } from './privacy-idea-administrati
 import { PrivacyIdeaAdministrationService } from './privacy-idea-administration.service.js';
 import { LoggerModule } from '../../core/logging/logger.module.js';
 import { PrivacyIdeaAdministrationEventHandler } from './privacy-idea-administration-event-handler.js';
+import { PrivacyIdeaAdministrationServiceHandler } from './event-handler/privacy-idea-administration-handler.js';
 
 @Module({
     imports: [
@@ -17,6 +18,10 @@ import { PrivacyIdeaAdministrationEventHandler } from './privacy-idea-administra
         LoggerModule.register(PrivacyIdeaAdministrationModule.name),
     ],
     controllers: [PrivacyIdeaAdministrationController],
-    providers: [PrivacyIdeaAdministrationService, PrivacyIdeaAdministrationEventHandler],
+    providers: [
+        PrivacyIdeaAdministrationService,
+        PrivacyIdeaAdministrationServiceHandler,
+        PrivacyIdeaAdministrationEventHandler,
+    ],
 })
 export class PrivacyIdeaAdministrationModule {}

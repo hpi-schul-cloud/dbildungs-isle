@@ -31,6 +31,7 @@ import { PersonUpdateOutdatedError } from '../domain/update-outdated.error.js';
 import { UsernameGeneratorService } from '../domain/username-generator.service.js';
 import { PersonalnummerRequiredError } from '../domain/personalnummer-required.error.js';
 import { toDIN91379SearchForm } from '../../../shared/util/din-91379-validation.js';
+import { PrivacyIdeaConfig } from '../../../shared/config/privacyidea.config.js';
 
 /**
  * Return email-address for person, if an enabled email-address exists, return it.
@@ -143,6 +144,8 @@ export type PersonenQueryParams = {
 export class PersonRepository {
     public readonly ROOT_ORGANISATION_ID: string;
 
+    public readonly PRIVACYIDEA_RENAME_WAITING_TIME_IN_SECONDS: number;
+
     public constructor(
         private readonly kcUserService: KeycloakUserService,
         private readonly em: EntityManager,
@@ -151,6 +154,8 @@ export class PersonRepository {
         config: ConfigService<ServerConfig>,
     ) {
         this.ROOT_ORGANISATION_ID = config.getOrThrow<DataConfig>('DATA').ROOT_ORGANISATION_ID;
+        this.PRIVACYIDEA_RENAME_WAITING_TIME_IN_SECONDS =
+            config.getOrThrow<PrivacyIdeaConfig>('PRIVACYIDEA').RENAME_WAITING_TIME_IN_SECONDS;
     }
 
     private async getPersonScopeWithPermissions(
@@ -424,7 +429,12 @@ export class PersonRepository {
         }
     }
 
+    public getReferrer(personEntity: Loaded<PersonEntity>): string | undefined {
+        return personEntity.referrer;
+    }
+
     public async update(person: Person<true>): Promise<Person<true> | DomainError> {
+        let oldReferrer: string | undefined = '';
         const personEntity: Loaded<PersonEntity> = await this.em.findOneOrFail(PersonEntity, person.id);
         const isPersonRenamedEventNecessary: boolean = this.hasChangedNames(personEntity, person);
         if (person.newPassword) {
@@ -438,11 +448,30 @@ export class PersonRepository {
             }
         }
 
+        //save old referrer for person-renamed-event before updating the person
+        if (isPersonRenamedEventNecessary) {
+            oldReferrer = this.getReferrer(personEntity);
+            if (!oldReferrer) {
+                const result: Result<string, DomainError> = await this.usernameGenerator.generateUsername(
+                    person.vorname,
+                    person.familienname,
+                );
+                if (!result.ok) {
+                    return result.error;
+                }
+                oldReferrer = result.value;
+            }
+        }
+
         personEntity.assign(mapAggregateToData(person));
         await this.em.persistAndFlush(personEntity);
 
         if (isPersonRenamedEventNecessary) {
-            this.eventService.publish(PersonRenamedEvent.fromPerson(person));
+            this.eventService.publish(PersonRenamedEvent.fromPerson(person, oldReferrer));
+            // wait for privacyIDEA to update the username
+            await new Promise<void>((resolve: () => void) =>
+                setTimeout(resolve, this.PRIVACYIDEA_RENAME_WAITING_TIME_IN_SECONDS * 1000),
+            );
         }
 
         return mapEntityToAggregate(personEntity);

@@ -158,7 +158,7 @@ describe('ItsLearning Persons Event Handler', () => {
             itslearningPersonRepoMock.readPerson.mockResolvedValueOnce(personResponse); // Read person
             itslearningPersonRepoMock.createOrUpdatePerson.mockResolvedValueOnce(undefined); // Create person
 
-            await sut.personRenamedEventHandler(PersonRenamedEvent.fromPerson(person));
+            await sut.personRenamedEventHandler(PersonRenamedEvent.fromPerson(person, faker.internet.userName()));
 
             expect(itslearningPersonRepoMock.createOrUpdatePerson).toHaveBeenCalledWith({
                 id: person.id,
@@ -175,7 +175,7 @@ describe('ItsLearning Persons Event Handler', () => {
             itslearningPersonRepoMock.readPerson.mockResolvedValueOnce(personResponse); // Read person
             itslearningPersonRepoMock.createOrUpdatePerson.mockResolvedValueOnce(new ItsLearningError('Test Error')); // Create person
 
-            await sut.personRenamedEventHandler(PersonRenamedEvent.fromPerson(person));
+            await sut.personRenamedEventHandler(PersonRenamedEvent.fromPerson(person, faker.internet.userName()));
 
             expect(loggerMock.error).toHaveBeenCalledWith(
                 `Person with ID ${person.id} could not be updated in itsLearning!`,
@@ -186,7 +186,7 @@ describe('ItsLearning Persons Event Handler', () => {
             it('should log error, if person has no referrer', async () => {
                 const [person]: [Person<true>, PersonResponse] = createPersonAndResponse({ referrer: undefined });
 
-                await sut.personRenamedEventHandler(PersonRenamedEvent.fromPerson(person));
+                await sut.personRenamedEventHandler(PersonRenamedEvent.fromPerson(person, faker.internet.userName()));
 
                 expect(loggerMock.error).toHaveBeenCalledWith(`Person with ID ${person.id} has no username!`);
             });
@@ -197,7 +197,7 @@ describe('ItsLearning Persons Event Handler', () => {
                 const [person]: [Person<true>, PersonResponse] = createPersonAndResponse();
                 itslearningPersonRepoMock.readPerson.mockResolvedValueOnce(undefined); // Read person
 
-                await sut.personRenamedEventHandler(PersonRenamedEvent.fromPerson(person));
+                await sut.personRenamedEventHandler(PersonRenamedEvent.fromPerson(person, faker.internet.userName()));
 
                 expect(loggerMock.info).toHaveBeenCalledWith(
                     `Person with ID ${person.id} is not in itslearning, ignoring.`,
@@ -209,7 +209,7 @@ describe('ItsLearning Persons Event Handler', () => {
             sut.ENABLED = false;
             const [person]: [Person<true>, PersonResponse] = createPersonAndResponse();
 
-            await sut.personRenamedEventHandler(PersonRenamedEvent.fromPerson(person));
+            await sut.personRenamedEventHandler(PersonRenamedEvent.fromPerson(person, faker.internet.userName()));
 
             expect(loggerMock.info).toHaveBeenCalledWith('Not enabled, ignoring event.');
         });
