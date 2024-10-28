@@ -24,6 +24,7 @@ import { createMock } from '@golevelup/ts-jest';
 import { KeycloakUserService } from '../../keycloak-administration/index.js';
 import { ServiceProviderRepo } from '../../service-provider/repo/service-provider.repo.js';
 import { DBiamPersonenkontextRepoInternal } from './internal-dbiam-personenkontext.repo.js';
+import { UserLockRepository } from '../../keycloak-administration/repository/user-lock.repository.js';
 
 describe('dbiam Personenkontext Repo', () => {
     let module: TestingModule;
@@ -90,6 +91,10 @@ describe('dbiam Personenkontext Repo', () => {
                                 value: faker.string.alphanumeric(16),
                             }),
                     }),
+                },
+                {
+                    provide: UserLockRepository,
+                    useValue: createMock<UserLockRepository>(),
                 },
             ],
         }).compile();

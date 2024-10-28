@@ -25,6 +25,7 @@ import { OrganisationRepository } from '../../organisation/persistence/organisat
 import { Organisation } from '../../organisation/domain/organisation.js';
 import { mapAggregateToData } from './email.repo.js';
 import { PersonAlreadyHasEnabledEmailAddressError } from '../error/person-already-has-enabled-email-address.error.js';
+import { UserLockRepository } from '../../keycloak-administration/repository/user-lock.repository.js';
 import { PersonEmailResponse } from '../../person/api/person-email-response.js';
 
 describe('EmailRepo', () => {
@@ -68,6 +69,10 @@ describe('EmailRepo', () => {
                                 value: faker.string.alphanumeric(16),
                             }),
                     }),
+                },
+                {
+                    provide: UserLockRepository,
+                    useValue: createMock<UserLockRepository>(),
                 },
             ],
         }).compile();

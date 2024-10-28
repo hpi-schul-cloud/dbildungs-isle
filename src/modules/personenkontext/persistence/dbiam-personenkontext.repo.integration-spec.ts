@@ -39,6 +39,7 @@ import {
     createAndPersistOrganisation,
     createAndPersistRootOrganisation,
 } from '../../../../test/utils/organisation-test-helper.js';
+import { UserLockRepository } from '../../keycloak-administration/repository/user-lock.repository.js';
 
 describe('dbiam Personenkontext Repo', () => {
     let module: TestingModule;
@@ -110,6 +111,10 @@ describe('dbiam Personenkontext Repo', () => {
                                 value: faker.string.alphanumeric(16),
                             }),
                     }),
+                },
+                {
+                    provide: UserLockRepository,
+                    useValue: createMock<UserLockRepository>(),
                 },
             ],
         }).compile();

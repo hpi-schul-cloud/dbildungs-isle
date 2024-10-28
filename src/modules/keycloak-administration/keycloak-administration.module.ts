@@ -11,6 +11,7 @@ import { EventModule } from '../../core/eventbus/event.module.js';
 
 import { KeycloakAdministrationService } from './domain/keycloak-admin-client.service.js';
 import { CreateGroupAndRoleHandler } from '../service-provider/repo/service-provider-event-handler.js';
+import { UserLockRepository } from './repository/user-lock.repository.js';
 @Module({
     imports: [LoggerModule.register(KeycloakAdministrationModule.name), KeycloakConfigModule, EventModule],
     providers: [
@@ -20,7 +21,8 @@ import { CreateGroupAndRoleHandler } from '../service-provider/repo/service-prov
         KeycloakAdministrationService,
         CreateGroupAndRoleHandler,
         KeycloakEventHandler,
+        UserLockRepository,
     ],
-    exports: [KeycloakUserService, KeycloakGroupRoleService],
+    exports: [KeycloakUserService, KeycloakGroupRoleService, UserLockRepository],
 })
 export class KeycloakAdministrationModule {}

@@ -43,7 +43,7 @@ import { PersonenkontextResponse } from '../../personenkontext/api/response/pers
 import { UpdatePersonBodyParams } from './update-person.body.params.js';
 import { PersonRepository } from '../persistence/person.repository.js';
 import { DomainError, EntityNotFoundError, MissingPermissionsError } from '../../../shared/error/index.js';
-import { LockInfo, Person } from '../domain/person.js';
+import { Person } from '../domain/person.js';
 import { PersonendatensatzResponse } from './personendatensatz.response.js';
 import { PersonScope } from '../persistence/person.scope.js';
 import { ScopeOrder } from '../../../shared/persistence/index.js';
@@ -74,6 +74,7 @@ import { PersonExternalSystemsSyncEvent } from '../../../shared/events/person-ex
 import { PersonMetadataBodyParams } from './person-metadata.body.param.js';
 import { EmailRepo } from '../../email/persistence/email.repo.js';
 import { PersonEmailResponse } from './person-email-response.js';
+import { UserLock } from '../../keycloak-administration/domain/user-lock.js';
 
 @UseFilters(SchulConnexValidationErrorFilter, new AuthenticationExceptionFilter(), new PersonExceptionFilter())
 @ApiTags('personen')
@@ -439,15 +440,18 @@ export class PersonController {
             throw new PersonDomainError(`Person with id ${personId} has no keycloak id`, personId);
         }
 
-        const lockInfo: LockInfo = {
-            lock_locked_from: lockUserBodyParams.locked_from,
-            lock_timestamp: new Date().toISOString(),
+        const userLock: UserLock = {
+            person: personId,
+            locked_by: lockUserBodyParams.locked_by,
+            locked_until: lockUserBodyParams.locked_until,
+            created_at: undefined,
         };
 
         const result: Result<void, DomainError> = await this.keycloakUserService.updateKeycloakUserStatus(
+            personId,
             personResult.value.keycloakUserId,
             !lockUserBodyParams.lock,
-            lockInfo,
+            userLock,
         );
         if (!result.ok) {
             throw new DownstreamKeycloakError(result.error.message, personId, [result.error.details]);

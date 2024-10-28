@@ -4,6 +4,8 @@ import { KeycloakUserService } from '../keycloak-administration/domain/keycloak-
 import { PersonRepository } from '../person/persistence/person.repository.js';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { KeycloakClientError } from '../../shared/error/keycloak-client.error.js';
+import { PersonID } from '../../shared/types/aggregate-ids.types.js';
+import { faker } from '@faker-js/faker';
 import { PersonDeleteService } from '../person/person-deletion/person-delete.service.js';
 import { PersonPermissions } from '../authentication/domain/person-permissions.js';
 import { MissingPermissionsError } from '../../shared/error/missing-permissions.error.js';
@@ -73,7 +75,11 @@ describe('CronController', () => {
     describe('/PUT cron/kopers-lock', () => {
         describe('when there are users to lock', () => {
             it('should return true when all users are successfully locked', async () => {
-                const mockKeycloakIds: string[] = ['user1', 'user2', 'user3'];
+                const mockKeycloakIds: [PersonID, string][] = [
+                    [faker.string.uuid(), 'user1'],
+                    [faker.string.uuid(), 'user2'],
+                    [faker.string.uuid(), 'user3'],
+                ];
                 personRepositoryMock.getKoPersUserLockList.mockResolvedValueOnce(mockKeycloakIds);
                 keycloakUserServiceMock.updateKeycloakUserStatus.mockResolvedValueOnce({ ok: true, value: undefined });
                 keycloakUserServiceMock.updateKeycloakUserStatus.mockResolvedValueOnce({ ok: true, value: undefined });
@@ -100,7 +106,11 @@ describe('CronController', () => {
 
         describe('when locking users fails', () => {
             it('should return false when at least one user fails to lock', async () => {
-                const mockKeycloakIds: string[] = ['user1', 'user2'];
+                const mockKeycloakIds: [PersonID, string][] = [
+                    [faker.string.uuid(), 'user1'],
+                    [faker.string.uuid(), 'user2'],
+                    [faker.string.uuid(), 'user3'],
+                ];
                 personRepositoryMock.getKoPersUserLockList.mockResolvedValueOnce(mockKeycloakIds);
                 keycloakUserServiceMock.updateKeycloakUserStatus.mockResolvedValueOnce({ ok: true, value: undefined });
                 keycloakUserServiceMock.updateKeycloakUserStatus.mockResolvedValueOnce({
