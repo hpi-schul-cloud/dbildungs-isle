@@ -1,6 +1,6 @@
 import { applyDecorators } from '@nestjs/common';
 import { Transform, TransformFnParams } from 'class-transformer';
-import { IsString, Matches } from 'class-validator';
+import { IsString, Matches, ValidationOptions } from 'class-validator';
 
 // Regex to validate DIN-91379A for a string
 // Generated using the list of legal characters using these steps:
@@ -194,18 +194,18 @@ export function toDIN91379SearchForm(input: string): string {
     return searchForm;
 }
 
-export function IsDIN91379A(): PropertyDecorator {
+export function IsDIN91379A(validationOptions?: ValidationOptions | undefined): PropertyDecorator {
     return applyDecorators(
         Transform(({ value }: TransformFnParams) => (typeof value === 'string' ? value.normalize('NFC') : undefined)),
-        IsString(),
-        Matches(DIN_91379A),
+        IsString(validationOptions),
+        Matches(DIN_91379A, validationOptions),
     );
 }
 
-export function IsDIN91379AEXT(): PropertyDecorator {
+export function IsDIN91379AEXT(validationOptions?: ValidationOptions | undefined): PropertyDecorator {
     return applyDecorators(
         Transform(({ value }: TransformFnParams) => (typeof value === 'string' ? value.normalize('NFC') : undefined)),
-        IsString(),
-        Matches(DIN_91379A_EXT),
+        IsString(validationOptions),
+        Matches(DIN_91379A_EXT, validationOptions),
     );
 }

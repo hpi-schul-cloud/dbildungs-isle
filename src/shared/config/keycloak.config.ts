@@ -19,6 +19,15 @@ export class KeycloakConfig {
 
     @IsString()
     @IsNotEmpty()
+    public readonly SERVICE_CLIENT_ID!: string;
+
+    @IsString()
+    @IsNotEmpty()
+    // Stringified JSON like { "keys": [<JWK>] }
+    public readonly SERVICE_CLIENT_PRIVATE_JWKS!: string;
+
+    @IsString()
+    @IsNotEmpty()
     public readonly REALM_NAME!: string;
 
     @IsString()

@@ -232,9 +232,9 @@ export class EmailEventHandler {
     }
 
     @EventHandler(OxMetadataInKeycloakChangedEvent)
-    public async handleOxUserAttributesChangedEvent(event: OxMetadataInKeycloakChangedEvent): Promise<void> {
+    public async handleOxMetadataInKeycloakChangedEvent(event: OxMetadataInKeycloakChangedEvent): Promise<void> {
         this.logger.info(
-            `Received OxUserAttributesChangedEvent personId:${event.personId}, keycloakUsername: ${event.keycloakUsername}, userName:${event.oxUserName}, contextName:${event.oxContextName}, email:${event.emailAddress}`,
+            `Received OxMetadataInKeycloakChangedEvent personId:${event.personId}, keycloakUsername: ${event.keycloakUsername}, userName:${event.oxUserName}, contextName:${event.oxContextName}, email:${event.emailAddress}`,
         );
         const email: Option<EmailAddress<true>> = await this.emailRepo.findRequestedByPerson(event.personId);
 

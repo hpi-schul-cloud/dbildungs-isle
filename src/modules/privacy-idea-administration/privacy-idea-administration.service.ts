@@ -33,6 +33,9 @@ import {
     UserResponse,
     VerificationResponse,
 } from './privacy-idea-api.types.js';
+import { DomainError } from '../../shared/error/domain.error.js';
+import { DeleteUserError } from './api/error/delete-user.error.js';
+import { UserExistsError } from './api/error/user-exists.error.js';
 
 @Injectable()
 export class PrivacyIdeaAdministrationService {
@@ -40,7 +43,7 @@ export class PrivacyIdeaAdministrationService {
 
     private tokenExpiryTimestampMs: number = 0;
 
-    private static AUTHORIZATION_TIMEBOX_MS: number = 59 * 60 * 1000;
+    private static readonly AUTHORIZATION_TIMEBOX_MS: number = 59 * 60 * 1000;
 
     private readonly privacyIdeaConfig: PrivacyIdeaConfig;
 
@@ -168,7 +171,7 @@ export class PrivacyIdeaAdministrationService {
         }
     }
 
-    private async getUserTokens(userName: string): Promise<PrivacyIdeaToken[]> {
+    public async getUserTokens(userName: string): Promise<PrivacyIdeaToken[]> {
         if (!(await this.checkUserExists(userName))) {
             return [];
         }
@@ -239,6 +242,55 @@ export class PrivacyIdeaAdministrationService {
                 throw new Error(`Error adding user: Unknown error occurred`);
             }
         }
+    }
+
+    public async deleteUserWrapper(userName: string): Promise<Result<void, DomainError>> {
+        const token: string = await this.getJWTToken();
+        const result: Result<void, DomainError> = await this.deleteUser(userName, token);
+        return result;
+    }
+
+    private async deleteUser(userName: string, token: string): Promise<Result<void, DomainError>> {
+        const url: string =
+            this.privacyIdeaConfig.ENDPOINT + '/user/' + this.privacyIdeaConfig.USER_RESOLVER + '/' + userName;
+        const headers: { Authorization: string } = {
+            Authorization: `${token}`,
+        };
+        try {
+            await firstValueFrom(this.httpService.delete(url, { headers: headers }));
+            return { ok: true, value: undefined };
+        } catch (error) {
+            return { ok: false, error: new DeleteUserError() };
+        }
+    }
+
+    public async updateUsername(oldUserName: string, newUserName: string): Promise<Result<void, DomainError>> {
+        const newUserNameExists: boolean = await this.checkUserExists(newUserName);
+        if (newUserNameExists) {
+            return { ok: false, error: new UserExistsError() };
+        }
+        const token: string = await this.getJWTToken();
+
+        const userTokens: PrivacyIdeaToken[] = await this.getUserTokens(oldUserName);
+        await Promise.all(
+            userTokens.map(async (userToken: PrivacyIdeaToken) => {
+                await this.unassignToken(userToken.serial, token);
+            }),
+        );
+
+        await this.addUser(newUserName);
+        await Promise.all(
+            userTokens.map(async (userToken: PrivacyIdeaToken) => {
+                await this.assignToken(userToken.serial, token, newUserName);
+            }),
+        );
+
+        const result: Result<void, DomainError> = await this.deleteUser(oldUserName, token);
+        if (!result.ok) {
+            return result;
+        }
+
+        return { ok: true, value: undefined };
     }
 
     private async verifyTokenStatus(serial: string, token: string): Promise<TokenVerificationResponse> {

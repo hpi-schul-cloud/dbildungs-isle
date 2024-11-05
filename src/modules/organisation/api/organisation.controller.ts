@@ -83,11 +83,12 @@ export class OrganisationController {
     @ApiForbiddenResponse({ description: 'Not permitted to create the organisation.' })
     @ApiInternalServerErrorResponse({ description: 'Internal server error while creating the organisation.' })
     public async createOrganisation(@Body() params: CreateOrganisationBodyParams): Promise<OrganisationResponse> {
-        const ROOT_ORGANISATION_ID: string = this.config.getOrThrow<DataConfig>('DATA').ROOT_ORGANISATION_ID;
+        const [oeffentlich]: [Organisation<true> | undefined, Organisation<true> | undefined] =
+            await this.organisationRepository.findRootDirectChildren();
 
         const organisation: Organisation<false> | DomainError = Organisation.createNew(
-            params.administriertVon ?? ROOT_ORGANISATION_ID,
-            params.zugehoerigZu ?? ROOT_ORGANISATION_ID,
+            params.administriertVon ?? oeffentlich?.id,
+            params.zugehoerigZu ?? oeffentlich?.id,
             params.kennung,
             params.name,
             params.namensergaenzung,

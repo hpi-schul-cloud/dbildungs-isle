@@ -45,6 +45,7 @@ import { DomainError } from '../../../shared/error/domain.error.js';
 import { PersonFactory } from '../../person/domain/person.factory.js';
 import { KeycloakConfigModule } from '../../keycloak-administration/keycloak-config.module.js';
 import { RolleServiceProviderBodyParams } from './rolle-service-provider.body.params.js';
+import { generatePassword } from '../../../shared/util/password-generator.js';
 
 describe('Rolle API', () => {
     let app: INestApplication;
@@ -715,7 +716,7 @@ describe('Rolle API', () => {
                     vorname: faker.person.firstName(),
                     familienname: faker.person.lastName(),
                     username: faker.internet.userName(),
-                    password: faker.string.alphanumeric(8),
+                    password: generatePassword(),
                 });
                 if (personData instanceof DomainError) {
                     throw personData;
@@ -817,7 +818,7 @@ describe('Rolle API', () => {
                     vorname: faker.person.firstName(),
                     familienname: faker.person.lastName(),
                     username: faker.internet.userName(),
-                    password: faker.string.alphanumeric(8),
+                    password: generatePassword(),
                 });
                 if (personData instanceof DomainError) {
                     throw personData;

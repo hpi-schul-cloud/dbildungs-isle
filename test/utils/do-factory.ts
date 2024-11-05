@@ -108,6 +108,7 @@ export class DoFactory {
             referrer: 'referrer',
             sichtfreigabe: SichtfreigabeType.JA,
             loeschungZeitpunkt: faker.date.anytime(),
+            befristung: faker.date.anytime(),
         };
 
         return Object.assign(Object.create(Personenkontext.prototype) as Personenkontext<boolean>, pk, props);

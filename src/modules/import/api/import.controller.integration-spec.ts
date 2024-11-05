@@ -128,8 +128,25 @@ describe('Rolle API', () => {
 
             const schule: OrganisationEntity = new OrganisationEntity();
             schule.typ = OrganisationsTyp.SCHULE;
+            schule.name = 'Import Schule';
             await em.persistAndFlush(schule);
             await em.findOneOrFail(OrganisationEntity, { id: schule.id });
+
+            const klasse1A: OrganisationEntity = new OrganisationEntity();
+            klasse1A.typ = OrganisationsTyp.KLASSE;
+            klasse1A.name = '1A';
+            klasse1A.administriertVon = schule.id;
+            klasse1A.zugehoerigZu = schule.id;
+            await em.persistAndFlush(klasse1A);
+            await em.findOneOrFail(OrganisationEntity, { id: klasse1A.id });
+
+            const klasse2B: OrganisationEntity = new OrganisationEntity();
+            klasse2B.typ = OrganisationsTyp.KLASSE;
+            klasse2B.name = '2B';
+            klasse2B.administriertVon = schule.id;
+            klasse2B.zugehoerigZu = schule.id;
+            await em.persistAndFlush(klasse2B);
+            await em.findOneOrFail(OrganisationEntity, { id: klasse2B.id });
 
             const sus: Rolle<true> = await rolleRepo.save(
                 DoFactory.createRolle(false, {
@@ -149,6 +166,80 @@ describe('Rolle API', () => {
             expect(response.body).toMatchObject({
                 importvorgangId: expect.any(String) as unknown as string,
                 isValid: true,
+                totalImportDataItems: 2,
+                totalInvalidImportDataItems: 0,
+                invalidImportDataItems: [],
+            });
+        });
+
+        it('should return 201 OK with ImportUploadResponse when there are missing values in the data items', async () => {
+            const filePath: string = path.resolve('./', `test/imports/valid_with_empty_values_test_import_SuS.csv`);
+
+            const fileExists: boolean = fs.existsSync(filePath);
+            if (!fileExists) throw new Error('file does not exist');
+
+            const schule: OrganisationEntity = new OrganisationEntity();
+            schule.typ = OrganisationsTyp.SCHULE;
+            schule.name = 'Import Schule';
+            await em.persistAndFlush(schule);
+            await em.findOneOrFail(OrganisationEntity, { id: schule.id });
+
+            const klasse1A: OrganisationEntity = new OrganisationEntity();
+            klasse1A.typ = OrganisationsTyp.KLASSE;
+            klasse1A.name = '1A';
+            klasse1A.administriertVon = schule.id;
+            klasse1A.zugehoerigZu = schule.id;
+            await em.persistAndFlush(klasse1A);
+            await em.findOneOrFail(OrganisationEntity, { id: klasse1A.id });
+
+            const klasse2B: OrganisationEntity = new OrganisationEntity();
+            klasse2B.typ = OrganisationsTyp.KLASSE;
+            klasse2B.name = '2B';
+            klasse2B.administriertVon = schule.id;
+            klasse2B.zugehoerigZu = schule.id;
+            await em.persistAndFlush(klasse2B);
+            await em.findOneOrFail(OrganisationEntity, { id: klasse2B.id });
+
+            const sus: Rolle<true> = await rolleRepo.save(
+                DoFactory.createRolle(false, {
+                    rollenart: RollenArt.LERN,
+                    administeredBySchulstrukturknoten: schule.id,
+                }),
+            );
+
+            const response: Response = await request(app.getHttpServer() as App)
+                .post('/import/upload')
+                .set('content-type', 'multipart/form-data')
+                .field('organisationId', schule.id)
+                .field('rolleId', sus.id)
+                .attach('file', filePath);
+
+            expect(response.status).toBe(201);
+            expect(response.body).toMatchObject({
+                importvorgangId: expect.any(String) as unknown as string,
+                isValid: false,
+                totalImportDataItems: 2,
+                totalInvalidImportDataItems: 2,
+                invalidImportDataItems: [
+                    {
+                        vorname: '',
+                        nachname: 'Mustermann',
+                        klasse: '1a-fake',
+                        validationErrors: [
+                            'IMPORT_DATA_ITEM_VORNAME_IS_TOO_SHORT',
+                            'IMPORT_DATA_ITEM_KLASSE_NOT_FOUND',
+                        ],
+                    },
+                    {
+                        vorname: 'Maria',
+                        nachname: '',
+                        klasse: '',
+                        validationErrors: [
+                            'IMPORT_DATA_ITEM_NACHNAME_IS_TOO_SHORT',
+                            'IMPORT_DATA_ITEM_KLASSE_IS_TOO_SHORT',
+                        ],
+                    },
+                ],
             });
         });
 
@@ -321,6 +412,25 @@ describe('Rolle API', () => {
                 .send(params);
 
             expect(executeResponse.status).toBe(404);
+        });
+    });
+
+    describe('/DELETE deleteImportTransaction', () => {
+        it('should return 204', async () => {
+            const importvorgangId: string = faker.string.uuid();
+            await importDataRepository.save(
+                DoFactory.createImportDataItem(false, {
+                    importvorgangId: importvorgangId,
+                    klasse: faker.lorem.word(),
+                    personalnummer: undefined,
+                }),
+            );
+
+            const response: Response = await request(app.getHttpServer() as App)
+                .delete(`/import/${importvorgangId}`)
+                .send();
+
+            expect(response.status).toBe(204);
         });
     });
 });

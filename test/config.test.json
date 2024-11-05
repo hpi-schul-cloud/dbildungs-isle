@@ -25,7 +25,9 @@
         "CLIENT_ID": "spsh",
         "ADMIN_SECRET": "44abDqJk2qgwRbpGfO0VZx7DpXeFsm7R",
         "CLIENT_SECRET": "YDp6fYkbUcj4ZkyAOnbAHGQ9O72htc5M",
-        "TEST_CLIENT_ID": "spsh-test"
+        "TEST_CLIENT_ID": "spsh-test",
+        "SERVICE_CLIENT_ID": "spsh-service",
+        "SERVICE_CLIENT_PRIVATE_JWKS": "{\"keys\":[{\"kty\":\"RSA\",\"n\":\"23mzd3v4YjgWMzO7XYYwD92NqCm436ErU1-NPTVok9aaVXx5mjZKfh_Xoyp5BEgjQU042MKOhl1Ri17HfOOf6k4cpBpvBQhENp0yfNPv_-kSy4OgdA3qk9-kZyvuRX1-0LKvJMwlrCLCLEfiv_yn8YQLpQeqgdIj1AlX37fcnSxxL3qukM_-Hm8dCB2mbUzANT_uRkSCHFQWVDxcbocKAmhr0808CmpiINWEIVv7AhS_HVSliaeB-iteAKN3W9Am3tCtGZaWKUlioKueQux7OTKxHm5fM-jZ9ZPnb7_RQlOGV9vu-TTMO8pKYkqn15LcnYuBKKHmFEBO8vRxI9_8Lw\",\"e\":\"AQAB\",\"d\":\"CdcSByhlbC9BkjgejW89FmkDjJJE-gR63HkV7F70T7SOejNjga4vdtTXUTclR94yyR8SORMNWtQyRMJnb_UGBXZNGG_K9yR2EntyeQrzjBDCHqJ0fjTlheMVYZQkUbSdC_RcSpUQl1V-STKhOvmz-e3Gq-Evxt70wPFOTEyCYAA5zTSgF7vwoxtKChfOb3NvkLUmD4JrBEb0vzapTgVvoyB158glUGEibpHBaVvVnA98qEI5hqJE2jhhtaoGyvErIkWDOummb1WPN2D0Nqsvr-sfwH3mxKFLDogHIfjMLxDaP9Y3I7Wwie9pbpsg6zK66s6EB27hkZnbRLlwaK4ImQ\",\"p\":\"_KCzohdV8BpnvfDxyL-Zjj8paJB5RBLkewf7xl-sqLHykjn-_nR1OGfEr8Gc0zwYD6FtTAJ9JN-h730vBacUVZDrgnKOW0NbQPIwNXCSisyChhbkSVXLBi94r_-t92ieJ8wPbchynF6Z1UyH0m4rieKnAPcxuio9iLuXdQrRNEs\",\"q\":\"3me1bHQ_GO5mPKwUf-kSZDguninq98ERMOAYdr__yUM1fc8QJ_3FSkZsSFr91Fi5kPvP9gthPRYhlfKeix61ibypLnLpyx6A298VIdG8VFjPrXzlme5CGSPYN9-YRSQq31e-xSdkn3lKiJlqPZzlRARyHveJlSWu07LuS91AgS0\",\"dp\":\"--U1GEOSchWyKaeNPrElaLu8C0I7WFBKOA7u0o9ldtPwXjOr-Yaftz1o1iMEv29lQnigpbC5ncHLEyRMdaNyWBtnaSvWnFNeMzUKMs7rn7Bp2VAMEr-T77f36-3SRiavxFjpbXr4JMkDNLbZm0405Yj1IrZYhBtIPgVm8NJ3ZV8\",\"dq\":\"ofqgbKvBZLQEq_2cNIiYh3tPoIvhAK6Riao8xwgREBEt_UH4f1fY_76IkK4MnkI8bHapwIYLPQVIUsBQbfxgtT89bIHu-qttqDUyW944Lqo8HxuO0WxwoYS0rgTgDsNHokByxX5qT6dz_EbX1KXXaJFgWGNqxcCbMr3nxkMO_sU\",\"qi\":\"r8ZslmjXzZJUv6IoN6nUT12UpzmhbriRXxjTcLNSwZBuSXz8QV_7F8ViNyEcot20aDo35t8IssLnDD9nxDAGTCL68FkXTJaAsUE2beGfkX9Sz5r_Gzlcer_Gjhl5aNHeZYgIMsYciPhM4laBzKD3d51xQuDFMMX1RQUvyDHDIog\"}]}"
     },
     "REDIS": {
         "HOST": "localhost",

@@ -39,6 +39,8 @@ import {
     createAndPersistOrganisation,
     createAndPersistRootOrganisation,
 } from '../../../../test/utils/organisation-test-helper.js';
+import { UserLockRepository } from '../../keycloak-administration/repository/user-lock.repository.js';
+import { generatePassword } from '../../../shared/util/password-generator.js';
 
 describe('dbiam Personenkontext Repo', () => {
     let module: TestingModule;
@@ -111,6 +113,10 @@ describe('dbiam Personenkontext Repo', () => {
                             }),
                     }),
                 },
+                {
+                    provide: UserLockRepository,
+                    useValue: createMock<UserLockRepository>(),
+                },
             ],
         }).compile();
 
@@ -133,7 +139,7 @@ describe('dbiam Personenkontext Repo', () => {
             vorname: faker.person.firstName(),
             familienname: faker.person.lastName(),
             username: faker.internet.userName(),
-            password: faker.string.alphanumeric(8),
+            password: generatePassword(),
         });
         if (personResult instanceof DomainError) {
             throw personResult;
@@ -558,6 +564,74 @@ describe('dbiam Personenkontext Repo', () => {
             const result: boolean = await sut.isRolleAlreadyAssigned(faker.string.uuid());
 
             expect(result).toBeFalsy();
+        });
+    });
+
+    describe('getPersonenKontexteWithExpiredBefristung', () => {
+        it('should return a grouped list of Personenkontext records with expired befristung', async () => {
+            // Create a date 1 day in the past for testing
+            const pastDate: Date = new Date();
+            pastDate.setDate(pastDate.getDate() - 1);
+
+            const futureDate: Date = new Date();
+            futureDate.setDate(futureDate.getDate() + 1);
+
+            const person1: Person<true> = await createPerson();
+            const person2: Person<true> = await createPerson();
+            const person3: Person<true> = await createPerson();
+
+            const rolle1: Rolle<false> = DoFactory.createRolle(false, {
+                name: 'rolle1',
+                rollenart: RollenArt.EXTERN,
+            });
+
+            const rolle1Result: Rolle<true> = await rolleRepo.save(rolle1);
+
+            //Kontexte with exceeding Befristung
+            const personenKontext1: Personenkontext<false> = DoFactory.createPersonenkontext(false, {
+                personId: person1.id,
+                rolleId: rolle1Result.id,
+                befristung: pastDate,
+            });
+
+            const personenKontext2: Personenkontext<false> = DoFactory.createPersonenkontext(false, {
+                personId: person2.id,
+                rolleId: rolle1Result.id,
+                befristung: pastDate,
+            });
+
+            //Kontexte without exceeding Befristung
+            const personenKontext3: Personenkontext<false> = DoFactory.createPersonenkontext(false, {
+                personId: person1.id,
+                rolleId: rolle1Result.id,
+                befristung: futureDate,
+            });
+
+            const personenKontext4: Personenkontext<false> = DoFactory.createPersonenkontext(false, {
+                personId: person2.id,
+                rolleId: rolle1Result.id,
+                befristung: futureDate,
+            });
+
+            const personenKontext5: Personenkontext<false> = DoFactory.createPersonenkontext(false, {
+                personId: person3.id,
+                rolleId: rolle1Result.id,
+                befristung: futureDate,
+            });
+
+            await personenkontextRepoInternal.save(personenKontext1);
+            await personenkontextRepoInternal.save(personenKontext2);
+            await personenkontextRepoInternal.save(personenKontext3);
+            await personenkontextRepoInternal.save(personenKontext4);
+            await personenkontextRepoInternal.save(personenKontext5);
+
+            const result: Map<string, Personenkontext<true>[]> = await sut.getPersonenKontexteWithExpiredBefristung();
+
+            expect(result.has(person1.id)).toBe(true);
+            expect(result.get(person1.id)).toHaveLength(2);
+
+            expect(result.has(person2.id)).toBe(true);
+            expect(result.get(person2.id)).toHaveLength(2);
         });
     });
 });

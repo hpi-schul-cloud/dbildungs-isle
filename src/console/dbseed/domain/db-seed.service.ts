@@ -33,6 +33,7 @@ import { OrganisationRepository } from '../../../modules/organisation/persistenc
 import { Organisation } from '../../../modules/organisation/domain/organisation.js';
 import { RollenMerkmal } from '../../../modules/rolle/domain/rolle.enums.js';
 import { ServiceProviderSystem } from '../../../modules/service-provider/domain/service-provider.enum.js';
+import { validate as isUUID } from 'uuid';
 
 @Injectable()
 export class DbSeedService {
@@ -99,13 +100,16 @@ export class DbSeedService {
             data.emailDomain,
             data.emailAdress,
         );
-
         if (organisation instanceof DomainError) {
             throw organisation;
         }
 
         if (!administriertVon && !zugehoerigZu && data.kuerzel === 'Root') {
             organisation.id = this.ROOT_ORGANISATION_ID;
+        }
+
+        if (data.overrideId) {
+            organisation.id = this.getValidUuidOrUndefined(data.overrideId);
         }
 
         const savedOrga: Organisation<true> = await this.organisationRepository.saveSeedData(organisation);
@@ -163,7 +167,11 @@ export class DbSeedService {
                 throw rolle;
             }
 
-            const persistedRolle: Rolle<true> = await this.rolleRepo.save(rolle);
+            if (file.overrideId) {
+                rolle.id = this.getValidUuidOrUndefined(file.overrideId);
+            }
+
+            const persistedRolle: Rolle<true> = await this.rolleRepo.create(rolle);
             if (persistedRolle && file.id != null) {
                 const dbSeedReference: DbSeedReference = DbSeedReference.createNew(
                     ReferencedEntityType.ROLLE,
@@ -201,9 +209,12 @@ export class DbSeedService {
                 file.externalSystem ?? ServiceProviderSystem.NONE,
                 file.requires2fa,
             );
+            if (file.overrideId) {
+                serviceProvider.id = this.getValidUuidOrUndefined(file.overrideId);
+            }
 
             const persistedServiceProvider: ServiceProvider<true> =
-                await this.serviceProviderRepo.save(serviceProvider);
+                await this.serviceProviderRepo.create(serviceProvider);
             if (persistedServiceProvider && file.id != null) {
                 const dbSeedReference: DbSeedReference = DbSeedReference.createNew(
                     ReferencedEntityType.SERVICE_PROVIDER,
@@ -254,6 +265,11 @@ export class DbSeedService {
                 this.logger.error(JSON.stringify(person));
                 throw person;
             }
+
+            if (file.overrideId) {
+                person.id = this.getValidUuidOrUndefined(file.overrideId);
+            }
+
             const filter: FindUserFilter = {
                 username: person.username,
             };
@@ -265,7 +281,50 @@ export class DbSeedService {
                     `Keycloak User with keycloakid: ${existingKcUser.value.id} has been deleted, and will be replaced by newly seeded user with same username: ${person.username}`,
                 );
             }
-            const persistedPerson: Person<true> | DomainError = await this.personRepository.create(person);
+
+            const persistedPerson: Person<true> | DomainError = await this.personRepository.create(
+                person,
+                undefined,
+                this.getValidUuidOrUndefined(file.overrideId),
+            );
+            if (persistedPerson instanceof Person && file.id != null) {
+                const dbSeedReference: DbSeedReference = DbSeedReference.createNew(
+                    ReferencedEntityType.PERSON,
+                    file.id,
+                    persistedPerson.id,
+                );
+                await this.dbSeedReferenceRepo.create(dbSeedReference);
+            } else {
+                this.logger.error('Person without ID thus not referenceable:');
+                this.logger.error(JSON.stringify(person));
+            }
+        }
+        this.logger.info(`Insert ${files.length} entities of type Person`);
+    }
+
+    public async seedTechnicalUser(fileContentAsStr: string): Promise<void> {
+        const personFile: EntityFile<PersonFile> = JSON.parse(fileContentAsStr) as EntityFile<PersonFile>;
+        const files: PersonFile[] = plainToInstance(PersonFile, personFile.entities);
+        /* eslint-disable no-await-in-loop */
+        for (const file of files) {
+            /* eslint-disable no-await-in-loop */
+            const person: Person<false> = Person.construct(
+                undefined,
+                undefined,
+                undefined,
+                file.familienname,
+                file.vorname,
+                '1',
+                file.username,
+                file.keycloakUserId,
+            );
+
+            const persistedPerson: Person<true> | DomainError = await this.personRepository.create(
+                person,
+                undefined,
+                this.getValidUuidOrUndefined(file.overrideId),
+                true,
+            );
             if (persistedPerson instanceof Person && file.id != null) {
                 const dbSeedReference: DbSeedReference = DbSeedReference.createNew(
                     ReferencedEntityType.PERSON,
@@ -326,7 +385,11 @@ export class DbSeedService {
                 throw specificationCheckError;
             }
 
-            persistedPersonenkontexte.push(await this.dBiamPersonenkontextRepoInternal.save(personenKontext));
+            if (file.overrideId) {
+                personenKontext.id = this.getValidUuidOrUndefined(file.overrideId);
+            }
+
+            persistedPersonenkontexte.push(await this.dBiamPersonenkontextRepoInternal.create(personenKontext));
             //at the moment no saving of Personenkontext
         }
         this.logger.info(`Insert ${files.length} entities of type Personenkontext`);
@@ -406,5 +469,14 @@ export class DbSeedService {
         return fs.readdirSync(path).filter(function (file: string) {
             return fs.statSync(path + '/' + file).isDirectory();
         });
+    }
+
+    public isValidUuid(id: unknown): id is string {
+        return typeof id === 'string' && isUUID(id);
+    }
+
+    public getValidUuidOrUndefined(id: string | undefined): string | undefined {
+        const valid: boolean = this.isValidUuid(id);
+        return valid ? id : undefined;
     }
 }

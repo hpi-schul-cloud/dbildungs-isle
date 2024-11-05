@@ -26,6 +26,8 @@ import { ImportTextFileCreationError } from './import-text-file-creation.error.j
 import { RolleNurAnPassendeOrganisationError } from '../../personenkontext/specification/error/rolle-nur-an-passende-organisation.js';
 import { Person } from '../../person/domain/person.js';
 import { ImportCSVFileEmptyError } from './import-csv-file-empty.error.js';
+import { ImportNurLernAnSchuleUndKlasseError } from './import-nur-lern-an-schule-und-klasse.error.js';
+import { ImportCSVFileParsingError } from './import-csv-file-parsing.error.js';
 
 describe('ImportWorkflow', () => {
     let module: TestingModule;
@@ -39,6 +41,7 @@ describe('ImportWorkflow', () => {
 
     const SELECTED_ORGANISATION_ID: string = faker.string.uuid();
     const SELECTED_ROLLE_ID: string = faker.string.uuid();
+    const FILE_MOCK: Express.Multer.File = createMock<Express.Multer.File>();
 
     beforeAll(async () => {
         module = await Test.createTestingModule({
@@ -97,23 +100,21 @@ describe('ImportWorkflow', () => {
 
     describe('validateImport', () => {
         it('should return EntityNotFoundError if the organisation does not exist', async () => {
-            const file: Express.Multer.File = createMock<Express.Multer.File>();
             sut.initialize(SELECTED_ORGANISATION_ID, SELECTED_ROLLE_ID);
             organisationRepoMock.findById.mockResolvedValueOnce(undefined);
             const result: DomainError | ImportUploadResultFields = await sut.validateImport(
-                file,
+                FILE_MOCK,
                 personpermissionsMock,
             );
             expect(result).toBeInstanceOf(EntityNotFoundError);
         });
 
         it('should return EntityNotFoundError if the rolle does not exist', async () => {
-            const file: Express.Multer.File = createMock<Express.Multer.File>();
             sut.initialize(SELECTED_ORGANISATION_ID, SELECTED_ROLLE_ID);
             organisationRepoMock.findById.mockResolvedValueOnce(DoFactory.createOrganisation(true));
             rolleRepoMock.findById.mockResolvedValueOnce(undefined);
             const result: DomainError | ImportUploadResultFields = await sut.validateImport(
-                file,
+                FILE_MOCK,
                 personpermissionsMock,
             );
             expect(result).toBeInstanceOf(EntityNotFoundError);
@@ -121,7 +122,6 @@ describe('ImportWorkflow', () => {
         });
 
         it('should return EntityNotFoundError if the rolle can not be assigned to organisation', async () => {
-            const file: Express.Multer.File = createMock<Express.Multer.File>();
             sut.initialize(SELECTED_ORGANISATION_ID, SELECTED_ROLLE_ID);
             organisationRepoMock.findById.mockResolvedValueOnce(DoFactory.createOrganisation(true));
             const rolleMock: DeepMocked<Rolle<true>> = createMock<Rolle<true>>();
@@ -129,25 +129,42 @@ describe('ImportWorkflow', () => {
             rolleMock.canBeAssignedToOrga.mockResolvedValueOnce(false);
             rolleRepoMock.findById.mockResolvedValueOnce(rolleMock);
             const result: DomainError | ImportUploadResultFields = await sut.validateImport(
-                file,
+                FILE_MOCK,
                 personpermissionsMock,
             );
             expect(result).toBeInstanceOf(EntityNotFoundError);
             expect(rolleRepoMock.findById).toHaveBeenCalledWith(SELECTED_ROLLE_ID);
         });
 
-        it('should return RolleNurAnPassendeOrganisationError if the rolle does not pass to organisation', async () => {
-            const file: Express.Multer.File = createMock<Express.Multer.File>();
+        it('should return ImportNurLernAnSchuleUndKlasseError if the rolle is not rollenart LERN', async () => {
             sut.initialize(SELECTED_ORGANISATION_ID, SELECTED_ROLLE_ID);
             organisationRepoMock.findById.mockResolvedValueOnce(
-                DoFactory.createOrganisation(true, { typ: OrganisationsTyp.KLASSE }),
+                DoFactory.createOrganisation(true, { typ: OrganisationsTyp.SCHULE }),
             );
             const rolleMock: DeepMocked<Rolle<true>> = createMock<Rolle<true>>();
-            rolleMock.rollenart = RollenArt.LEIT;
+            rolleMock.rollenart = RollenArt.LEHR;
             rolleMock.canBeAssignedToOrga.mockResolvedValueOnce(true);
             rolleRepoMock.findById.mockResolvedValueOnce(rolleMock);
             const result: DomainError | ImportUploadResultFields = await sut.validateImport(
-                file,
+                FILE_MOCK,
+                personpermissionsMock,
+            );
+            expect(result).toBeInstanceOf(ImportNurLernAnSchuleUndKlasseError);
+            expect(organisationRepoMock.findById).toHaveBeenCalledWith(SELECTED_ORGANISATION_ID);
+            expect(rolleRepoMock.findById).toHaveBeenCalledWith(SELECTED_ROLLE_ID);
+        });
+
+        it('should return RolleNurAnPassendeOrganisationError if the rolle does not pass to organisation', async () => {
+            sut.initialize(SELECTED_ORGANISATION_ID, SELECTED_ROLLE_ID);
+            organisationRepoMock.findById.mockResolvedValueOnce(
+                DoFactory.createOrganisation(true, { typ: OrganisationsTyp.LAND }),
+            );
+            const rolleMock: DeepMocked<Rolle<true>> = createMock<Rolle<true>>();
+            rolleMock.rollenart = RollenArt.LERN;
+            rolleMock.canBeAssignedToOrga.mockResolvedValueOnce(true);
+            rolleRepoMock.findById.mockResolvedValueOnce(rolleMock);
+            const result: DomainError | ImportUploadResultFields = await sut.validateImport(
+                FILE_MOCK,
                 personpermissionsMock,
             );
             expect(result).toBeInstanceOf(RolleNurAnPassendeOrganisationError);
@@ -156,7 +173,6 @@ describe('ImportWorkflow', () => {
         });
 
         it('should return MissingPermissionsError if the admin does not permissions to import data', async () => {
-            const file: Express.Multer.File = createMock<Express.Multer.File>();
             sut.initialize(SELECTED_ORGANISATION_ID, SELECTED_ROLLE_ID);
             organisationRepoMock.findById.mockResolvedValueOnce(
                 DoFactory.createOrganisation(true, { typ: OrganisationsTyp.SCHULE }),
@@ -169,7 +185,7 @@ describe('ImportWorkflow', () => {
             personpermissionsMock.hasSystemrechteAtRootOrganisation.mockResolvedValue(false);
 
             const result: DomainError | ImportUploadResultFields = await sut.validateImport(
-                file,
+                FILE_MOCK,
                 personpermissionsMock,
             );
             expect(result).toBeInstanceOf(MissingPermissionsError);
@@ -198,8 +214,7 @@ describe('ImportWorkflow', () => {
             expect(importDataRepositoryMock.save).not.toHaveBeenCalled();
         });
 
-        it('should call parser and importDataRepository', async () => {
-            const file: Express.Multer.File = createMock<Express.Multer.File>();
+        it('should return ImportCSVFileParsingError if the parser cannot parse', async () => {
             sut.initialize(SELECTED_ORGANISATION_ID, SELECTED_ROLLE_ID);
             const rolleMock: DeepMocked<Rolle<true>> = createMock<Rolle<true>>();
             rolleMock.rollenart = RollenArt.LERN;
@@ -215,13 +230,15 @@ describe('ImportWorkflow', () => {
                 [stream: typeof Papa.NODE_STREAM_INPUT, config?: Papa.ParseConfig<unknown, undefined> | undefined],
                 unknown
             > = jest.spyOn(Papa, 'parse');
+            spyParse.mockImplementationOnce(() => {
+                throw new Error('Error details');
+            });
 
             const result: DomainError | ImportUploadResultFields = await sut.validateImport(
-                file,
+                FILE_MOCK,
                 personpermissionsMock,
             );
-            expect(result).not.toBeInstanceOf(DomainError);
-            expect(importDataRepositoryMock.save).toHaveBeenCalled();
+            expect(result).toBeInstanceOf(ImportCSVFileParsingError);
             expect(spyParse).toHaveBeenCalled();
         });
     });
@@ -447,6 +464,27 @@ describe('ImportWorkflow', () => {
             const result: string = sut.getFileName(importvorgangId);
 
             expect(result).toBe(expectedFielName);
+        });
+    });
+
+    describe('cancelImport', () => {
+        it('should return MissingPermissionsError if the admin does not have permissions to cancel the import transaction', async () => {
+            personpermissionsMock.hasSystemrechteAtRootOrganisation.mockResolvedValueOnce(false);
+
+            const result: Result<void> = await sut.cancelImport(faker.string.uuid(), personpermissionsMock);
+
+            expect(result).toEqual({
+                ok: false,
+                error: new MissingPermissionsError('Unauthorized to import data'),
+            });
+        });
+
+        it('should call the importDataRepository if the admin has permissions to cancel the import transaction', async () => {
+            personpermissionsMock.hasSystemrechteAtRootOrganisation.mockResolvedValueOnce(true);
+
+            const result: Result<void> = await sut.cancelImport(faker.string.uuid(), personpermissionsMock);
+            expect(importDataRepositoryMock.deleteByImportVorgangId).toHaveBeenCalled();
+            expect(result).toEqual({ ok: true, value: undefined });
         });
     });
 });

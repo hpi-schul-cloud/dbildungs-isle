@@ -202,6 +202,25 @@ export class OrganisationRepository {
         return res;
     }
 
+    /**
+     * Uses findParentOrgasForIdSortedByDepthAsc method to search for the first occurrence of an email-domain in the tree of organisations starting from passed organisationId.
+     * @param id start of search (leaf)
+     */
+    public async findEmailDomainForOrganisation(id: OrganisationID): Promise<string | undefined> {
+        const organisations: Organisation<true>[] = await this.findParentOrgasForIdSortedByDepthAsc(id);
+        const emailDomain: Option<string> = this.getDomainRecursive(organisations);
+
+        return emailDomain ?? undefined;
+    }
+
+    private getDomainRecursive(organisationsSortedByDepthAsc: Organisation<true>[]): Option<string> {
+        if (!organisationsSortedByDepthAsc || organisationsSortedByDepthAsc.length == 0) return undefined;
+        if (organisationsSortedByDepthAsc[0] && organisationsSortedByDepthAsc[0].emailDomain)
+            return organisationsSortedByDepthAsc[0].emailDomain;
+
+        return this.getDomainRecursive(organisationsSortedByDepthAsc.slice(1));
+    }
+
     public async isOrgaAParentOfOrgaB(
         organisationIdA: OrganisationID,
         organisationIdB: OrganisationID,

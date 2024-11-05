@@ -428,6 +428,136 @@ describe('OrganisationRepository', () => {
         });
     });
 
+    describe('findEmailDomainForOrganisation', () => {
+        type CreateOrgaTreeResult = {
+            root: Organisation<true>;
+            traeger: Organisation<true>;
+            schule: Organisation<true>;
+        };
+        async function createOrgaTreeWithDomains(
+            rootDomain?: string,
+            traegerDomain?: string,
+            schuleDomain?: string,
+        ): Promise<CreateOrgaTreeResult> {
+            const root: Organisation<true> = Organisation.construct(
+                sut.ROOT_ORGANISATION_ID,
+                faker.date.past(),
+                faker.date.recent(),
+                undefined,
+                undefined,
+                faker.string.numeric(6),
+                faker.string.alphanumeric(10),
+                faker.lorem.word(),
+                faker.string.uuid(),
+                OrganisationsTyp.ROOT,
+                undefined,
+                rootDomain,
+            );
+
+            const traeger: Organisation<true> = Organisation.construct(
+                faker.string.uuid(),
+                faker.date.past(),
+                faker.date.recent(),
+                root.id,
+                root.id,
+                faker.string.numeric(6),
+                faker.string.alphanumeric(10),
+                faker.lorem.word(),
+                faker.string.uuid(),
+                OrganisationsTyp.ROOT,
+                undefined,
+                traegerDomain,
+            );
+
+            const schule: Organisation<true> = Organisation.construct(
+                faker.string.uuid(),
+                faker.date.past(),
+                faker.date.recent(),
+                traeger.id,
+                traeger.id,
+                faker.string.numeric(6),
+                faker.string.alphanumeric(10),
+                faker.lorem.word(),
+                faker.string.uuid(),
+                OrganisationsTyp.ROOT,
+                undefined,
+                schuleDomain,
+            );
+
+            await em.persistAndFlush([
+                em.create(OrganisationEntity, mapAggregateToData(root)),
+                em.create(OrganisationEntity, mapAggregateToData(traeger)),
+                em.create(OrganisationEntity, mapAggregateToData(schule)),
+            ]);
+
+            return { root, traeger, schule };
+        }
+
+        const domain: string = 'schule-sh.de';
+
+        it('should return emailDomain for root provided by root', async () => {
+            const { root }: CreateOrgaTreeResult = await createOrgaTreeWithDomains(domain, undefined, undefined);
+
+            const result: string | undefined = await sut.findEmailDomainForOrganisation(root.id);
+
+            expect(result).toBeDefined();
+            expect(result).toStrictEqual(domain);
+        });
+
+        it('should return emailDomain for schule provided by traeger', async () => {
+            const { root, traeger, schule }: CreateOrgaTreeResult = await createOrgaTreeWithDomains(
+                undefined,
+                domain,
+                undefined,
+            );
+
+            const result: string | undefined = await sut.findEmailDomainForOrganisation(traeger.id);
+
+            expect(root).toBeDefined();
+            expect(schule).toBeDefined();
+            expect(result).toBeDefined();
+            expect(result).toStrictEqual(domain);
+        });
+
+        it('should return emailDomain for schule provided by root', async () => {
+            const { root, traeger, schule }: CreateOrgaTreeResult = await createOrgaTreeWithDomains(
+                domain,
+                undefined,
+                undefined,
+            );
+
+            const result: string | undefined = await sut.findEmailDomainForOrganisation(schule.id);
+
+            expect(root).toBeDefined();
+            expect(traeger).toBeDefined();
+            expect(result).toBeDefined();
+            expect(result).toStrictEqual(domain);
+        });
+
+        it('should return undefined when NO organisation in tree has an email-domain', async () => {
+            const { root, traeger, schule }: CreateOrgaTreeResult = await createOrgaTreeWithDomains(
+                undefined,
+                undefined,
+                undefined,
+            );
+
+            const result: string | undefined = await sut.findEmailDomainForOrganisation(schule.id);
+
+            expect(root).toBeDefined();
+            expect(traeger).toBeDefined();
+            expect(schule).toBeDefined();
+            expect(result).toBeUndefined();
+        });
+
+        // This test covers getDomainRecursive, case 'no organisations, first cancel condition'
+        it('should return undefined when NO organisation were found via findParentOrgasForIdSortedByDepthAsc', async () => {
+            //no tree-creation here -> mocks no organisations could be found
+            const result: string | undefined = await sut.findEmailDomainForOrganisation(faker.string.uuid());
+
+            expect(result).toBeUndefined();
+        });
+    });
+
     describe('findParentOrgas-Methods', () => {
         type CreateOrgaTreeResult = {
             root: Organisation<true>;

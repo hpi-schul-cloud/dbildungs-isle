@@ -1,5 +1,5 @@
 import { TimestampedEntity } from '../../../persistence/timestamped.entity.js';
-import { Entity, Property } from '@mikro-orm/core';
+import { ArrayType, Entity, Property } from '@mikro-orm/core';
 
 @Entity({ tableName: 'importdataitem' })
 export class ImportDataItemEntity extends TimestampedEntity {
@@ -17,4 +17,7 @@ export class ImportDataItemEntity extends TimestampedEntity {
 
     @Property({ nullable: true })
     public personalnummer?: string;
+
+    @Property({ type: ArrayType, nullable: true })
+    public validationErrors?: string[];
 }

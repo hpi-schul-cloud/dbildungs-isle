@@ -1,0 +1,34 @@
+{
+    "entityName": "Organisation",
+    "entities": [
+        {
+            "id": 0,
+            "kennung": null,
+            "name": "Land Schleswig-Holstein",
+            "kuerzel": "Root",
+            "typ": "ROOT",
+            "administriertVon": null,
+            "zugehoerigZu": null
+        },
+        {
+            "id": 1,
+            "kennung": null,
+            "name": "Öffentliche Schulen Land Schleswig-Holstein",
+            "kuerzel": "Öffentl. Schulen",
+            "typ": "LAND",
+            "administriertVon": 0,
+            "zugehoerigZu": 0,
+            "emailDomain": "schule-sh.de"
+        },
+        {
+            "id": 2,
+            "kennung": null,
+            "name": "Ersatzschulen Land Schleswig-Holstein",
+            "kuerzel": "Ersatzschulen",
+            "typ": "LAND",
+            "administriertVon": 0,
+            "zugehoerigZu": 0,
+            "emailDomain": "ersatzschule-sh.de"
+        }
+    ]
+}

@@ -36,6 +36,22 @@ spec:
           volumeMounts:
             {{- toYaml .Values.backend.volumeMounts | nindent 12 }}
           resources: {{- toYaml .Values.backend.resources | nindent 12 }}
+        - name: "{{ template "common.names.name" . }}-keycloak-data-migration"
+          image: "{{ .Values.backend.image.repository }}:{{ .Values.backend.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.backend.image.pullPolicy | default "Always" }}
+          securityContext: {{- omit .Values.containerSecurityContext "enabled" | toYaml | nindent 12 }}
+          command: [ "node", "dist/src/console/main.js", "keycloak", "update-clients", "dev" ]
+          env:
+            {{- include "dbildungs-iam-server-backend-envs" . | indent  12 }}
+              {{- if .Values.backend.extraEnvVars }}
+              {{ toYaml .Values.backend.extraEnvVars | nindent 12 }}
+              {{- end }}
+          envFrom:
+            - configMapRef:
+                name: {{ template "common.names.name" . }}
+          volumeMounts:
+            {{- toYaml .Values.backend.volumeMounts | nindent 12 }}
+          resources: {{- toYaml .Values.backend.resources | nindent 12 }}
         {{- if .Values.backend.dbseeding.enabled }}
         - name: db-seeding
           image: "{{ .Values.backend.image.repository }}:{{ .Values.backend.image.tag | default .Chart.AppVersion }}"
@@ -87,6 +103,9 @@ spec:
         - name: migration-volume
           configMap:
             name: {{ template "common.names.name" . }}-backend-migration
+        - name: keycloak-migration-volume
+          configMap:
+            name: {{ template "common.names.name" . }}-backend-keycloak-migration
         {{if .Values.backend.dbseeding.enabled }}
         - name: seeding-volume
           configMap:

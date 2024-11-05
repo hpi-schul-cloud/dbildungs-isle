@@ -1,8 +1,10 @@
 import {
     Body,
     Controller,
+    Delete,
     HttpCode,
     HttpStatus,
+    Param,
     ParseFilePipeBuilder,
     Post,
     Res,
@@ -17,9 +19,11 @@ import {
     ApiConsumes,
     ApiForbiddenResponse,
     ApiInternalServerErrorResponse,
+    ApiNoContentResponse,
     ApiNotFoundResponse,
     ApiOAuth2,
     ApiOkResponse,
+    ApiOperation,
     ApiProduces,
     ApiTags,
     ApiUnauthorizedResponse,
@@ -40,6 +44,7 @@ import { ImportUploadResponse } from './importvorgang-upload.response.js';
 import { ImportDomainError } from '../domain/import-domain.error.js';
 import { SchulConnexErrorMapper } from '../../../shared/error/schul-connex-error.mapper.js';
 import { ImportExceptionFilter } from './import-exception-filter.js';
+import { ImportvorgangByIdParams } from './importvorgang-by-id.params.js';
 
 @UseFilters(SchulConnexValidationErrorFilter, new AuthenticationExceptionFilter(), new ImportExceptionFilter())
 @ApiTags('import')
@@ -85,7 +90,12 @@ export class ImportController {
             );
         }
 
-        return new ImportUploadResponse(result.importVorgangId, result.isValid);
+        return new ImportUploadResponse(
+            result.importVorgangId,
+            result.isValid,
+            result.totalImportDataItems,
+            result.invalidImportDataItems,
+        );
     }
 
     @ApiProduces('text/plain')
@@ -133,6 +143,31 @@ export class ImportController {
                 'Content-Disposition': contentDisposition,
             });
             return new StreamableFile(result.value);
+        }
+    }
+
+    @Delete(':importvorgangId')
+    @HttpCode(HttpStatus.NO_CONTENT)
+    @ApiOperation({ description: 'Delete a role by id.' })
+    @ApiNoContentResponse({ description: 'Import transaction was deleted successfully.' })
+    @ApiBadRequestResponse({
+        description: 'Something went wrong with the found import transaction.',
+        type: DbiamImportError,
+    })
+    @ApiNotFoundResponse({ description: 'The import transaction that should be deleted does not exist.' })
+    @ApiUnauthorizedResponse({ description: 'Not authorized to delete the import transaction.' })
+    public async deleteImportTransaction(
+        @Param() params: ImportvorgangByIdParams,
+        @Permissions() permissions: PersonPermissions,
+    ): Promise<void> {
+        const importWorkflow: ImportWorkflow = this.importWorkflowFactory.createNew();
+        const result: Result<void> = await importWorkflow.cancelImport(params.importvorgangId, permissions);
+        if (!result.ok) {
+            if (result.error instanceof DomainError) {
+                throw SchulConnexErrorMapper.mapSchulConnexErrorToHttpException(
+                    SchulConnexErrorMapper.mapDomainErrorToSchulConnexError(result.error),
+                );
+            }
         }
     }
 }

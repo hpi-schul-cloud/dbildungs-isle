@@ -3,6 +3,8 @@ import { RollenArt, RollenMerkmal, RollenSystemRecht } from '../../../modules/ro
 export class RolleFile {
     public id?: number;
 
+    public overrideId?: string;
+
     public name!: string;
 
     public administeredBySchulstrukturknoten!: number;

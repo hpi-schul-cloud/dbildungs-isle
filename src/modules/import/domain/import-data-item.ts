@@ -8,6 +8,7 @@ export class ImportDataItem<WasPersisted extends boolean> {
         public vorname: string,
         public klasse?: string,
         public personalnummer?: string,
+        public validationErrors?: string[],
     ) {}
 
     public static construct<WasPersisted extends boolean = false>(
@@ -19,8 +20,19 @@ export class ImportDataItem<WasPersisted extends boolean> {
         vorname: string,
         klasse?: string,
         personalnummer?: string,
+        validationErrors?: string[],
     ): ImportDataItem<WasPersisted> {
-        return new ImportDataItem(id, createdAt, updatedAt, importvorgangId, nachname, vorname, klasse, personalnummer);
+        return new ImportDataItem(
+            id,
+            createdAt,
+            updatedAt,
+            importvorgangId,
+            nachname,
+            vorname,
+            klasse,
+            personalnummer,
+            validationErrors,
+        );
     }
 
     public static createNew(
@@ -29,6 +41,7 @@ export class ImportDataItem<WasPersisted extends boolean> {
         vorname: string,
         klasse?: string,
         personalnummer?: string,
+        validationErrors?: string[],
     ): ImportDataItem<false> {
         return new ImportDataItem(
             undefined,
@@ -39,6 +52,7 @@ export class ImportDataItem<WasPersisted extends boolean> {
             vorname,
             klasse,
             personalnummer,
+            validationErrors,
         );
     }
 }

@@ -1,0 +1,16 @@
+{
+    "entityName": "ServiceProvider",
+    "entities": [
+        {
+            "name": "itslearning",
+            "overrideId": "d12f5972-2391-4e9a-9e91-65a917fb4dd0",
+            "target": "URL",
+            "url": "https://itslearning.com/de",
+            "kategorie": "UNTERRICHT",
+            "logoMimeType": "image/png",
+            "logoBase64": "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABAQAAAAA3bvkkAAAACklEQVR4AWNgAAAAAgABc3UBGAAAAABJRU5ErkJggg==",
+            "providedOnSchulstrukturknoten": 111,
+            "requires2fa": false
+        }
+    ]
+}

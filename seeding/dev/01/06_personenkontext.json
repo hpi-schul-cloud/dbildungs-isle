@@ -100,16 +100,6 @@
         {
             "personId": 15,
             "organisationId": 5,
-            "rolleId": 2
-        },
-        {
-            "personId": 15,
-            "organisationId": 6,
-            "rolleId": 2
-        },
-        {
-            "personId": 15,
-            "organisationId": 5,
             "rolleId": 4
         },
         {
@@ -140,7 +130,12 @@
         {
             "personId": 20,
             "organisationId": 0,
-            "rolleId": 5
+            "rolleId": 101
+        },
+        {
+            "personId": 7777777,
+            "organisationId": 0,
+            "rolleId": 100
         }
     ]
 }

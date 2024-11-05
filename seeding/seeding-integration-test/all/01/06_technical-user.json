@@ -1,0 +1,13 @@
+{
+    "entityName": "TechnicalUser",
+    "entities": [
+        {
+            "id": 7777777,
+            "username": "cron-runner",
+            "password": "cron-runner",
+            "vorname": "cron-runner",
+            "familienname": "cron-runner",
+            "keycloakUserId": "abc"
+        }
+    ]
+}

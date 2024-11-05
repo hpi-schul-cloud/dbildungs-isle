@@ -12,6 +12,9 @@ import { PersonPermissions } from '../../authentication/domain/person-permission
 import { Response } from 'express';
 import { ImportTextFileCreationError } from '../domain/import-text-file-creation.error.js';
 import { ImportvorgangByIdBodyParams } from './importvorgang-by-id.body.params.js';
+import { HttpException } from '@nestjs/common';
+import { MissingPermissionsError } from '../../../shared/error/missing-permissions.error.js';
+import { ImportvorgangByIdParams } from './importvorgang-by-id.params.js';
 
 describe('Import API with mocked ImportWorkflow', () => {
     let sut: ImportController;
@@ -69,6 +72,27 @@ describe('Import API with mocked ImportWorkflow', () => {
                 await expect(sut.executeImport(params, responseMock, personpermissionsMock)).rejects.toThrow(
                     new ImportTextFileCreationError(['Reason']),
                 );
+            });
+        });
+    });
+
+    describe('/DELETE cancel the import transaction', () => {
+        describe('if the admin does not rights to import', () => {
+            it('should throw an HttpExcetion', async () => {
+                const params: ImportvorgangByIdParams = {
+                    importvorgangId: faker.string.uuid(),
+                };
+
+                const personpermissionsMock: DeepMocked<PersonPermissions> = createMock();
+                personpermissionsMock.hasSystemrechteAtRootOrganisation.mockResolvedValueOnce(false);
+
+                ImportWorkflowMock.cancelImport.mockResolvedValueOnce({
+                    ok: false,
+                    error: new MissingPermissionsError('Unauthorized to import data'),
+                });
+                importWorkflowFactoryMock.createNew.mockReturnValueOnce(ImportWorkflowMock);
+
+                await expect(sut.deleteImportTransaction(params, personpermissionsMock)).rejects.toThrow(HttpException);
             });
         });
     });

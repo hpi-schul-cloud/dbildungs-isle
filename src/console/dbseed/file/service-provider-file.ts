@@ -7,6 +7,8 @@ import {
 export class ServiceProviderFile {
     public id!: number;
 
+    public overrideId?: string;
+
     public name!: string;
 
     public target!: ServiceProviderTarget;

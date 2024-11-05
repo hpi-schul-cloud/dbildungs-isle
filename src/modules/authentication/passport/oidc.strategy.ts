@@ -9,6 +9,27 @@ import { PassportUser } from '../types/user.js';
 import { PersonRepository } from '../../person/persistence/person.repository.js';
 import { Person } from '../../person/domain/person.js';
 import { KeycloakUserNotFoundError } from '../domain/keycloak-user-not-found.error.js';
+import { Request } from 'express';
+import { JwtPayload, decode } from 'jsonwebtoken';
+
+export interface CustomJwtPayload extends JwtPayload {
+    acr: StepUpLevel;
+}
+
+export enum StepUpLevel {
+    NONE = 'none',
+    SILVER = 'silver',
+    GOLD = 'gold',
+}
+
+export function extractStepUpLevelFromJWT(jwt: string | undefined): StepUpLevel {
+    if (!jwt) {
+        return StepUpLevel.NONE;
+    }
+
+    const decoded: CustomJwtPayload | null = decode(jwt) as CustomJwtPayload | null;
+    return decoded?.acr ?? StepUpLevel.NONE;
+}
 
 @Injectable()
 export class OpenIdConnectStrategy extends PassportStrategy(Strategy, 'oidc') {
@@ -23,11 +44,22 @@ export class OpenIdConnectStrategy extends PassportStrategy(Strategy, 'oidc') {
             client,
             usePKCE: true,
             params: { redirect_uri: frontendConfig.OIDC_CALLBACK_URL },
-            passReqToCallback: false,
+            passReqToCallback: true,
         } satisfies StrategyOptions);
     }
 
-    public async validate(tokenset: TokenSet): Promise<AuthorizationParameters & PassportUser> {
+    public override authenticate(req: Request): void {
+        const requiredStepUpLevel: string =
+            (req.query['requiredStepUpLevel'] as StepUpLevel | undefined) ?? StepUpLevel.SILVER;
+
+        const options: { acr_values: string } = {
+            acr_values: requiredStepUpLevel,
+        };
+
+        super.authenticate(req, options);
+    }
+
+    public async validate(req: Request, tokenset: TokenSet): Promise<AuthorizationParameters & PassportUser> {
         let userinfo: UserinfoResponse;
         let person: Option<Person<true>>;
 
@@ -56,6 +88,7 @@ export class OpenIdConnectStrategy extends PassportStrategy(Strategy, 'oidc') {
             refresh_token: refreshToken,
             userinfo: userinfo,
             personPermissions: () => Promise.reject(),
+            redirect_uri: req.session?.redirectUrl,
         };
         return user;
     }

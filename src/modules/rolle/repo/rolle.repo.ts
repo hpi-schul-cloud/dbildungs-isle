@@ -296,13 +296,11 @@ export class RolleRepo {
             return authorizedRoleResult.error;
         }
         //Specifications
-        {
-            if (
-                isAlreadyAssigned &&
-                (merkmale.length > 0 || merkmale.length < authorizedRoleResult.value.merkmale.length)
-            ) {
-                return new UpdateMerkmaleError();
-            }
+        if (
+            isAlreadyAssigned &&
+            (merkmale.length > 0 || merkmale.length < authorizedRoleResult.value.merkmale.length)
+        ) {
+            return new UpdateMerkmaleError();
         }
 
         const authorizedRole: Rolle<true> = authorizedRoleResult.value;
@@ -356,7 +354,7 @@ export class RolleRepo {
         return;
     }
 
-    private async create(rolle: Rolle<false>): Promise<Rolle<true>> {
+    public async create(rolle: Rolle<false>): Promise<Rolle<true>> {
         const rolleEntity: RolleEntity = this.em.create(RolleEntity, mapAggregateToData(rolle));
 
         await this.em.persistAndFlush(rolleEntity);

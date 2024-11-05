@@ -506,6 +506,7 @@ describe('Email Event Handler', () => {
                 faker.person.firstName(),
                 faker.person.lastName(),
                 faker.internet.userName(),
+                faker.internet.userName(),
             );
             personenkontext = createMock<Personenkontext<true>>({ rolleId: fakeRolleId });
             rolle = createMock<Rolle<true>>({ id: fakeRolleId });
@@ -681,13 +682,15 @@ describe('Email Event Handler', () => {
 
     describe('handlePersonDeletedEvent', () => {
         let personId: string;
+        let referrer: string;
         let emailAddress: string;
         let event: PersonDeletedEvent;
 
         beforeEach(() => {
             personId = faker.string.uuid();
+            referrer = faker.string.alpha();
             emailAddress = faker.internet.email();
-            event = new PersonDeletedEvent(personId, emailAddress);
+            event = new PersonDeletedEvent(personId, referrer, emailAddress);
         });
 
         describe('when deletion is successful', () => {
@@ -700,7 +703,7 @@ describe('Email Event Handler', () => {
 
         describe('when event does not provide email-address', () => {
             it('should log info about that', async () => {
-                event = new PersonDeletedEvent(personId, undefined);
+                event = new PersonDeletedEvent(personId, referrer, undefined);
                 await emailEventHandler.handlePersonDeletedEvent(event);
 
                 expect(loggerMock.info).toHaveBeenCalledWith(
@@ -825,7 +828,7 @@ describe('Email Event Handler', () => {
             it('should log error', async () => {
                 emailRepoMock.findRequestedByPerson.mockResolvedValueOnce(undefined);
 
-                await emailEventHandler.handleOxUserAttributesChangedEvent(event);
+                await emailEventHandler.handleOxMetadataInKeycloakChangedEvent(event);
 
                 expect(loggerMock.error).toHaveBeenLastCalledWith(
                     `Cannot find requested email-address for person with personId:${event.personId}, enabling not possible`,
@@ -846,7 +849,7 @@ describe('Email Event Handler', () => {
 
                 emailRepoMock.save.mockResolvedValueOnce(createMock<EmailAddress<true>>({}));
 
-                await emailEventHandler.handleOxUserAttributesChangedEvent(event);
+                await emailEventHandler.handleOxMetadataInKeycloakChangedEvent(event);
 
                 expect(loggerMock.warning).toHaveBeenCalledWith(
                     `Mismatch between requested(${emailAddress}) and received(${event.emailAddress}) address from OX`,
@@ -869,7 +872,7 @@ describe('Email Event Handler', () => {
 
                 emailRepoMock.save.mockResolvedValueOnce(new EntityCouldNotBeUpdated('EmailAddress', '1'));
 
-                await emailEventHandler.handleOxUserAttributesChangedEvent(event);
+                await emailEventHandler.handleOxMetadataInKeycloakChangedEvent(event);
 
                 expect(loggerMock.error).toHaveBeenLastCalledWith(
                     `Could not enable email, error is EmailAddress with ID 1 could not be updated`,
@@ -888,7 +891,7 @@ describe('Email Event Handler', () => {
 
                 emailRepoMock.save.mockResolvedValueOnce(emailMock);
 
-                await emailEventHandler.handleOxUserAttributesChangedEvent(event);
+                await emailEventHandler.handleOxMetadataInKeycloakChangedEvent(event);
 
                 expect(loggerMock.info).toHaveBeenLastCalledWith(
                     `Changed email-address:${fakeEmail} from REQUESTED to ENABLED`,

@@ -6,6 +6,7 @@ import { DbiamImportError, ImportErrorI18nTypes } from './dbiam-import.error.js'
 import { ImportCSVFileParsingError } from '../domain/import-csv-file-parsing.error.js';
 import { ImportTextFileCreationError } from '../domain/import-text-file-creation.error.js';
 import { ImportCSVFileEmptyError } from '../domain/import-csv-file-empty.error.js';
+import { ImportNurLernAnSchuleUndKlasseError } from '../domain/import-nur-lern-an-schule-und-klasse.error.js';
 
 @Catch(ImportDomainError)
 export class ImportExceptionFilter implements ExceptionFilter<ImportDomainError> {
@@ -29,6 +30,13 @@ export class ImportExceptionFilter implements ExceptionFilter<ImportDomainError>
             new DbiamImportError({
                 code: 500,
                 i18nKey: ImportErrorI18nTypes.IMPORT_TEXT_FILE_CREATION_ERROR,
+            }),
+        ],
+        [
+            ImportNurLernAnSchuleUndKlasseError.name,
+            new DbiamImportError({
+                code: 400,
+                i18nKey: ImportErrorI18nTypes.IMPORT_NUR_LERN_AN_SCHULE_ERROR,
             }),
         ],
     ]);

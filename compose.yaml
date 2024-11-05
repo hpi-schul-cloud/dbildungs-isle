@@ -14,6 +14,10 @@ services:
     environment:
       - KEYCLOAK_ADMIN=admin
       - KEYCLOAK_ADMIN_PASSWORD=admin
+      - PI_ADMIN_USER=admin
+      - PI_ADMIN_PASSWORD=admin
+      - PI_REALM=defrealm
+      - PI_BASE_URL=http://privacy-idea:8080
     entrypoint: '/opt/keycloak/bin/kc.sh start-dev'
     command:
       # Internal DB but still persisted in container
@@ -37,6 +41,7 @@ services:
     ports:
       - 6379:6379
     command: redis-server --requirepass password
+
   backend:
     profiles:
       - full-backend
@@ -121,13 +126,17 @@ services:
       - PI_DB_PASSWORD=password
       - PI_DB_VENDOR=mysql
       - PI_SUPERUSER_REALM="administrator,api"
-      - PI_PAGE_TITLE=pivacyIDEA
+      - PI_PAGE_TITLE=Schulportal SH
       - PI_SECRET_KEY=secret
       - PI_PEPPER=pepper
       - PI_LOGLEVEL=DEBUG
     depends_on:
       maria-db:
         condition: service_healthy
+    volumes:
+      - ./privacyidea/encfile:/data/privacyidea/keys/encfile
+      - ./privacyidea/dummy_private.pem:/data/privacyidea/keys/private.pem
+      - ./privacyidea/dummy_public.pem:/data/privacyidea/keys/public.pem
 
   maria-db:
     image: mariadb:latest
@@ -147,7 +156,7 @@ services:
       retries: 3
     volumes:
       - mariadb:/var/lib/mysql
-      - ./dump.sql:/docker-entrypoint-initdb.d/dump.sql
+      - ./privacyidea/dump.sql:/docker-entrypoint-initdb.d/dump.sql
 
 volumes:
   db-data:

@@ -38,6 +38,13 @@ export class KeycloakEventHandler {
                     event.primaryEmail,
                 ),
             );
+        } else {
+            this.logger.error(
+                `Updating user in Keycloak FAILED for OxUserChangedEvent, personId:${event.personId}, userId:${event.oxUserId}, userName:${event.oxUserName} contextId:${event.oxContextId}, contextName:${event.oxContextName}, primaryEmail:${event.primaryEmail}`,
+            );
+            this.logger.error(
+                `OxMetadataInKeycloakChangedEvent will NOT be published, email-address for personId:${event.personId} in REQUESTED status will NOT be ENABLED!`,
+            );
         }
     }
 }

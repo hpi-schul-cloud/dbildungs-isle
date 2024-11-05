@@ -1,6 +1,6 @@
 {
     "name": "dbildungs-iam-server",
-    "version": "0.0.1",
+    "version": "0.7.0",
     "description": "",
     "author": "Dataport AöR",
     "private": true,
@@ -28,7 +28,8 @@
         "db:migration-init": "npm run start:console -- db migration-init",
         "db:migration-create": "npm run start:console -- db migration-create",
         "db:migration-apply": "npm run start:console -- db migration-apply",
-        "setup": "npm run db:migration-apply && npm run db:seed dev",
+        "keycloak:update-clients": "npm run start:console -- keycloak update-clients dev",
+        "setup": "npm run db:migration-apply && npm run keycloak:update-clients && npm run db:seed dev",
         "db:seedingdata-generate": "npm run start:console -- db seedingdata-generate ./seeding/dev/01/ numberOfSchools=50 classesPerSchool=12"
     },
     "dependencies": {
@@ -71,9 +72,10 @@
         "papaparse": "^5.4.1",
         "passport": "^0.7.0",
         "passport-jwt": "^4.0.1",
-        "redis": "^4.6.13",
+        "redis": "^4.7.0",
         "reflect-metadata": "^0.1.14",
         "rxjs": "^7.2.0",
+        "uuid": "^10.0.0",
         "winston": "^3.13.0"
     },
     "devDependencies": {

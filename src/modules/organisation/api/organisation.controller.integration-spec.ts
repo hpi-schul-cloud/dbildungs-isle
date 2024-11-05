@@ -33,6 +33,7 @@ import { Person } from '../../person/domain/person.js';
 import { DomainError } from '../../../shared/error/domain.error.js';
 import { PersonFactory } from '../../person/domain/person.factory.js';
 import { KeycloakConfigModule } from '../../keycloak-administration/keycloak-config.module.js';
+import { generatePassword } from '../../../shared/util/password-generator.js';
 
 describe('Organisation API', () => {
     let app: INestApplication;
@@ -166,7 +167,7 @@ describe('Organisation API', () => {
                     vorname: faker.person.firstName(),
                     familienname: faker.person.lastName(),
                     username: faker.internet.userName(),
-                    password: faker.string.alphanumeric(8),
+                    password: generatePassword(),
                 });
                 if (personData instanceof DomainError) {
                     throw personData;

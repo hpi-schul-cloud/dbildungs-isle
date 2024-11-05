@@ -62,7 +62,7 @@ export class DBiamPersonenkontextRepoInternal {
         }
     }
 
-    private async create(personenKontext: Personenkontext<false>): Promise<Personenkontext<true>> {
+    public async create(personenKontext: Personenkontext<false>): Promise<Personenkontext<true>> {
         const personenKontextEntity: PersonenkontextEntity = this.em.create(
             PersonenkontextEntity,
             mapAggregateToData(personenKontext),

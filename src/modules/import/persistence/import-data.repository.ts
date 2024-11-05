@@ -11,6 +11,7 @@ export function mapAggregateToData(importDataItem: ImportDataItem<boolean>): Req
         vorname: importDataItem.vorname,
         klasse: importDataItem.klasse,
         personalnummer: importDataItem.personalnummer,
+        validationErrors: importDataItem.validationErrors,
     };
 }
 
@@ -24,6 +25,7 @@ export function mapEntityToAggregate(entity: ImportDataItemEntity): ImportDataIt
         entity.vorname,
         entity.klasse,
         entity.personalnummer,
+        entity.validationErrors,
     );
 }
 @Injectable()
@@ -56,6 +58,7 @@ export class ImportDataRepository {
     }
 
     public async deleteByImportVorgangId(importvorgangId: string): Promise<void> {
+        //Optimierung: check if there are any items to delete when ImportVorgang will be saved in his own table
         await this.em.nativeDelete(ImportDataItemEntity, { importvorgangId: importvorgangId });
     }
 }

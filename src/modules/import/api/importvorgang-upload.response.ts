@@ -1,4 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { ImportDataItem } from '../domain/import-data-item.js';
+import { ImportDataItemResponse } from './import-data-item.response.js';
 
 export class ImportUploadResponse {
     @ApiProperty({
@@ -11,8 +13,31 @@ export class ImportUploadResponse {
     })
     public isValid: boolean;
 
-    public constructor(importvorgangId: string, isValid: boolean) {
+    @ApiProperty({
+        description: 'The total number of data items in the CSV file.',
+    })
+    public totalImportDataItems: number;
+
+    @ApiProperty({
+        description: 'The total number of data items in the CSV file that are invalid.',
+    })
+    public totalInvalidImportDataItems: number;
+
+    @ApiProperty({ type: ImportDataItemResponse, isArray: true })
+    public invalidImportDataItems: ImportDataItemResponse[];
+
+    public constructor(
+        importvorgangId: string,
+        isValid: boolean,
+        totalImportDataItems: number,
+        importDataItems: ImportDataItem<false>[],
+    ) {
         this.importvorgangId = importvorgangId;
         this.isValid = isValid;
+        this.totalImportDataItems = totalImportDataItems;
+        this.totalInvalidImportDataItems = importDataItems.length;
+        this.invalidImportDataItems = importDataItems.map(
+            (importDataItem: ImportDataItem<false>) => new ImportDataItemResponse(importDataItem),
+        );
     }
 }

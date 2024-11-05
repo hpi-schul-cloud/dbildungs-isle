@@ -121,6 +121,7 @@ export class DbSeedConsole extends CommandRunner {
     }
 
     private async processEntityFile(entityFileName: string, directory: string, subDir: string): Promise<void> {
+        this.logger.info(`Processing file ${directory}/${subDir}/${entityFileName}`);
         const fileContentAsStr: string = fs.readFileSync(`./seeding/${directory}/${subDir}/${entityFileName}`, 'utf-8');
         const seedFile: SeedFile = JSON.parse(fileContentAsStr) as SeedFile;
         this.logger.info(`Processing ${seedFile.entityName} from ${directory}/${subDir}/${entityFileName}`);
@@ -142,6 +143,9 @@ export class DbSeedConsole extends CommandRunner {
                 break;
             case 'Personenkontext':
                 await this.dbSeedService.seedPersonenkontext(fileContentAsStr);
+                break;
+            case 'TechnicalUser':
+                await this.dbSeedService.seedTechnicalUser(fileContentAsStr);
                 break;
             default:
                 throw new Error(`Unsupported EntityName / EntityType: ${seedFile.entityName}`);

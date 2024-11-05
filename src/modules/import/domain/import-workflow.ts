@@ -5,7 +5,7 @@ import { DomainError } from '../../../shared/error/domain.error.js';
 import { EntityNotFoundError } from '../../../shared/error/entity-not-found.error.js';
 import { OrganisationRepository } from '../../organisation/persistence/organisation.repository.js';
 import { Organisation } from '../../organisation/domain/organisation.js';
-import { RollenSystemRecht } from '../../rolle/domain/rolle.enums.js';
+import { RollenArt, RollenSystemRecht } from '../../rolle/domain/rolle.enums.js';
 import { MissingPermissionsError } from '../../../shared/error/missing-permissions.error.js';
 import { RolleNurAnPassendeOrganisationError } from '../../personenkontext/specification/error/rolle-nur-an-passende-organisation.js';
 import { OrganisationMatchesRollenart } from '../../personenkontext/specification/organisation-matches-rollenart.js';
@@ -24,10 +24,17 @@ import { OrganisationsTyp } from '../../organisation/domain/organisation.enums.j
 import { Personenkontext } from '../../personenkontext/domain/personenkontext.js';
 import { ImportTextFileCreationError } from './import-text-file-creation.error.js';
 import { ImportCSVFileEmptyError } from './import-csv-file-empty.error.js';
+import { ImportNurLernAnSchuleUndKlasseError } from './import-nur-lern-an-schule-und-klasse.error.js';
+import { ImportDomainErrorI18nTypes } from './import-i18n-errors.js';
+import { validateSync } from 'class-validator';
+import { plainToInstance } from 'class-transformer';
 
 export type ImportUploadResultFields = {
     importVorgangId: string;
     isValid: boolean;
+    totalImportDataItems: number;
+    totalInvalidImportDataItems: number;
+    invalidImportDataItems: ImportDataItem<false>[];
 };
 export type OrganisationByIdAndName = Pick<Organisation<true>, 'id' | 'name'>;
 export type TextFilePersonFields = {
@@ -73,7 +80,6 @@ export class ImportWorkflow {
     }
 
     // Check References and Permissions
-    // Parse data (ToDO => next ticket: validate every data item)
     public async validateImport(
         file: Express.Multer.File,
         permissions: PersonPermissions,
@@ -92,37 +98,90 @@ export class ImportWorkflow {
         }
 
         //Parse Data
+        let parsedDataItems: CSVImportDataItemDTO[] = [];
         try {
-            //Optimierungsidee: 50 ImportDataItems per call direkt einmail parsen
             const parsedData: DomainError | ParseResult<CSVImportDataItemDTO> = await this.parseCSVFile(file);
-
             if (parsedData instanceof DomainError) {
                 return parsedData;
             }
 
-            //Datensätze persistieren
-            //TODO: 50 ImportDataItems per call direkt einmail persistieren
-            const importVorgangId: string = faker.string.uuid();
-            const promises: Promise<ImportDataItem<true>>[] = parsedData.data.map((value: CSVImportDataItemDTO) =>
-                this.importDataRepository.save(
-                    ImportDataItem.createNew(
-                        importVorgangId,
-                        value.nachname,
-                        value.vorname,
-                        value.klasse,
-                        value.personalnummer,
-                    ),
-                ),
-            );
-            await Promise.all(promises);
+            if (parsedData.errors.length > 0) {
+                return new ImportCSVFileParsingError(parsedData.errors);
+            }
 
-            return {
-                importVorgangId,
-                isValid: parsedData.errors.length === 0,
-            };
+            parsedDataItems = plainToInstance(CSVImportDataItemDTO, parsedData.data);
         } catch (error) {
             return new ImportCSVFileParsingError([error]);
         }
+
+        //Optimierung: private methode gibt eine map zurück
+        const klassenByIDandName: OrganisationByIdAndName[] = [];
+        const klassen: Organisation<true>[] = await this.organisationRepository.findChildOrgasForIds([
+            this.selectedOrganisationId,
+        ]);
+        klassen.forEach((value: Organisation<true>) => {
+            if (value.typ === OrganisationsTyp.KLASSE) {
+                klassenByIDandName.push({
+                    id: value.id,
+                    name: value.name,
+                });
+            }
+        });
+
+        const importVorgangId: string = faker.string.uuid();
+        const invalidImportDataItems: ImportDataItem<false>[] = [];
+
+        const promises: Promise<ImportDataItem<true>>[] = parsedDataItems.map((value: CSVImportDataItemDTO) => {
+            const importDataItemErrors: string[] = [];
+
+            // Validate object
+            for (const error of validateSync(value, { forbidUnknownValues: true })) {
+                if (error.constraints) {
+                    for (const message of Object.values(error.constraints)) {
+                        importDataItemErrors.push(message);
+                    }
+                }
+            }
+
+            if (value.klasse) {
+                const klasse: OrganisationByIdAndName | undefined = klassenByIDandName.find(
+                    (organisationByIdAndName: OrganisationByIdAndName) =>
+                        organisationByIdAndName.name?.toLowerCase() === value.klasse?.toLowerCase(),
+                );
+
+                //Only check if the Klasse exists
+                //Do not need to check if the Klasse can be assigned to rolle for now, because we only impport RollenArt=LERN
+                if (!klasse) {
+                    importDataItemErrors.push(ImportDomainErrorI18nTypes.IMPORT_DATA_ITEM_KLASSE_NOT_FOUND);
+                }
+            }
+
+            const importDataItem: ImportDataItem<false> = ImportDataItem.createNew(
+                importVorgangId,
+                value.nachname,
+                value.vorname,
+                value.klasse,
+                value.personalnummer,
+                importDataItemErrors,
+            );
+
+            if (importDataItemErrors.length > 0) {
+                invalidImportDataItems.push(importDataItem);
+            }
+
+            return this.importDataRepository.save(importDataItem);
+        });
+        //Datensätze persistieren
+        //TODO: 50 ImportDataItems per call direkt einmail persistieren
+        await Promise.all(promises);
+
+        return {
+            importVorgangId,
+            isValid: invalidImportDataItems.length === 0,
+            totalImportDataItems: parsedDataItems.length,
+            totalInvalidImportDataItems: invalidImportDataItems.length,
+            invalidImportDataItems,
+        };
     }
 
     public async executeImport(importvorgangId: string, permissions: PersonPermissions): Promise<Result<Buffer>> {
@@ -187,6 +246,8 @@ export class ImportWorkflow {
                 },
             ];
 
+            // TODO: Refactor this. We want to save the persons in bulk, and not get bogged down with checks.
+            // We should not use the CreationService here
             const savedPersonWithPersonenkontext: DomainError | PersonPersonenkontext =
                 await this.personenkontextCreationService.createPersonWithPersonenkontexte(
                     permissions,
@@ -233,6 +294,22 @@ export class ImportWorkflow {
         return importvorgangId + this.TEXT_FILENAME_NAME;
     }
 
+    public async cancelImport(importvorgangId: string, permissions: PersonPermissions): Promise<Result<void>> {
+        const permissionCheckError: Option<DomainError> = await this.checkPermissions(permissions);
+        if (permissionCheckError) {
+            return {
+                ok: false,
+                error: permissionCheckError,
+            };
+        }
+
+        await this.importDataRepository.deleteByImportVorgangId(importvorgangId);
+        return {
+            ok: true,
+            value: undefined,
+        };
+    }
+
     //Optimierung: CheckReferences auslagern?
     private async checkReferences(organisationId: string, rolleId: string): Promise<Option<DomainError>> {
         const [orga, rolle]: [Option<Organisation<true>>, Option<Rolle<true>>] = await Promise.all([
@@ -247,6 +324,12 @@ export class ImportWorkflow {
         if (!rolle) {
             return new EntityNotFoundError('Rolle', rolleId);
         }
+
+        //Check if the rolle is rollenart LERN (for now we can only import LERN)
+        if (rolle.rollenart !== RollenArt.LERN) {
+            return new ImportNurLernAnSchuleUndKlasseError();
+        }
+
         // Can rolle be assigned at target orga
         const canAssignRolle: boolean = await rolle.canBeAssignedToOrga(organisationId);
         if (!canAssignRolle) {
@@ -275,7 +358,7 @@ export class ImportWorkflow {
     }
 
     private async parseCSVFile(file: Express.Multer.File): Promise<DomainError | ParseResult<CSVImportDataItemDTO>> {
-        const csvContent: string = file.buffer.toString();
+        const csvContent: string = file.buffer.toString().replace(/['"]+/g, '');
         if (!csvContent) {
             return new ImportCSVFileEmptyError();
         }
@@ -287,8 +370,10 @@ export class ImportWorkflow {
                 ) => void,
             ) => {
                 Papa.parse<CSVImportDataItemDTO>(csvContent, {
+                    delimiter: ';',
+                    delimitersToGuess: [';'],
                     header: true,
-                    skipEmptyLines: false,
+                    skipEmptyLines: true,
                     transformHeader: (header: string) => header.toLowerCase().trim(),
                     transform: (value: string): string => {
                         return value.trim();

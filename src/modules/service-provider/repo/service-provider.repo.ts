@@ -108,7 +108,7 @@ export class ServiceProviderRepo {
         }
     }
 
-    private async create(serviceProvider: ServiceProvider<false>): Promise<ServiceProvider<true>> {
+    public async create(serviceProvider: ServiceProvider<false>): Promise<ServiceProvider<true>> {
         const serviceProviderEntity: ServiceProviderEntity = this.em.create(
             ServiceProviderEntity,
             mapAggregateToData(serviceProvider),

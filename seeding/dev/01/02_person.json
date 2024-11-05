@@ -4,7 +4,7 @@
         {
             "id": 1,
             "username": "test",
-            "password": "test",
+            "password": "SPSHtest1!",
             "vorname": "test",
             "familienname": "test",
             "personalnummer": "6056356"
@@ -12,7 +12,7 @@
         {
             "id": 2,
             "username": "ssuperadmin",
-            "password": "test",
+            "password": "SPSHtest1!",
             "mandant": "023c68a8-83a8-487f-812e-e4662c9862e1",
             "stammorganisation": null,
             "vorname": "Susi",
@@ -30,49 +30,49 @@
         {
             "id": 3,
             "username": "mmustermann",
-            "password": "test",
+            "password": "SPSHtest1!",
             "vorname": "Manuell",
             "familienname": "Mustermann"
         },
         {
             "id": 4,
             "username": "smueller",
-            "password": "test",
+            "password": "SPSHtest1!",
             "vorname": "Sven",
             "familienname": "Müller"
         },
         {
             "id": 5,
             "username": "lmuellermeier",
-            "password": "test",
+            "password": "SPSHtest1!",
             "vorname": "Luise",
             "familienname": "Müller-Meier"
         },
         {
             "id": 6,
             "username": "yvonbreitenfelshohenroehr",
-            "password": "test",
+            "password": "SPSHtest1!",
             "vorname": "Yvonne",
             "familienname": "von Breitenfels-Hohenröhr"
         },
         {
             "id": 7,
             "username": "llaubenbichler",
-            "password": "test",
+            "password": "SPSHtest1!",
             "vorname": "Lennart",
             "familienname": "Laubenbichler"
         },
         {
             "id": 8,
             "username": "wwebtor",
-            "password": "test",
+            "password": "SPSHtest1!",
             "vorname": "Willi",
             "familienname": "Webtor"
         },
         {
             "id": 9,
             "username": "autotester",
-            "password": "autotester",
+            "password": "SPSHtest1!",
             "mandant": "023c68a8-83a8-487f-812e-e4662c9862e1",
             "stammorganisation": null,
             "vorname": "Anton",
@@ -90,77 +90,77 @@
         {
             "id": 10,
             "username": "schueler",
-            "password": "test",
+            "password": "SPSHtest1!",
             "vorname": "Sebastian",
             "familienname": "Chueler"
         },
         {
             "id": 11,
             "username": "streber",
-            "password": "test",
+            "password": "SPSHtest1!",
             "vorname": "Sofie",
             "familienname": "Treber"
         },
         {
             "id": 12,
             "username": "wweiss",
-            "password": "test",
+            "password": "SPSHtest1!",
             "vorname": "Walter",
             "familienname": "Weiss"
         },
         {
             "id": 13,
             "username": "jpinkmann",
-            "password": "test",
+            "password": "SPSHtest1!",
             "vorname": "Jesse",
             "familienname": "Pinkmann"
         },
         {
             "id": 14,
             "username": "kbuechner",
-            "password": "test",
+            "password": "SPSHtest1!",
             "vorname": "Klaus",
             "familienname": "Büchner"
         },
         {
             "id": 15,
             "username": "faltmann",
-            "password": "test",
+            "password": "SPSHtest1!",
             "vorname": "Fiete",
             "familienname": "Altmann"
         },
         {
             "id": 16,
             "username": "hkaiser",
-            "password": "test",
+            "password": "SPSHtest1!",
             "vorname": "Hanna",
             "familienname": "Kaiser"
         },
         {
             "id": 17,
             "username": "sbuesingpreuss",
-            "password": "test",
+            "password": "SPSHtest1!",
             "vorname": "Sönke",
             "familienname": "Büsing-Preuss"
         },
         {
             "id": 18,
             "username": "mclassen",
-            "password": "test",
+            "password": "SPSHtest1!",
             "vorname": "Mia",
             "familienname": "Claßen"
         },
         {
             "id": 19,
             "username": "hheinzmann",
-            "password": "test",
+            "password": "SPSHtest1!",
             "vorname": "Heinrich",
             "familienname": "Heinzmann"
         },
         {
             "id": 20,
             "username": "migration",
-            "password": "migration",
+            "password": "Migration1!",
             "vorname": "migration",
             "familienname": "migration",
             "personalnummer": "9999999"
