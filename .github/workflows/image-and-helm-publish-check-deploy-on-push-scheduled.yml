@@ -134,18 +134,6 @@ jobs:
       namespace: ${{ needs.create_branch_identifier.outputs.namespace_from_branch }}
     secrets: inherit
 
-  all_tests_successfull:
-    needs:
-      - deploy
-      - scan_helm
-      - codeql_analyze
-      - nest_lint
-      - tests_and_sonarcloud
-    runs-on: ubuntu-latest
-    steps:
-      - shell: bash
-        run: echo "All necessary Tests have been executed" 
-
   # On Delete
   create_branch_identifier_for_deletion:
     if: ${{ github.event_name == 'delete' && github.event.ref_type == 'branch' }}

@@ -17,6 +17,7 @@ import { DataProviderEntity } from '../../../persistence/data-provider.entity.js
 import { Geschlecht, Vertrauensstufe } from '../domain/person.enums.js';
 import { PersonenkontextEntity } from '../../personenkontext/persistence/personenkontext.entity.js';
 import { EmailAddressEntity } from '../../email/persistence/email-address.entity.js';
+import { UserLockEntity } from '../../keycloak-administration/entity/user-lock.entity.js';
 
 @Entity({ tableName: 'person' })
 export class PersonEntity extends TimestampedEntity {
@@ -148,4 +149,12 @@ export class PersonEntity extends TimestampedEntity {
     @AutoMap()
     @Property({ nullable: true, type: DateTimeType })
     public orgUnassignmentDate?: Date;
+
+    @OneToMany({
+        entity: () => UserLockEntity,
+        mappedBy: 'person',
+        cascade: [Cascade.REMOVE],
+        orphanRemoval: true,
+    })
+    public userLocks: Collection<UserLockEntity> = new Collection<UserLockEntity>(this);
 }

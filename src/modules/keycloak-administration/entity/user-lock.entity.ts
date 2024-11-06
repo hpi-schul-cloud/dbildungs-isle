@@ -1,10 +1,17 @@
-import { Entity, Property, ManyToOne, Rel } from '@mikro-orm/core';
+import { Entity, Property, ManyToOne, Rel, Cascade } from '@mikro-orm/core';
 import { TimestampedEntity } from '../../../persistence/timestamped.entity.js';
 import { PersonEntity } from '../../person/persistence/person.entity.js';
 
 @Entity({ tableName: 'user_lock' })
 export class UserLockEntity extends TimestampedEntity {
-    @ManyToOne({ entity: () => PersonEntity })
+    @ManyToOne({
+        entity: () => PersonEntity,
+        fieldName: 'person_id',
+        columnType: 'uuid',
+        cascade: [Cascade.REMOVE],
+        ref: true,
+        nullable: false,
+    })
     public readonly person!: Rel<PersonEntity>;
 
     @Property({ nullable: false })

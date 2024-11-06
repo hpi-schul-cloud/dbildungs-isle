@@ -15,7 +15,8 @@
                 "SCHULTRAEGER_VERWALTEN",
                 "PERSONEN_SOFORT_LOESCHEN",
                 "PERSON_SYNCHRONISIEREN",
-                "IMPORT_DURCHFUEHREN"
+                "IMPORT_DURCHFUEHREN",
+                "PERSONEN_ANLEGEN"
             ],
             "serviceProviderIds": [5, 8, 9, 10, 11]
         },
