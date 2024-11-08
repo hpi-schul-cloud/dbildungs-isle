@@ -12,6 +12,8 @@ import { EventService } from '../../eventbus/services/event.service.js';
 import { LdapPersonEntryChangedEvent } from '../../../shared/events/ldap-person-entry-changed.event.js';
 import { LdapEmailAddressError } from '../error/ldap-email-address.error.js';
 import { LdapEmailDomainError } from '../error/ldap-email-domain.error.js';
+import { LdapCreateLehrerError } from '../error/ldap-create-lehrer.error.js';
+import { LdapModifyEmailError } from '../error/ldap-modify-email.error.js';
 
 export type PersonData = {
     vorname: string;
@@ -36,6 +38,12 @@ export class LdapClientService {
     public static readonly MAIL_ALTERNATIVE_ADDRESS: string = 'mailAlternativeAddress';
 
     public static readonly DC_SCHULE_SH_DC_DE: string = 'dc=schule-sh,dc=de';
+
+    public static readonly GID_NUMBER: string = '100'; //because 0 to 99 are used for statically allocated user groups on Unix-systems
+
+    public static readonly UID_NUMBER: string = '100'; //to match the GID_NUMBER rule above and 0 is reserved for super-user
+
+    public static readonly HOME_DIRECTORY: string = 'none'; //highlight it's a dummy value
 
     private mutex: Mutex;
 
@@ -131,9 +139,13 @@ export class LdapClientService {
                 return { ok: true, value: person };
             }
             const entry: LdapPersonEntry = {
+                uid: lehrerUid,
+                uidNumber: LdapClientService.UID_NUMBER,
+                gidNumber: LdapClientService.GID_NUMBER,
+                homeDirectory: LdapClientService.HOME_DIRECTORY,
                 cn: person.vorname,
                 sn: person.familienname,
-                objectclass: ['inetOrgPerson', 'univentionMail'],
+                objectclass: ['inetOrgPerson', 'univentionMail', 'posixAccount'],
                 mailPrimaryAddress: mail ?? ``,
                 mailAlternativeAddress: mail ?? ``,
             };
@@ -143,10 +155,17 @@ export class LdapClientService {
             entry.entryUUID = person.ldapEntryUUID ?? person.id;
             controls.push(new Control(relaxRulesControlOID));
 
-            await client.add(lehrerUid, entry, controls);
-            this.logger.info(`LDAP: Successfully created lehrer ${lehrerUid}`);
+            try {
+                await client.add(lehrerUid, entry, controls);
+                this.logger.info(`LDAP: Successfully created lehrer ${lehrerUid}`);
 
-            return { ok: true, value: person };
+                return { ok: true, value: person };
+            } catch (err) {
+                const errMsg: string = JSON.stringify(err);
+                this.logger.error(`LDAP: Creating lehrer FAILED, uid:${lehrerUid}, errMsg:${errMsg}`);
+
+                return { ok: false, error: new LdapCreateLehrerError() };
+            }
         });
     }
 
@@ -268,31 +287,41 @@ export class LdapClientService {
             }
             const currentEmailAddress: string = currentEmailAddressString ?? newEmailAddress;
 
-            await client.modify(searchResult.searchEntries[0].dn, [
-                new Change({
-                    operation: 'replace',
-                    modification: new Attribute({
-                        type: LdapClientService.MAIL_PRIMARY_ADDRESS,
-                        values: [newEmailAddress],
+            try {
+                await client.modify(searchResult.searchEntries[0].dn, [
+                    new Change({
+                        operation: 'replace',
+                        modification: new Attribute({
+                            type: LdapClientService.MAIL_PRIMARY_ADDRESS,
+                            values: [newEmailAddress],
+                        }),
                     }),
-                }),
-            ]);
-            await client.modify(searchResult.searchEntries[0].dn, [
-                new Change({
-                    operation: 'replace',
-                    modification: new Attribute({
-                        type: LdapClientService.MAIL_ALTERNATIVE_ADDRESS,
-                        values: [currentEmailAddress],
+                ]);
+                await client.modify(searchResult.searchEntries[0].dn, [
+                    new Change({
+                        operation: 'replace',
+                        modification: new Attribute({
+                            type: LdapClientService.MAIL_ALTERNATIVE_ADDRESS,
+                            values: [currentEmailAddress],
+                        }),
                     }),
-                }),
-            ]);
-            this.logger.info(
-                `LDAP: Successfully modified mailPrimaryAddress and mailAlternativeAddress for personId:${personId}`,
-            );
+                ]);
+                this.logger.info(
+                    `LDAP: Successfully modified mailPrimaryAddress and mailAlternativeAddress for personId:${personId}`,
+                );
+                this.eventService.publish(
+                    new LdapPersonEntryChangedEvent(personId, newEmailAddress, currentEmailAddress),
+                );
 
-            this.eventService.publish(new LdapPersonEntryChangedEvent(personId, newEmailAddress, currentEmailAddress));
+                return { ok: true, value: personId };
+            } catch (err) {
+                const errMsg: string = JSON.stringify(err);
+                this.logger.error(
+                    `LDAP: Modifying mailPrimaryAddress and mailAlternativeAddress FAILED, errMsg:${errMsg}`,
+                );
 
-            return { ok: true, value: personId };
+                return { ok: false, error: new LdapModifyEmailError() };
+            }
         });
     }
 }
