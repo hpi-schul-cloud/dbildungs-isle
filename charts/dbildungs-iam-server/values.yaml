@@ -129,6 +129,7 @@ backend:
 redis-cluster:
   enabled: true
   persistence: 
+    enabled: false
     size: 4Gi
   image:
     registry: docker.io
