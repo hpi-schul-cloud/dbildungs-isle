@@ -1,5 +1,5 @@
 import { AutoMap } from '@automapper/classes';
-import { Entity, Enum, Index, Property } from '@mikro-orm/core';
+import { BigIntType, Entity, Enum, Index, Opt, Property } from '@mikro-orm/core';
 import { TimestampedEntity } from '../../../persistence/timestamped.entity.js';
 import { OrganisationsTyp, Traegerschaft } from '../domain/organisation.enums.js';
 
@@ -48,4 +48,7 @@ export class OrganisationEntity extends TimestampedEntity {
 
     @Property({ nullable: true })
     public emailAddress?: string;
+
+    @Property({ type: new BigIntType('number'), defaultRaw: '1', concurrencyCheck: true })
+    public version!: number & Opt;
 }

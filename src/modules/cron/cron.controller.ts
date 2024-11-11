@@ -23,6 +23,7 @@ import { PersonenkontextWorkflowFactory } from '../personenkontext/domain/person
 import { Personenkontext } from '../personenkontext/domain/personenkontext.js';
 import { PersonenkontexteUpdateError } from '../personenkontext/domain/error/personenkontexte-update.error.js';
 import { PersonID } from '../../shared/types/aggregate-ids.types.js';
+import { PersonLockOccasion } from '../person/domain/person.enums.js';
 
 @Controller({ path: 'cron' })
 @ApiBearerAuth()
@@ -56,8 +57,14 @@ export class CronController {
 
             const results: PromiseSettledResult<Result<void, DomainError>>[] = await Promise.allSettled(
                 personIdsTouple.map(([personId, keycloakUserId]: [PersonID, string]) => {
-                    const userLock: UserLock = UserLock.construct(personId, 'Cron', new Date(), new Date());
-                    return this.keyCloakUserService.updateKeycloakUserStatus(personId, keycloakUserId, false, userLock);
+                    const userLock: UserLock = UserLock.construct(
+                        personId,
+                        'Cron',
+                        undefined,
+                        PersonLockOccasion.KOPERS_GESPERRT,
+                        new Date(),
+                    );
+                    return this.keyCloakUserService.updateKeycloakUserStatus(personId, keycloakUserId, userLock, true);
                 }),
             );
 

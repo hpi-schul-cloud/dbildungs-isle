@@ -74,6 +74,7 @@ describe('Person', () => {
             expect(person).toBeDefined();
             expect(person).toBeInstanceOf(Person<true>);
             expect(person.revision).toEqual('5');
+            expect(person.userLock).toEqual([]);
         });
     });
 

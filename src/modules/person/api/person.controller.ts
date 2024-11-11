@@ -75,6 +75,7 @@ import { PersonMetadataBodyParams } from './person-metadata.body.param.js';
 import { EmailRepo } from '../../email/persistence/email.repo.js';
 import { PersonEmailResponse } from './person-email-response.js';
 import { UserLock } from '../../keycloak-administration/domain/user-lock.js';
+import { PersonLockOccasion } from '../domain/person.enums.js';
 
 @UseFilters(SchulConnexValidationErrorFilter, new AuthenticationExceptionFilter(), new PersonExceptionFilter())
 @ApiTags('personen')
@@ -444,14 +445,15 @@ export class PersonController {
             person: personId,
             locked_by: lockUserBodyParams.locked_by,
             locked_until: lockUserBodyParams.locked_until,
+            locked_occasion: PersonLockOccasion.MANUELL_GESPERRT,
             created_at: undefined,
         };
 
         const result: Result<void, DomainError> = await this.keycloakUserService.updateKeycloakUserStatus(
             personId,
             personResult.value.keycloakUserId,
-            !lockUserBodyParams.lock,
             userLock,
+            lockUserBodyParams.lock,
         );
         if (!result.ok) {
             throw new DownstreamKeycloakError(result.error.message, personId, [result.error.details]);

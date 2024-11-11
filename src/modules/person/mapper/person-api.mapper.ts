@@ -7,12 +7,14 @@ import { Person } from '../domain/person.js';
 import { CreatedPersonenkontextOrganisation } from '../../personenkontext/api/created-personenkontext-organisation.js';
 import { Rolle } from '../../rolle/domain/rolle.js';
 import { LoeschungResponse } from '../api/loeschung.response.js';
+import { PersonEmailResponse } from '../api/person-email-response.js';
 
 @Injectable()
 export class PersonApiMapper {
     public async mapToPersonInfoResponse(
         person: Person<true>,
         kontexte: Personenkontext<true>[],
+        email: PersonEmailResponse | undefined,
     ): Promise<PersonInfoResponse> {
         const personenkontexte: PersonenkontextResponse[] = await Promise.all(
             kontexte.map((kontext: Personenkontext<true>) => this.mapToPersonenkontextResponse(kontext)),
@@ -49,6 +51,7 @@ export class PersonApiMapper {
             },
             personenkontexte: personenkontexte,
             gruppen: [], // TODO: if the gruppe module is implemented, this should be filled out with EW-656 / EW-697
+            email,
         });
 
         return response;

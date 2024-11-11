@@ -18,6 +18,7 @@ import { NameRequiredForKlasseError } from '../specification/error/name-required
 import { NameForOrganisationWithTrailingSpaceError } from '../specification/error/name-with-trailing-space.error.js';
 import { KennungForOrganisationWithTrailingSpaceError } from '../specification/error/kennung-with-trailing-space.error.js';
 import { EmailAdressOnOrganisationTypError } from '../specification/error/email-adress-on-organisation-typ-error.js';
+import { OrganisationUpdateOutdatedError } from '../domain/orga-update-outdated.error.js';
 
 @Catch(OrganisationSpecificationError)
 export class OrganisationExceptionFilter implements ExceptionFilter<OrganisationSpecificationError> {
@@ -125,6 +126,13 @@ export class OrganisationExceptionFilter implements ExceptionFilter<Organisation
             new DbiamOrganisationError({
                 code: 400,
                 i18nKey: OrganisationSpecificationErrorI18nTypes.EMAIL_ADRESS_ON_ORGANISATION_TYP,
+            }),
+        ],
+        [
+            OrganisationUpdateOutdatedError.name,
+            new DbiamOrganisationError({
+                code: 400,
+                i18nKey: OrganisationSpecificationErrorI18nTypes.NEWER_VERSION_ORGANISATION,
             }),
         ],
     ]);

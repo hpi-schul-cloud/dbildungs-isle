@@ -121,6 +121,7 @@ describe('OrganisationController', () => {
                 faker.string.uuid(),
                 faker.date.past(),
                 faker.date.recent(),
+                faker.number.int(),
                 faker.string.uuid(),
                 faker.string.uuid(),
                 faker.string.numeric(),
@@ -134,6 +135,7 @@ describe('OrganisationController', () => {
                 faker.string.uuid(),
                 faker.date.past(),
                 faker.date.recent(),
+                faker.number.int(),
                 faker.string.uuid(),
                 faker.string.uuid(),
                 faker.string.numeric(),
@@ -165,6 +167,7 @@ describe('OrganisationController', () => {
                     faker.string.uuid(),
                     faker.date.past(),
                     faker.date.recent(),
+                    faker.number.int(),
                     faker.string.uuid(),
                     faker.string.uuid(),
                     faker.string.numeric(),
@@ -178,6 +181,7 @@ describe('OrganisationController', () => {
                     faker.string.uuid(),
                     faker.date.past(),
                     faker.date.recent(),
+                    faker.number.int(),
                     faker.string.uuid(),
                     faker.string.uuid(),
                     faker.string.numeric(),
@@ -210,6 +214,7 @@ describe('OrganisationController', () => {
                     faker.string.uuid(),
                     faker.date.past(),
                     faker.date.recent(),
+                    faker.number.int(),
                     faker.string.uuid(),
                     faker.string.uuid(),
                     faker.string.numeric(),
@@ -223,6 +228,7 @@ describe('OrganisationController', () => {
                     faker.string.uuid(),
                     faker.date.past(),
                     faker.date.recent(),
+                    faker.number.int(),
                     faker.string.uuid(),
                     faker.string.uuid(),
                     faker.string.numeric(),
@@ -425,6 +431,7 @@ describe('OrganisationController', () => {
                     faker.string.uuid(),
                     faker.date.past(),
                     faker.date.recent(),
+                    faker.number.int(),
                     faker.string.uuid(),
                     faker.string.uuid(),
                     faker.string.numeric(),
@@ -438,6 +445,7 @@ describe('OrganisationController', () => {
                     faker.string.uuid(),
                     faker.date.past(),
                     faker.date.recent(),
+                    faker.number.int(),
                     faker.string.uuid(),
                     faker.string.uuid(),
                     faker.string.numeric(),
@@ -485,6 +493,7 @@ describe('OrganisationController', () => {
                     id,
                     faker.date.past(),
                     faker.date.recent(),
+                    faker.number.int(),
                     faker.string.uuid(),
                     faker.string.uuid(),
                     faker.string.numeric(),
@@ -716,6 +725,7 @@ describe('OrganisationController', () => {
                     faker.string.uuid(),
                     faker.date.past(),
                     faker.date.recent(),
+                    faker.number.int(),
                     faker.string.uuid(),
                     faker.string.uuid(),
                     faker.string.numeric(),
@@ -730,6 +740,7 @@ describe('OrganisationController', () => {
                 };
                 const body: OrganisationByNameBodyParams = {
                     name: faker.company.name(),
+                    version: faker.number.int(),
                 };
 
                 organisationRepositoryMock.updateKlassenname.mockResolvedValueOnce(oeffentlich);
@@ -745,6 +756,7 @@ describe('OrganisationController', () => {
                 };
                 const body: OrganisationByNameBodyParams = {
                     name: faker.company.name(),
+                    version: faker.number.int(),
                 };
                 organisationRepositoryMock.updateKlassenname.mockResolvedValueOnce(new NameRequiredForKlasseError());
 
@@ -761,6 +773,7 @@ describe('OrganisationController', () => {
                 };
                 const body: OrganisationByNameBodyParams = {
                     name: faker.company.name(),
+                    version: faker.number.int(),
                 };
 
                 organisationRepositoryMock.updateKlassenname.mockResolvedValueOnce(new EntityNotFoundError());
@@ -779,6 +792,7 @@ describe('OrganisationController', () => {
                     faker.string.uuid(),
                     faker.date.past(),
                     faker.date.recent(),
+                    faker.number.int(),
                     faker.string.uuid(),
                     faker.string.uuid(),
                     faker.string.numeric(),
@@ -793,6 +807,7 @@ describe('OrganisationController', () => {
                 };
                 const body: OrganisationByNameBodyParams = {
                     name: faker.company.name(),
+                    version: faker.number.int(),
                 };
 
                 organisationRepositoryMock.updateKlassenname.mockResolvedValueOnce(oeffentlich);
@@ -808,6 +823,7 @@ describe('OrganisationController', () => {
                 };
                 const body: OrganisationByNameBodyParams = {
                     name: faker.company.name(),
+                    version: faker.number.int(),
                 };
                 organisationRepositoryMock.updateKlassenname.mockResolvedValueOnce(new NameRequiredForKlasseError());
 
@@ -824,6 +840,7 @@ describe('OrganisationController', () => {
                 };
                 const body: OrganisationByNameBodyParams = {
                     name: faker.company.name(),
+                    version: faker.number.int(),
                 };
 
                 organisationRepositoryMock.updateKlassenname.mockResolvedValueOnce(new EntityNotFoundError());

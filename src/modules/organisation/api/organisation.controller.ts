@@ -445,6 +445,7 @@ export class OrganisationController {
         const result: DomainError | Organisation<true> = await this.organisationRepository.updateKlassenname(
             params.organisationId,
             body.name,
+            body.version,
         );
 
         if (result instanceof DomainError) {

@@ -202,8 +202,8 @@
             "MIGRATION_DURCHFUEHREN",
             "PERSON_SYNCHRONISIEREN",
             "CRON_DURCHFUEHREN",
-            "IMPORT_DURCHFUEHREN",
-            "PERSONEN_ANLEGEN"
+            "PERSONEN_ANLEGEN",
+            "IMPORT_DURCHFUEHREN"
           ]
         },
         "service_provider_target_enum": {
@@ -417,8 +417,8 @@
             "MIGRATION_DURCHFUEHREN",
             "PERSON_SYNCHRONISIEREN",
             "CRON_DURCHFUEHREN",
-            "IMPORT_DURCHFUEHREN",
-            "PERSONEN_ANLEGEN"
+            "PERSONEN_ANLEGEN",
+            "IMPORT_DURCHFUEHREN"
           ]
         },
         "service_provider_target_enum": {
@@ -654,8 +654,8 @@
             "MIGRATION_DURCHFUEHREN",
             "PERSON_SYNCHRONISIEREN",
             "CRON_DURCHFUEHREN",
-            "IMPORT_DURCHFUEHREN",
-            "PERSONEN_ANLEGEN"
+            "PERSONEN_ANLEGEN",
+            "IMPORT_DURCHFUEHREN"
           ]
         },
         "service_provider_target_enum": {
@@ -883,8 +883,8 @@
             "MIGRATION_DURCHFUEHREN",
             "PERSON_SYNCHRONISIEREN",
             "CRON_DURCHFUEHREN",
-            "IMPORT_DURCHFUEHREN",
-            "PERSONEN_ANLEGEN"
+            "PERSONEN_ANLEGEN",
+            "IMPORT_DURCHFUEHREN"
           ]
         },
         "service_provider_target_enum": {
@@ -1104,8 +1104,8 @@
             "MIGRATION_DURCHFUEHREN",
             "PERSON_SYNCHRONISIEREN",
             "CRON_DURCHFUEHREN",
-            "IMPORT_DURCHFUEHREN",
-            "PERSONEN_ANLEGEN"
+            "PERSONEN_ANLEGEN",
+            "IMPORT_DURCHFUEHREN"
           ]
         },
         "service_provider_target_enum": {
@@ -1373,8 +1373,8 @@
             "MIGRATION_DURCHFUEHREN",
             "PERSON_SYNCHRONISIEREN",
             "CRON_DURCHFUEHREN",
-            "IMPORT_DURCHFUEHREN",
-            "PERSONEN_ANLEGEN"
+            "PERSONEN_ANLEGEN",
+            "IMPORT_DURCHFUEHREN"
           ]
         },
         "service_provider_target_enum": {
@@ -1548,6 +1548,16 @@
           "primary": false,
           "nullable": true,
           "mappedType": "string"
+        },
+        "version": {
+          "name": "version",
+          "type": "bigint",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "default": "1",
+          "mappedType": "bigint"
         }
       },
       "name": "organisation",
@@ -1718,8 +1728,8 @@
             "MIGRATION_DURCHFUEHREN",
             "PERSON_SYNCHRONISIEREN",
             "CRON_DURCHFUEHREN",
-            "IMPORT_DURCHFUEHREN",
-            "PERSONEN_ANLEGEN"
+            "PERSONEN_ANLEGEN",
+            "IMPORT_DURCHFUEHREN"
           ]
         },
         "service_provider_target_enum": {
@@ -2202,8 +2212,8 @@
             "MIGRATION_DURCHFUEHREN",
             "PERSON_SYNCHRONISIEREN",
             "CRON_DURCHFUEHREN",
-            "IMPORT_DURCHFUEHREN",
-            "PERSONEN_ANLEGEN"
+            "PERSONEN_ANLEGEN",
+            "IMPORT_DURCHFUEHREN"
           ]
         },
         "service_provider_target_enum": {
@@ -2485,8 +2495,8 @@
             "MIGRATION_DURCHFUEHREN",
             "PERSON_SYNCHRONISIEREN",
             "CRON_DURCHFUEHREN",
-            "IMPORT_DURCHFUEHREN",
-            "PERSONEN_ANLEGEN"
+            "PERSONEN_ANLEGEN",
+            "IMPORT_DURCHFUEHREN"
           ]
         },
         "service_provider_target_enum": {
@@ -2756,8 +2766,8 @@
             "MIGRATION_DURCHFUEHREN",
             "PERSON_SYNCHRONISIEREN",
             "CRON_DURCHFUEHREN",
-            "IMPORT_DURCHFUEHREN",
-            "PERSONEN_ANLEGEN"
+            "PERSONEN_ANLEGEN",
+            "IMPORT_DURCHFUEHREN"
           ]
         },
         "service_provider_target_enum": {
@@ -3138,8 +3148,8 @@
             "MIGRATION_DURCHFUEHREN",
             "PERSON_SYNCHRONISIEREN",
             "CRON_DURCHFUEHREN",
-            "IMPORT_DURCHFUEHREN",
-            "PERSONEN_ANLEGEN"
+            "PERSONEN_ANLEGEN",
+            "IMPORT_DURCHFUEHREN"
           ]
         },
         "service_provider_target_enum": {
@@ -3361,8 +3371,8 @@
             "MIGRATION_DURCHFUEHREN",
             "PERSON_SYNCHRONISIEREN",
             "CRON_DURCHFUEHREN",
-            "IMPORT_DURCHFUEHREN",
-            "PERSONEN_ANLEGEN"
+            "PERSONEN_ANLEGEN",
+            "IMPORT_DURCHFUEHREN"
           ]
         },
         "service_provider_target_enum": {
@@ -3425,8 +3435,8 @@
             "MIGRATION_DURCHFUEHREN",
             "PERSON_SYNCHRONISIEREN",
             "CRON_DURCHFUEHREN",
-            "IMPORT_DURCHFUEHREN",
-            "PERSONEN_ANLEGEN"
+            "PERSONEN_ANLEGEN",
+            "IMPORT_DURCHFUEHREN"
           ],
           "mappedType": "enum"
         }
@@ -3593,8 +3603,8 @@
             "MIGRATION_DURCHFUEHREN",
             "PERSON_SYNCHRONISIEREN",
             "CRON_DURCHFUEHREN",
-            "IMPORT_DURCHFUEHREN",
-            "PERSONEN_ANLEGEN"
+            "PERSONEN_ANLEGEN",
+            "IMPORT_DURCHFUEHREN"
           ]
         },
         "service_provider_target_enum": {
@@ -3904,8 +3914,8 @@
             "MIGRATION_DURCHFUEHREN",
             "PERSON_SYNCHRONISIEREN",
             "CRON_DURCHFUEHREN",
-            "IMPORT_DURCHFUEHREN",
-            "PERSONEN_ANLEGEN"
+            "PERSONEN_ANLEGEN",
+            "IMPORT_DURCHFUEHREN"
           ]
         },
         "service_provider_target_enum": {
@@ -4238,8 +4248,8 @@
             "MIGRATION_DURCHFUEHREN",
             "PERSON_SYNCHRONISIEREN",
             "CRON_DURCHFUEHREN",
-            "IMPORT_DURCHFUEHREN",
-            "PERSONEN_ANLEGEN"
+            "PERSONEN_ANLEGEN",
+            "IMPORT_DURCHFUEHREN"
           ]
         },
         "service_provider_target_enum": {
@@ -4468,8 +4478,8 @@
             "MIGRATION_DURCHFUEHREN",
             "PERSON_SYNCHRONISIEREN",
             "CRON_DURCHFUEHREN",
-            "IMPORT_DURCHFUEHREN",
-            "PERSONEN_ANLEGEN"
+            "PERSONEN_ANLEGEN",
+            "IMPORT_DURCHFUEHREN"
           ]
         },
         "service_provider_target_enum": {
@@ -4561,11 +4571,31 @@
           "nullable": true,
           "length": 6,
           "mappedType": "datetime"
+        },
+        "locked_occasion": {
+          "name": "locked_occasion",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "string"
         }
       },
       "name": "user_lock",
       "schema": "public",
       "indexes": [
+        {
+          "keyName": "user_lock_person_id_locked_occasion_unique",
+          "columnNames": [
+            "person_id",
+            "locked_occasion"
+          ],
+          "composite": true,
+          "constraint": true,
+          "primary": false,
+          "unique": true
+        },
         {
           "keyName": "user_lock_pkey",
           "columnNames": [
@@ -4724,6 +4754,7 @@
             "MIGRATION_DURCHFUEHREN",
             "PERSON_SYNCHRONISIEREN",
             "CRON_DURCHFUEHREN",
+            "PERSONEN_ANLEGEN",
             "IMPORT_DURCHFUEHREN"
           ]
         },
@@ -4891,8 +4922,8 @@
         "MIGRATION_DURCHFUEHREN",
         "PERSON_SYNCHRONISIEREN",
         "CRON_DURCHFUEHREN",
-        "IMPORT_DURCHFUEHREN",
-        "PERSONEN_ANLEGEN"
+        "PERSONEN_ANLEGEN",
+        "IMPORT_DURCHFUEHREN"
       ]
     },
     "service_provider_target_enum": {

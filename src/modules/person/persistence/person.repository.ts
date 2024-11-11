@@ -257,7 +257,7 @@ export class PersonRepository {
         if (!keyCloakUserDataResponse.ok) {
             return person;
         }
-        person.userLock = (await this.userLockRepository.findPersonById(person.id)) ?? undefined;
+        person.userLock = await this.userLockRepository.findByPersonId(person.id);
         person.isLocked = keyCloakUserDataResponse.value.enabled === false;
         return person;
     }

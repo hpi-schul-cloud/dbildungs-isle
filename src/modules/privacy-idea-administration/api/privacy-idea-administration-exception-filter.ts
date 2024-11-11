@@ -16,6 +16,9 @@ import { TwoAuthStateError } from './error/two-auth-state.error.js';
 import { SoftwareTokenVerificationError } from './error/software-token-verification.error.js';
 import { DeleteUserError } from './error/delete-user.error.js';
 import { UserExistsError } from './error/user-exists.error.js';
+import { SoftwareTokenInitializationError } from './error/software-token-initialization.error.js';
+import { TokenStateError } from './error/token-state.error.js';
+import { PIUnavailableError } from './error/pi-unavailable.error.js';
 
 @Catch(TokenError)
 export class PrivacyIdeaAdministrationExceptionFilter implements ExceptionFilter<TokenError> {
@@ -81,6 +84,27 @@ export class PrivacyIdeaAdministrationExceptionFilter implements ExceptionFilter
             new DbiamPrivacyIdeaAdministrationError({
                 code: 400,
                 i18nKey: PrivacyIdeaAdministrationErrorI18nTypes.DELETE_USER_ERROR,
+            }),
+        ],
+        [
+            SoftwareTokenInitializationError.name,
+            new DbiamPrivacyIdeaAdministrationError({
+                code: 400,
+                i18nKey: PrivacyIdeaAdministrationErrorI18nTypes.SOFTWARE_TOKEN_INITIALIZATION_ERROR,
+            }),
+        ],
+        [
+            TokenStateError.name,
+            new DbiamPrivacyIdeaAdministrationError({
+                code: 400,
+                i18nKey: PrivacyIdeaAdministrationErrorI18nTypes.TOKEN_STATE_ERROR,
+            }),
+        ],
+        [
+            PIUnavailableError.name,
+            new DbiamPrivacyIdeaAdministrationError({
+                code: 400,
+                i18nKey: PrivacyIdeaAdministrationErrorI18nTypes.PI_UNAVAILABLE_ERROR,
             }),
         ],
     ]);

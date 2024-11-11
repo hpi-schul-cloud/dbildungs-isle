@@ -154,6 +154,313 @@
             "typ": "SCHULE",
             "administriertVon": 2,
             "zugehoerigZu": 2
+        },
+        {
+            "id": 665,
+            "kennung": "1111165",
+            "name": "Testschule-PW665",
+            "namensergaenzung": "Keine",
+            "kuerzel": "Testschule-PW665",
+            "typ": "SCHULE",
+            "administriertVon": 1,
+            "zugehoerigZu": 1,
+            "emailAdress": "Testschule65.pw@schule-sh.de"
+        },
+        {
+            "id": 666,
+            "name": "1A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 665,
+            "zugehoerigZu": 665
+        },
+        {
+            "id": 667,
+            "name": "1B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 665,
+            "zugehoerigZu": 665
+        },
+        {
+            "id": 668,
+            "name": "1C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 665,
+            "zugehoerigZu": 665
+        },
+        {
+            "id": 669,
+            "name": "1D",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 665,
+            "zugehoerigZu": 665
+        },
+        {
+            "id": 670,
+            "name": "1E",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 665,
+            "zugehoerigZu": 665
+        },
+        {
+            "id": 671,
+            "name": "1F",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 665,
+            "zugehoerigZu": 665
+        },
+        {
+            "id": 672,
+            "name": "1G",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 665,
+            "zugehoerigZu": 665
+        },
+        {
+            "id": 673,
+            "name": "1H",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 665,
+            "zugehoerigZu": 665
+        },
+        {
+            "id": 674,
+            "name": "1I",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 665,
+            "zugehoerigZu": 665
+        },
+        {
+            "id": 675,
+            "name": "1J",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 665,
+            "zugehoerigZu": 665
+        },
+        {
+            "id": 676,
+            "name": "1K",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 665,
+            "zugehoerigZu": 665
+        },
+        {
+            "id": 677,
+            "name": "2A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 665,
+            "zugehoerigZu": 665
+        },
+        {
+            "id": 678,
+            "name": "2B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 665,
+            "zugehoerigZu": 665
+        },
+        {
+            "id": 679,
+            "name": "2C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 665,
+            "zugehoerigZu": 665
+        },
+        {
+            "id": 680,
+            "name": "2D",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 665,
+            "zugehoerigZu": 665
+        },
+        {
+            "id": 681,
+            "name": "2E",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 665,
+            "zugehoerigZu": 665
+        },
+        {
+            "id": 682,
+            "name": "2F",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 665,
+            "zugehoerigZu": 665
+        },
+        {
+            "id": 683,
+            "name": "2G",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 665,
+            "zugehoerigZu": 665
+        },
+        {
+            "id": 684,
+            "name": "2H",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 665,
+            "zugehoerigZu": 665
+        },
+        {
+            "id": 685,
+            "name": "2I",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 665,
+            "zugehoerigZu": 665
+        },
+        {
+            "id": 686,
+            "name": "2J",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 665,
+            "zugehoerigZu": 665
+        },
+        {
+            "id": 687,
+            "name": "2K",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 665,
+            "zugehoerigZu": 665
+        },
+        {
+            "id": 688,
+            "name": "3A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 665,
+            "zugehoerigZu": 665
+        },
+        {
+            "id": 689,
+            "name": "3B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 665,
+            "zugehoerigZu": 665
+        },
+        {
+            "id": 690,
+            "name": "3C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 665,
+            "zugehoerigZu": 665
+        },
+        {
+            "id": 691,
+            "name": "3D",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 665,
+            "zugehoerigZu": 665
+        },
+        {
+            "id": 692,
+            "name": "3E",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 665,
+            "zugehoerigZu": 665
+        },
+        {
+            "id": 693,
+            "name": "3F",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 665,
+            "zugehoerigZu": 665
+        },
+        {
+            "id": 694,
+            "name": "3G",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 665,
+            "zugehoerigZu": 665
+        },
+        {
+            "id": 695,
+            "name": "3H",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 665,
+            "zugehoerigZu": 665
+        },
+        {
+            "id": 696,
+            "name": "3I",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 665,
+            "zugehoerigZu": 665
+        },
+        {
+            "id": 697,
+            "name": "3J",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 665,
+            "zugehoerigZu": 665
+        },
+        {
+            "id": 698,
+            "name": "3K",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 665,
+            "zugehoerigZu": 665
+        },
+        {
+            "id": 699,
+            "name": "4A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 665,
+            "zugehoerigZu": 665
+        },
+        {
+            "id": 700,
+            "name": "4B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 665,
+            "zugehoerigZu": 665
+        },
+        {
+            "id": 701,
+            "name": "4C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 665,
+            "zugehoerigZu": 665
+        },
+        {
+            "id": 702,
+            "name": "4D",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 665,
+            "zugehoerigZu": 665
         }
     ]
 }

@@ -45,6 +45,7 @@ describe('Organisation', () => {
                 faker.string.uuid(),
                 faker.date.past(),
                 faker.date.recent(),
+                faker.number.int(),
                 faker.string.uuid(),
                 faker.string.uuid(),
                 faker.lorem.word(),

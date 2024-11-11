@@ -26,6 +26,7 @@ import { EntityCouldNotBeUpdated } from '../../../shared/error/entity-could-not-
 import { OrganisationSpecificationError } from '../specification/error/organisation-specification.error.js';
 import { PersonPermissions } from '../../authentication/domain/person-permissions.js';
 import { RollenSystemRecht } from '../../rolle/domain/rolle.enums.js';
+import { OrganisationUpdateOutdatedError } from '../domain/orga-update-outdated.error.js';
 
 describe('OrganisationRepository', () => {
     let module: TestingModule;
@@ -100,6 +101,7 @@ describe('OrganisationRepository', () => {
                 faker.string.uuid(),
                 faker.date.past(),
                 faker.date.recent(),
+                faker.number.int(),
                 faker.string.uuid(),
                 faker.string.uuid(),
                 faker.lorem.word(),
@@ -202,6 +204,7 @@ describe('OrganisationRepository', () => {
                 faker.string.uuid(),
                 faker.date.past(),
                 faker.date.recent(),
+                faker.number.int(),
                 faker.string.uuid(),
                 faker.string.uuid(),
                 '05674',
@@ -215,6 +218,7 @@ describe('OrganisationRepository', () => {
                 faker.string.uuid(),
                 faker.date.past(),
                 faker.date.recent(),
+                faker.number.int(),
                 faker.string.uuid(),
                 faker.string.uuid(),
                 '44123',
@@ -228,6 +232,7 @@ describe('OrganisationRepository', () => {
                 faker.string.uuid(),
                 faker.date.past(),
                 faker.date.recent(),
+                faker.number.int(),
                 faker.string.uuid(),
                 faker.string.uuid(),
                 '75693',
@@ -340,6 +345,7 @@ describe('OrganisationRepository', () => {
                 sut.ROOT_ORGANISATION_ID,
                 faker.date.past(),
                 faker.date.recent(),
+                faker.number.int(),
                 undefined,
                 undefined,
                 faker.string.numeric(6),
@@ -354,6 +360,7 @@ describe('OrganisationRepository', () => {
                 faker.string.uuid(),
                 faker.date.past(),
                 faker.date.recent(),
+                faker.number.int(),
                 root.id,
                 root.id,
                 faker.string.numeric(6),
@@ -368,6 +375,7 @@ describe('OrganisationRepository', () => {
                 faker.string.uuid(),
                 faker.date.past(),
                 faker.date.recent(),
+                faker.number.int(),
                 traeger.id,
                 traeger.id,
                 faker.string.numeric(6),
@@ -443,6 +451,7 @@ describe('OrganisationRepository', () => {
                 sut.ROOT_ORGANISATION_ID,
                 faker.date.past(),
                 faker.date.recent(),
+                faker.number.int(),
                 undefined,
                 undefined,
                 faker.string.numeric(6),
@@ -458,6 +467,7 @@ describe('OrganisationRepository', () => {
                 faker.string.uuid(),
                 faker.date.past(),
                 faker.date.recent(),
+                faker.number.int(),
                 root.id,
                 root.id,
                 faker.string.numeric(6),
@@ -473,6 +483,7 @@ describe('OrganisationRepository', () => {
                 faker.string.uuid(),
                 faker.date.past(),
                 faker.date.recent(),
+                faker.number.int(),
                 traeger.id,
                 traeger.id,
                 faker.string.numeric(6),
@@ -569,6 +580,7 @@ describe('OrganisationRepository', () => {
                 sut.ROOT_ORGANISATION_ID,
                 faker.date.past(),
                 faker.date.recent(),
+                faker.number.int(),
                 undefined,
                 undefined,
                 faker.string.numeric(6),
@@ -582,6 +594,7 @@ describe('OrganisationRepository', () => {
                 faker.string.uuid(),
                 faker.date.past(),
                 faker.date.recent(),
+                faker.number.int(),
                 root.id,
                 root.id,
                 faker.string.numeric(6),
@@ -595,6 +608,7 @@ describe('OrganisationRepository', () => {
                 faker.string.uuid(),
                 faker.date.past(),
                 faker.date.recent(),
+                faker.number.int(),
                 traeger.id,
                 traeger.id,
                 faker.string.numeric(6),
@@ -712,6 +726,7 @@ describe('OrganisationRepository', () => {
                 ROOT_ORGANISATION_ID,
                 faker.date.past(),
                 faker.date.recent(),
+                faker.number.int(),
                 faker.string.uuid(),
                 faker.string.uuid(),
                 faker.string.numeric(),
@@ -725,6 +740,7 @@ describe('OrganisationRepository', () => {
                 faker.string.uuid(),
                 faker.date.past(),
                 faker.date.recent(),
+                faker.number.int(),
                 ROOT_ORGANISATION_ID,
                 faker.string.uuid(),
                 faker.string.numeric(),
@@ -738,6 +754,7 @@ describe('OrganisationRepository', () => {
                 faker.string.uuid(),
                 faker.date.past(),
                 faker.date.recent(),
+                faker.number.int(),
                 ROOT_ORGANISATION_ID,
                 faker.string.uuid(),
                 faker.string.numeric(),
@@ -805,7 +822,11 @@ describe('OrganisationRepository', () => {
         describe('when organisation does not exist', () => {
             it('should return EntityNotFoundError', async () => {
                 const id: string = faker.string.uuid();
-                const result: DomainError | Organisation<true> = await sut.updateKlassenname(id, faker.company.name());
+                const result: DomainError | Organisation<true> = await sut.updateKlassenname(
+                    id,
+                    faker.company.name(),
+                    faker.number.int(),
+                );
 
                 expect(result).toEqual(new EntityNotFoundError('Organisation', id));
             });
@@ -816,11 +837,13 @@ describe('OrganisationRepository', () => {
                 const organisation: Organisation<false> = DoFactory.createOrganisationAggregate(false, {
                     typ: OrganisationsTyp.SONSTIGE,
                     name: 'test',
+                    version: faker.number.int(),
                 });
                 const savedOrganisaiton: Organisation<true> = await sut.save(organisation);
                 const result: DomainError | Organisation<true> = await sut.updateKlassenname(
                     savedOrganisaiton.id,
                     faker.company.name(),
+                    faker.number.int(),
                 );
 
                 expect(result).toBeInstanceOf(EntityCouldNotBeUpdated);
@@ -834,7 +857,11 @@ describe('OrganisationRepository', () => {
                     name: 'test',
                 });
                 const savedOrganisaiton: Organisation<true> = await sut.save(organisation);
-                const result: DomainError | Organisation<true> = await sut.updateKlassenname(savedOrganisaiton.id, '');
+                const result: DomainError | Organisation<true> = await sut.updateKlassenname(
+                    savedOrganisaiton.id,
+                    '',
+                    faker.number.int(),
+                );
 
                 expect(result).toBeInstanceOf(OrganisationSpecificationError);
             });
@@ -844,15 +871,19 @@ describe('OrganisationRepository', () => {
             it('should update class name and return void', async () => {
                 const parentOrga: Organisation<true> = DoFactory.createOrganisationAggregate(true, {
                     typ: OrganisationsTyp.SCHULE,
+                    version: 1,
                 });
                 const organisation: Organisation<false> = DoFactory.createOrganisationAggregate(false, {
                     typ: OrganisationsTyp.KLASSE,
                     name: 'name',
                     administriertVon: parentOrga.id,
+                    version: 1,
                 });
                 const otherChildOrga: Organisation<false> = DoFactory.createOrganisationAggregate(false, {
                     typ: OrganisationsTyp.KLASSE,
+                    name: 'nameOther',
                     administriertVon: parentOrga.id,
+                    version: 1,
                 });
 
                 const organisationEntity1: OrganisationEntity = em.create(
@@ -868,25 +899,69 @@ describe('OrganisationRepository', () => {
                     mapAggregateToData(otherChildOrga),
                 );
                 await em.persistAndFlush([organisationEntity1, organisationEntity2, organisationEntity3]);
-
+                em.clear();
                 const result: DomainError | Organisation<true> = await sut.updateKlassenname(
                     organisationEntity2.id,
                     'newName',
+                    1,
                 );
 
                 expect(result).not.toBeInstanceOf(DomainError);
             });
         });
 
-        describe('when name did not change', () => {
-            it('should not check specifications, update class name and return void', async () => {
+        describe('Should throw an error', () => {
+            it('should throw OptimisticLockError when concurrent updates cause version mismatch', async () => {
+                // Setup: Create initial organization
                 const parentOrga: Organisation<true> = DoFactory.createOrganisationAggregate(true, {
                     typ: OrganisationsTyp.SCHULE,
+                    version: 1,
                 });
                 const organisation: Organisation<false> = DoFactory.createOrganisationAggregate(false, {
                     typ: OrganisationsTyp.KLASSE,
                     name: 'name',
                     administriertVon: parentOrga.id,
+                    version: 1,
+                });
+
+                // Create and persist entities
+                const organisationEntity1: OrganisationEntity = em.create(
+                    OrganisationEntity,
+                    mapAggregateToData(parentOrga),
+                );
+                const organisationEntity2: OrganisationEntity = em.create(
+                    OrganisationEntity,
+                    mapAggregateToData(organisation),
+                );
+
+                await em.persistAndFlush([organisationEntity1, organisationEntity2]);
+                em.clear();
+
+                // Simulate concurrent updates:
+                // 1. First update
+                await sut.updateKlassenname(organisationEntity2.id, 'newName1', 1);
+
+                // 2. Try second update with original version (should fail)
+                await expect(async () => {
+                    await sut.updateKlassenname(
+                        organisationEntity2.id,
+                        'newName2',
+                        1, // This is now outdated because previous update incremented it
+                    );
+                }).rejects.toThrow(OrganisationUpdateOutdatedError);
+            });
+        });
+        describe('when name did not change', () => {
+            it('should not check specifications, update class name and return void', async () => {
+                const parentOrga: Organisation<true> = DoFactory.createOrganisationAggregate(true, {
+                    typ: OrganisationsTyp.SCHULE,
+                    version: 1,
+                });
+                const organisation: Organisation<false> = DoFactory.createOrganisationAggregate(false, {
+                    typ: OrganisationsTyp.KLASSE,
+                    name: 'name',
+                    administriertVon: parentOrga.id,
+                    version: 1,
                 });
 
                 const organisationEntity1: OrganisationEntity = em.create(
@@ -902,6 +977,7 @@ describe('OrganisationRepository', () => {
                 const result: DomainError | Organisation<true> = await sut.updateKlassenname(
                     organisationEntity2.id,
                     'name',
+                    1,
                 );
 
                 expect(result).not.toBeInstanceOf(DomainError);
@@ -965,6 +1041,7 @@ describe('OrganisationRepository', () => {
                 ROOT_ORGANISATION_ID,
                 faker.date.past(),
                 faker.date.recent(),
+                faker.number.int(),
                 faker.string.uuid(),
                 faker.string.uuid(),
                 faker.string.numeric(),
@@ -978,6 +1055,7 @@ describe('OrganisationRepository', () => {
                 faker.string.uuid(),
                 faker.date.past(),
                 faker.date.recent(),
+                faker.number.int(),
                 ROOT_ORGANISATION_ID,
                 faker.string.uuid(),
                 faker.string.numeric(),
@@ -991,6 +1069,7 @@ describe('OrganisationRepository', () => {
                 faker.string.uuid(),
                 faker.date.past(),
                 faker.date.recent(),
+                faker.number.int(),
                 ROOT_ORGANISATION_ID,
                 faker.string.uuid(),
                 faker.string.numeric(),

@@ -49,7 +49,7 @@ import { OrganisationsTyp } from '../../organisation/domain/organisation.enums.j
 import { OrganisationEntity } from '../../organisation/persistence/organisation.entity.js';
 import { RolleEntity } from '../../rolle/entity/rolle.entity.js';
 import { EmailAddressStatus } from '../../email/domain/email-address.js';
-import { SortFieldPersonFrontend } from '../domain/person.enums.js';
+import { PersonLockOccasion, SortFieldPersonFrontend } from '../domain/person.enums.js';
 import { RolleFactory } from '../../rolle/domain/rolle.factory.js';
 import { PersonenkontextFactory } from '../../personenkontext/domain/personenkontext.factory.js';
 import { DBiamPersonenkontextRepoInternal } from '../../personenkontext/persistence/internal-dbiam-personenkontext.repo.js';
@@ -1223,12 +1223,15 @@ describe('PersonRepository Integration', () => {
                 const personEntity: PersonEntity = new PersonEntity();
                 await em.persistAndFlush(personEntity.assign(mapAggregateToData(person1)));
                 person1.id = personEntity.id;
-                person1.userLock = {
-                    person: person1.id,
-                    locked_by: '',
-                    locked_until: new Date(),
-                    created_at: new Date(),
-                };
+                person1.userLock = [
+                    {
+                        person: person1.id,
+                        locked_by: '',
+                        locked_until: new Date(),
+                        locked_occasion: PersonLockOccasion.MANUELL_GESPERRT,
+                        created_at: new Date(),
+                    },
+                ];
                 person1.isLocked = false;
 
                 kcUserServiceMock.findById.mockResolvedValue({

@@ -33,7 +33,7 @@ export type PersonCreationParams = {
     username?: string;
     password?: string;
     personalnummer?: string;
-    userLock?: UserLock;
+    userLock?: UserLock[];
     isLocked?: boolean;
     orgUnassignmentDate?: Date;
 };
@@ -55,30 +55,30 @@ export class Person<WasPersisted extends boolean> {
         public familienname: string,
         public vorname: string,
         public revision: string,
-        public username?: string,
-        public keycloakUserId?: string,
-        public referrer?: string,
-        public stammorganisation?: string,
-        public initialenFamilienname?: string,
-        public initialenVorname?: string,
-        public rufname?: string,
-        public nameTitel?: string,
-        public nameAnrede?: string[],
-        public namePraefix?: string[],
-        public nameSuffix?: string[],
-        public nameSortierindex?: string,
-        public geburtsdatum?: Date,
-        public geburtsort?: string,
-        public geschlecht?: Geschlecht,
-        public lokalisierung?: string,
-        public vertrauensstufe?: Vertrauensstufe,
-        public auskunftssperre?: boolean,
-        public personalnummer?: string,
-        public userLock?: UserLock,
-        public orgUnassignmentDate?: Date,
-        public isLocked?: boolean,
-        public email?: string,
-        public oxUserId?: string,
+        public username: string | undefined,
+        public keycloakUserId: string | undefined,
+        public referrer: string | undefined,
+        public stammorganisation: string | undefined,
+        public initialenFamilienname: string | undefined,
+        public initialenVorname: string | undefined,
+        public rufname: string | undefined,
+        public nameTitel: string | undefined,
+        public nameAnrede: string[] | undefined,
+        public namePraefix: string[] | undefined,
+        public nameSuffix: string[] | undefined,
+        public nameSortierindex: string | undefined,
+        public geburtsdatum: Date | undefined,
+        public geburtsort: string | undefined,
+        public geschlecht: Geschlecht | undefined,
+        public lokalisierung: string | undefined,
+        public vertrauensstufe: Vertrauensstufe | undefined,
+        public auskunftssperre: boolean | undefined,
+        public personalnummer: string | undefined,
+        public userLock: UserLock[],
+        public orgUnassignmentDate: Date | undefined,
+        public isLocked: boolean | undefined,
+        public email: string | undefined,
+        public oxUserId: string | undefined,
     ) {
         this.mandant = Person.CREATE_PERSON_DTO_MANDANT_UUID;
     }
@@ -118,7 +118,7 @@ export class Person<WasPersisted extends boolean> {
         auskunftssperre?: boolean,
         personalnummer?: string,
         orgUnassignmentDate?: Date,
-        userLock?: UserLock,
+        userLock: UserLock[] = [],
         isLocked?: boolean,
         email?: string,
         oxUserId?: string,
@@ -197,8 +197,11 @@ export class Person<WasPersisted extends boolean> {
             creationParams.vertrauensstufe,
             creationParams.auskunftssperre,
             creationParams.personalnummer,
-            creationParams.userLock,
+            creationParams.userLock ?? [],
             creationParams.orgUnassignmentDate,
+            undefined,
+            undefined,
+            undefined,
         );
 
         if (creationParams.password) {
@@ -245,7 +248,7 @@ export class Person<WasPersisted extends boolean> {
         vertrauensstufe?: Vertrauensstufe,
         auskunftssperre?: boolean,
         personalnummer?: string,
-        userLock?: UserLock,
+        userLock?: UserLock[],
         orgUnassignmentDate?: Date,
         isLocked?: boolean,
         email?: string,
@@ -288,10 +291,10 @@ export class Person<WasPersisted extends boolean> {
         this.auskunftssperre = auskunftssperre;
         this.revision = newRevision;
         this.personalnummer = personalnummer ?? this.personalnummer;
-        this.userLock = userLock;
         this.orgUnassignmentDate = orgUnassignmentDate;
         this.isLocked = isLocked;
         this.email = email;
+        this.userLock = userLock ?? [];
     }
 
     public resetPassword(): void {

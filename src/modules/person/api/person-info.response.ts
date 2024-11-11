@@ -4,6 +4,7 @@ import { Vertrauensstufe, VertrauensstufeTypName } from '../domain/person.enums.
 import { PersonenkontextResponse } from '../../personenkontext/api/response/personenkontext.response.js';
 import { PersonNameResponse } from './person-name.response.js';
 import { PersonBirthResponse } from './person-birth.response.js';
+import { PersonEmailResponse } from './person-email-response.js';
 
 class Person {
     @ApiProperty()
@@ -67,6 +68,14 @@ export class PersonInfoResponse {
     @ApiProperty({})
     public readonly gruppen: object[];
 
+    @ApiProperty({
+        type: PersonEmailResponse,
+        nullable: true,
+        description:
+            'Contains status and address. Returns email-address verified by OX (enabled) if available, otherwise returns most recently updated one (no prioritized status)',
+    })
+    public readonly email?: PersonEmailResponse;
+
     public constructor(props: Readonly<PersonInfoResponse>) {
         this.pid = props.pid;
         this.person = new Person(props.person);
@@ -74,5 +83,6 @@ export class PersonInfoResponse {
             (kontext: Readonly<PersonenkontextResponse>) => new PersonenkontextResponse(kontext),
         );
         this.gruppen = [];
+        this.email = props.email;
     }
 }

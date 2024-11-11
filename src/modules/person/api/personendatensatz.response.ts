@@ -5,6 +5,7 @@ import { PersonBirthParams } from './person-birth.params.js';
 import { PersonNameParams } from './person-name.params.js';
 import { UserLockParams } from '../../keycloak-administration/api/user-lock.params.js';
 import { PersonEmailResponse } from './person-email-response.js';
+import { UserLock } from '../../keycloak-administration/domain/user-lock.js';
 
 export class PersonendatensatzResponse {
     @ApiProperty()
@@ -27,12 +28,14 @@ export class PersonendatensatzResponse {
             datum: person.geburtsdatum,
             geburtsort: person.geburtsort,
         };
-        const userLockParams: UserLockParams = {
+        const userLockParams: UserLockParams[] = person.userLock.map((lock: UserLock) => ({
             personId: person.id,
-            locked_by: person.userLock?.locked_by,
-            locked_until: person.userLock?.locked_until?.toISOString(),
-            created_at: person.userLock?.created_at?.toISOString(),
-        };
+            locked_by: lock.locked_by,
+            locked_until: lock.locked_until?.toISOString(),
+            lock_occasion: lock.locked_occasion,
+            created_at: lock.created_at?.toISOString(),
+        }));
+
         const personResponse: PersonResponse = {
             id: person.id,
             referrer: person.referrer,

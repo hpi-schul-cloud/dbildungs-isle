@@ -13,6 +13,7 @@ import { DomainError } from '../../../shared/error/domain.error.js';
 import { PersonEntity } from '../../person/persistence/person.entity.js';
 import { mapAggregateToData } from '../../person/persistence/person.repository.js';
 import { EntityManager } from '@mikro-orm/postgresql';
+import { PersonLockOccasion } from '../../person/domain/person.enums.js';
 
 describe('UserLockRepository', () => {
     let sut: UserLockRepository;
@@ -52,26 +53,42 @@ describe('UserLockRepository', () => {
     });
 
     describe('findPersonById', () => {
-        it('should return UserLock when found by person', async () => {
+        it('should return an array of UserLocks when found by person', async () => {
             const newPerson: PersonEntity = createPersonEntity();
             await em.persistAndFlush(newPerson);
-            const userLock: UserLock = UserLock.construct(newPerson.id, faker.string.uuid(), new Date(), new Date());
 
-            const createdUserLock: UserLock | DomainError = await sut.createUserLock(userLock);
-            if (createdUserLock instanceof DomainError) throw new Error();
-            expect(createdUserLock).toBeTruthy();
+            // Create multiple UserLocks for the same person to test array retrieval
+            const userLock1: UserLock = UserLock.construct(
+                newPerson.id,
+                faker.string.uuid(),
+                new Date(),
+                PersonLockOccasion.MANUELL_GESPERRT,
+                new Date(),
+            );
+            const userLock2: UserLock = UserLock.construct(
+                newPerson.id,
+                faker.string.uuid(),
+                new Date(),
+                PersonLockOccasion.KOPERS_GESPERRT,
+                new Date(),
+            );
 
-            const foundUserLock: Option<UserLock> = await sut.findPersonById(userLock.person);
+            await sut.createUserLock(userLock1);
+            await sut.createUserLock(userLock2);
 
-            expect(foundUserLock).toBeTruthy();
-            expect(foundUserLock?.person).toEqual(userLock.person);
+            const foundUserLocks: UserLock[] = await sut.findByPersonId(userLock1.person);
+
+            expect(foundUserLocks).toHaveLength(2);
+            expect(foundUserLocks[0]!.person).toEqual(userLock1.person);
+            expect(foundUserLocks[1]!.person).toEqual(userLock1.person);
         });
 
-        it('should return null when userLock is not found by person', async () => {
+        it('should return an empty array when no UserLocks are found by person', async () => {
             const person: string = faker.string.uuid();
-            const foundUserLock: Option<UserLock> = await sut.findPersonById(person);
+            const foundUserLocks: Option<UserLock[]> = await sut.findByPersonId(person);
 
-            expect(foundUserLock).toBeNull();
+            // Check that it returns an empty array instead of null
+            expect(foundUserLocks).toEqual([]);
         });
     });
 
@@ -79,12 +96,18 @@ describe('UserLockRepository', () => {
         it('should create and return a UserLock', async () => {
             const newPerson: PersonEntity = createPersonEntity();
             await em.persistAndFlush(newPerson);
-            const userLock: UserLock = UserLock.construct(newPerson.id, faker.string.uuid(), new Date(), new Date());
+
+            const userLock: UserLock = UserLock.construct(
+                newPerson.id,
+                faker.string.uuid(),
+                new Date(),
+                PersonLockOccasion.MANUELL_GESPERRT,
+                new Date(),
+            );
 
             const createdUserLock: UserLock | DomainError = await sut.createUserLock(userLock);
             if (createdUserLock instanceof DomainError) throw new Error();
             expect(createdUserLock).toBeTruthy();
-
             expect(createdUserLock.person).toEqual(userLock.person);
         });
     });
@@ -93,7 +116,14 @@ describe('UserLockRepository', () => {
         it('should update an existing UserLock', async () => {
             const newPerson: PersonEntity = createPersonEntity();
             await em.persistAndFlush(newPerson);
-            const userLock: UserLock = UserLock.construct(newPerson.id, faker.string.uuid(), new Date(), new Date());
+
+            const userLock: UserLock = UserLock.construct(
+                newPerson.id,
+                faker.string.uuid(),
+                new Date(),
+                PersonLockOccasion.MANUELL_GESPERRT,
+                new Date(),
+            );
 
             const createdUserLock: UserLock | DomainError = await sut.createUserLock(userLock);
             if (createdUserLock instanceof DomainError) throw new Error();
@@ -111,6 +141,7 @@ describe('UserLockRepository', () => {
                 faker.string.uuid(),
                 faker.string.uuid(),
                 new Date(),
+                PersonLockOccasion.MANUELL_GESPERRT,
                 new Date(),
             );
 
@@ -119,19 +150,35 @@ describe('UserLockRepository', () => {
     });
 
     describe('deleteUserLock', () => {
-        it('should delete UserLock by person', async () => {
+        it('should delete UserLocks by person', async () => {
             const newPerson: PersonEntity = createPersonEntity();
             await em.persistAndFlush(newPerson);
-            const userLock: UserLock = UserLock.construct(newPerson.id, faker.string.uuid(), new Date(), new Date());
 
-            const createdUserLock: UserLock | DomainError = await sut.createUserLock(userLock);
-            if (createdUserLock instanceof DomainError) throw new Error();
-            expect(createdUserLock).toBeTruthy();
+            const userLock1: UserLock = UserLock.construct(
+                newPerson.id,
+                faker.string.uuid(),
+                new Date(),
+                PersonLockOccasion.MANUELL_GESPERRT,
+                new Date(),
+            );
+            const userLock2: UserLock = UserLock.construct(
+                newPerson.id,
+                faker.string.uuid(),
+                new Date(),
+                PersonLockOccasion.KOPERS_GESPERRT,
+                new Date(),
+            );
 
-            await sut.deleteUserLock(createdUserLock.person);
+            await sut.createUserLock(userLock1);
+            await sut.createUserLock(userLock2);
 
-            const foundUserLock: Option<UserLock> = await sut.findPersonById(createdUserLock.person);
-            expect(foundUserLock).toBeNull();
+            // Delete all UserLocks for the person
+            await sut.deleteUserLock(newPerson.id, userLock1.locked_occasion);
+            await sut.deleteUserLock(newPerson.id, userLock2.locked_occasion);
+
+            const foundUserLocks: Option<UserLock[]> = await sut.findByPersonId(newPerson.id);
+            // Expect to find an empty array after deletion
+            expect(foundUserLocks).toEqual([]);
         });
     });
 });

@@ -7,6 +7,8 @@ import { Person } from '../domain/person.js';
 import { PersonApiMapper } from './person-api.mapper.js';
 import { Test, TestingModule } from '@nestjs/testing';
 import { faker } from '@faker-js/faker';
+import { PersonEmailResponse } from '../api/person-email-response.js';
+import { EmailAddressStatus } from '../../email/domain/email-address.js';
 
 describe('PersonApiMapper', () => {
     let module: TestingModule;
@@ -42,9 +44,13 @@ describe('PersonApiMapper', () => {
                     getRolle: () => rolleRepoMock.findById(faker.string.uuid()),
                 });
                 const kontexte: Personenkontext<true>[] = [kontext];
+                const email: PersonEmailResponse = {
+                    address: faker.internet.email(),
+                    status: faker.helpers.enumValue(EmailAddressStatus),
+                };
 
                 // Act
-                const result: PersonInfoResponse = await sut.mapToPersonInfoResponse(person, kontexte);
+                const result: PersonInfoResponse = await sut.mapToPersonInfoResponse(person, kontexte, email);
 
                 // Assert
                 expect(result).toBeInstanceOf(PersonInfoResponse);
@@ -93,6 +99,10 @@ describe('PersonApiMapper', () => {
                         },
                     ],
                     gruppen: [],
+                    email: {
+                        address: email.address,
+                        status: email.status,
+                    },
                 });
             });
         });
@@ -107,9 +117,13 @@ describe('PersonApiMapper', () => {
                 getRolle: () => rolleRepoMock.findById(faker.string.uuid()),
             });
             const kontexte: Personenkontext<true>[] = [kontext];
+            const email: PersonEmailResponse = {
+                address: faker.internet.email(),
+                status: faker.helpers.enumValue(EmailAddressStatus),
+            };
 
             // Act
-            const result: PersonInfoResponse = await sut.mapToPersonInfoResponse(person, kontexte);
+            const result: PersonInfoResponse = await sut.mapToPersonInfoResponse(person, kontexte, email);
 
             // Assert
             expect(result).toBeInstanceOf(PersonInfoResponse);

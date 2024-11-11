@@ -43,6 +43,7 @@ import { PersonalnummerRequiredError } from '../domain/personalnummer-required.e
 import { EmailRepo } from '../../email/persistence/email.repo.js';
 import { PersonEmailResponse } from './person-email-response.js';
 import { EmailAddressStatus } from '../../email/domain/email-address.js';
+import { PersonLockOccasion } from '../domain/person.enums.js';
 
 describe('PersonController', () => {
     let module: TestingModule;
@@ -142,6 +143,35 @@ describe('PersonController', () => {
             faker.lorem.word(),
             faker.lorem.word(),
             faker.string.uuid(),
+            undefined, // referrer
+            undefined, // stammorganisation
+            undefined, // initialenFamilienname
+            undefined, // initialenVorname
+            undefined, // rufname
+            undefined, // nameTitel
+            undefined, // nameAnrede
+            undefined, // namePraefix
+            undefined, // nameSuffix
+            undefined, // nameSortierindex
+            undefined, // geburtsdatum
+            undefined, // geburtsort
+            undefined, // geschlecht
+            undefined, // lokalisierung
+            undefined, // vertrauensstufe
+            undefined, // auskunftssperre
+            undefined, // personalnummer
+            [
+                {
+                    person: '1',
+                    locked_by: 'test',
+                    locked_occasion: PersonLockOccasion.MANUELL_GESPERRT,
+                    locked_until: new Date(),
+                    created_at: new Date(),
+                },
+            ], // userLock array
+            undefined, // orgUnassignmentDate
+            undefined, // isLocked
+            undefined, // email
         );
     }
 
