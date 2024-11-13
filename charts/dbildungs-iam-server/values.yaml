@@ -48,6 +48,8 @@ auth:
   pi_admin_password: ''
   pi_user_resolver: ''
   pi_user_realm: ''
+  pi_rename_waiting_time: ''
+  redis_password: ''
 
 backend:
   replicaCount: 1
@@ -122,45 +124,52 @@ backend:
       name: secret-volume
   extraVolumeMounts: []
 
-redis:
+
+# Reference: https://github.com/bitnami/charts/tree/main/bitnami/redis-cluster
+redis-cluster:
+  enabled: true
+  persistence: 
+    enabled: false
+    size: 4Gi
   image:
-    name: redis
-    repository: redis
-    tag: '7.2.4'
-    pullPolicy: IfNotPresent
-  args:
-    - '/data/tls/redis.conf'
-  containerPorts:
-    redis: 6379
+    registry: docker.io
+    repository: bitnami/redis-cluster
+    tag: 7.4
+  existingSecret: dbildungs-iam-server-redis
+  cluster:
+      ## This is total number of nodes including the replicas. Meaning there will be 3 master and 3 replica
+      ## nodes (as replica count is set to 1 by default, there will be 1 replica per master node).
+      ## Hence, nodes = numberOfMasterNodes + numberOfMasterNodes * replicas
+      ## The number of master nodes should always be >= 3, otherwise cluster creation will fail
+      nodes: 6
+      # for staging and prod this could get increased
+      ## @param cluster.replicas Number of replicas for every master in the cluster
+      replicas: 1
+  networkPolicy:
+    enabled: false
+  pdb:
+    create: false
+  serviceAccount:
+    create: false
+  usePassword: true
+  tls:
+    enabled: false
+  podLabels:
+      app.kubernetes.io/component: server-redis
+  commonLabels:
+    app.kubernetes.io/name: dbildungs-iam-server 
   resources:
     limits:
-      cpu: 2
-      memory: 4G
+      cpu: 300m
+      memory: 512Mi
     requests:
-      cpu: 200m
-      memory: 200Mi
-  livenessProbe:
+      cpu: 125m
+      memory: 128Mi
+  metrics:
     enabled: true
-    tcpSocket:
-      port: 6379
-    initialDelaySeconds: 15
-    timeoutSeconds: 2
-  readinessProbe:
-    enabled: true
-    tcpSocket:
-      port: 6379
-    initialDelaySeconds: 5
-    timeoutSeconds: 1
-  startupProbe:
-    enabled: true
-    tcpSocket:
-      port: 6379
-    failureThreshold: 30
-    periodSeconds: 10
-  service:
-    type: ClusterIP
-    ports:
-      redis: 6379
-  extraEnvVars: []
-  extraVolumes: []
-  extraVolumeMounts: []
+   
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 5
+  targetCPUUtilizationPercentage: 60

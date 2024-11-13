@@ -21,7 +21,7 @@ import { DomainError } from '../../../shared/error/domain.error.js';
 import { MissingPermissionsError } from '../../../shared/error/missing-permissions.error.js';
 import { UpdateInvalidRollenartForLernError } from './error/update-invalid-rollenart-for-lern.error.js';
 import { IPersonPermissions } from '../../../shared/permissions/person-permissions.interface.js';
-import { CheckRollenartLernSpecification } from '../specification/nur-rolle-lern.js';
+import { CheckRollenartSpecification } from '../specification/nur-gleiche-rolle.js';
 import { ClassLogger } from '../../../core/logging/class-logger.js';
 import { CheckBefristungSpecification } from '../specification/befristung-required-bei-rolle-befristungspflicht.js';
 import { PersonenkontextBefristungRequiredError } from './error/personenkontext-befristung-required.error.js';
@@ -268,13 +268,13 @@ export class PersonenkontexteUpdate {
         return createdPKs;
     }
 
-    private async checkRollenartLernSpecification(
+    private async checkRollenartSpecification(
         sentPKs: Personenkontext<boolean>[],
     ): Promise<Option<PersonenkontexteUpdateError>> {
-        const isSatisfied: boolean = await new CheckRollenartLernSpecification(
+        const isSatisfied: boolean = await new CheckRollenartSpecification(
             this.dBiamPersonenkontextRepo,
             this.rolleRepo,
-        ).checkRollenartLern(sentPKs);
+        ).checkRollenart(sentPKs);
 
         if (!isSatisfied) {
             return new UpdateInvalidRollenartForLernError();
@@ -305,7 +305,7 @@ export class PersonenkontexteUpdate {
         const existingPKs: Personenkontext<true>[] = await this.dBiamPersonenkontextRepo.findByPerson(this.personId);
 
         const validationForLernError: Option<PersonenkontexteUpdateError> =
-            await this.checkRollenartLernSpecification(sentPKs);
+            await this.checkRollenartSpecification(sentPKs);
         if (validationForLernError) {
             return validationForLernError;
         }
@@ -337,6 +337,21 @@ export class PersonenkontexteUpdate {
             const person: Option<Person<true>> = await this.personRepo.findById(this.personId);
             if (person) {
                 person.personalnummer = this.personalnummer;
+                await this.personRepo.save(person);
+            }
+        }
+
+        // Set value with current date in database, when person has no Personenkontext anymore
+        if (existingPKsAfterUpdate.length == 0) {
+            const person: Option<Person<true>> = await this.personRepo.findById(this.personId);
+            if (person) {
+                person.orgUnassignmentDate = new Date();
+                await this.personRepo.save(person);
+            }
+        } else {
+            const person: Option<Person<true>> = await this.personRepo.findById(this.personId);
+            if (person && person.orgUnassignmentDate) {
+                person.orgUnassignmentDate = undefined;
                 await this.personRepo.save(person);
             }
         }

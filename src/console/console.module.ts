@@ -26,6 +26,7 @@ import { DbCreateMigrationConsole } from './dbmigrate/db-create-migration.consol
 import { DbApplyMigrationConsole } from './dbmigrate/db-apply-migration.console.js';
 import { LdapModule } from '../core/ldap/ldap.module.js';
 import { DbSeedDataGeneratorConsole } from './dbseed/db-seed-data-generator.console.js';
+import { KeycloakConsoleModule } from './keycloak/keycloak-console.module.js';
 
 @Module({
     imports: [
@@ -38,6 +39,7 @@ import { DbSeedDataGeneratorConsole } from './dbseed/db-seed-data-generator.cons
         PersonenKontextModule,
         LdapModule,
         DbSeedModule,
+        KeycloakConsoleModule,
         LoggerModule.register(ConsoleModule.name),
         ConfigModule.forRoot({
             isGlobal: true,

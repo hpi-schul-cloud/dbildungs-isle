@@ -33,6 +33,12 @@ import {
     UserResponse,
     VerificationResponse,
 } from './privacy-idea-api.types.js';
+import { DomainError } from '../../shared/error/domain.error.js';
+import { DeleteUserError } from './api/error/delete-user.error.js';
+import { UserExistsError } from './api/error/user-exists.error.js';
+import { SoftwareTokenInitializationError } from './api/error/software-token-initialization.error.js';
+import { TokenStateError } from './api/error/token-state.error.js';
+import { PIUnavailableError } from './api/error/pi-unavailable.error.js';
 
 @Injectable()
 export class PrivacyIdeaAdministrationService {
@@ -40,7 +46,7 @@ export class PrivacyIdeaAdministrationService {
 
     private tokenExpiryTimestampMs: number = 0;
 
-    private static AUTHORIZATION_TIMEBOX_MS: number = 59 * 60 * 1000;
+    private static readonly AUTHORIZATION_TIMEBOX_MS: number = 59 * 60 * 1000;
 
     private readonly privacyIdeaConfig: PrivacyIdeaConfig;
 
@@ -68,11 +74,7 @@ export class PrivacyIdeaAdministrationService {
             const response: InitSoftwareToken = await this.initToken(user, token, selfService);
             return response.detail.googleurl.img;
         } catch (error: unknown) {
-            if (error instanceof Error) {
-                throw new Error(`Error initializing token: ${error.message}`);
-            } else {
-                throw new Error(`Error initializing token: Unknown error occurred`);
-            }
+            throw new SoftwareTokenInitializationError(error instanceof Error ? error.message : undefined);
         }
     }
 
@@ -90,15 +92,19 @@ export class PrivacyIdeaAdministrationService {
 
         try {
             const response: AxiosResponse<AuthenticaitonResponse> = await firstValueFrom(
-                this.httpService.post(url, authPayload, {
-                    headers: { 'Content-Type': 'application/json' },
-                }),
+                this.httpService
+                    .post(url, authPayload, {
+                        headers: { 'Content-Type': 'application/json' },
+                    })
+                    .pipe(catchError((error: AxiosError) => this.handleConnectionError(error))),
             );
             this.tokenExpiryTimestampMs = now + PrivacyIdeaAdministrationService.AUTHORIZATION_TIMEBOX_MS;
             this.jwtToken = response.data.result.value.token;
             return this.jwtToken;
         } catch (error) {
-            if (error instanceof Error) {
+            if (error instanceof PIUnavailableError) {
+                throw error;
+            } else if (error instanceof Error) {
                 throw new Error(`Error fetching JWT token: ${error.message}`);
             } else {
                 throw new Error(`Error fetching JWT token: Unknown error occurred`);
@@ -160,15 +166,15 @@ export class PrivacyIdeaAdministrationService {
                 (x: PrivacyIdeaToken) => x.rollout_state !== 'verify',
             )[0];
         } catch (error) {
-            if (error instanceof Error) {
-                throw new Error(`Error getting two auth state: ${error.message}`);
+            if (error instanceof PIUnavailableError) {
+                throw error;
             } else {
-                throw new Error(`Error getting two auth state: Unknown error occurred`);
+                throw new TokenStateError(error instanceof Error ? error.message : undefined);
             }
         }
     }
 
-    private async getUserTokens(userName: string): Promise<PrivacyIdeaToken[]> {
+    public async getUserTokens(userName: string): Promise<PrivacyIdeaToken[]> {
         if (!(await this.checkUserExists(userName))) {
             return [];
         }
@@ -182,11 +188,15 @@ export class PrivacyIdeaAdministrationService {
         };
         try {
             const response: AxiosResponse<PrivacyIdeaResponseTokens> = await firstValueFrom(
-                this.httpService.get(url, { headers: headers, params: params }),
+                this.httpService
+                    .get(url, { headers: headers, params: params })
+                    .pipe(catchError((error: AxiosError) => this.handleConnectionError(error))),
             );
             return response.data.result.value.tokens;
         } catch (error) {
-            if (error instanceof Error) {
+            if (error instanceof PIUnavailableError) {
+                throw error;
+            } else if (error instanceof Error) {
                 throw new Error(`Error getting user tokens: ${error.message}`);
             } else {
                 throw new Error(`Error getting user tokens: Unknown error occurred`);
@@ -206,11 +216,15 @@ export class PrivacyIdeaAdministrationService {
 
         try {
             const response: AxiosResponse<UserResponse> = await firstValueFrom(
-                this.httpService.get(url, { headers: headers, params: params }),
+                this.httpService
+                    .get(url, { headers: headers, params: params })
+                    .pipe(catchError((error: AxiosError) => this.handleConnectionError(error))),
             );
             return response.data.result.value.length > 0;
         } catch (error) {
-            if (error instanceof Error) {
+            if (error instanceof PIUnavailableError) {
+                throw error;
+            } else if (error instanceof Error) {
                 throw new Error(`Error checking user exists: ${error.message}`);
             } else {
                 throw new Error(`Error checking user exists: Unknown error occurred`);
@@ -239,6 +253,55 @@ export class PrivacyIdeaAdministrationService {
                 throw new Error(`Error adding user: Unknown error occurred`);
             }
         }
+    }
+
+    public async deleteUserWrapper(userName: string): Promise<Result<void, DomainError>> {
+        const token: string = await this.getJWTToken();
+        const result: Result<void, DomainError> = await this.deleteUser(userName, token);
+        return result;
+    }
+
+    private async deleteUser(userName: string, token: string): Promise<Result<void, DomainError>> {
+        const url: string =
+            this.privacyIdeaConfig.ENDPOINT + '/user/' + this.privacyIdeaConfig.USER_RESOLVER + '/' + userName;
+        const headers: { Authorization: string } = {
+            Authorization: `${token}`,
+        };
+        try {
+            await firstValueFrom(this.httpService.delete(url, { headers: headers }));
+            return { ok: true, value: undefined };
+        } catch (error) {
+            return { ok: false, error: new DeleteUserError() };
+        }
+    }
+
+    public async updateUsername(oldUserName: string, newUserName: string): Promise<Result<void, DomainError>> {
+        const newUserNameExists: boolean = await this.checkUserExists(newUserName);
+        if (newUserNameExists) {
+            return { ok: false, error: new UserExistsError() };
+        }
+        const token: string = await this.getJWTToken();
+
+        const userTokens: PrivacyIdeaToken[] = await this.getUserTokens(oldUserName);
+        await Promise.all(
+            userTokens.map(async (userToken: PrivacyIdeaToken) => {
+                await this.unassignToken(userToken.serial, token);
+            }),
+        );
+
+        await this.addUser(newUserName);
+        await Promise.all(
+            userTokens.map(async (userToken: PrivacyIdeaToken) => {
+                await this.assignToken(userToken.serial, token, newUserName);
+            }),
+        );
+
+        const result: Result<void, DomainError> = await this.deleteUser(oldUserName, token);
+        if (!result.ok) {
+            return result;
+        }
+
+        return { ok: true, value: undefined };
     }
 
     private async verifyTokenStatus(serial: string, token: string): Promise<TokenVerificationResponse> {
@@ -301,6 +364,11 @@ export class PrivacyIdeaAdministrationService {
 
         if (!(await this.checkUserExists(user))) {
             await this.addUser(user);
+        } else {
+            const oldTokenToVerify: PrivacyIdeaToken | undefined = await this.getTokenToVerify(user);
+            if (oldTokenToVerify) {
+                await this.deleteToken(oldTokenToVerify.serial);
+            }
         }
         const tokenVerificationResponse: TokenVerificationResponse = await this.verifyTokenStatus(serial, token);
         //Check token existence
@@ -434,6 +502,14 @@ export class PrivacyIdeaAdministrationService {
             } else {
                 throw new Error(`Error deleting token: Unknown error occurred`);
             }
+        }
+    }
+
+    private handleConnectionError(error: AxiosError): never {
+        if (error.code === 'ECONNREFUSED') {
+            throw new PIUnavailableError();
+        } else {
+            throw error;
         }
     }
 }

@@ -35,4 +35,8 @@ export class RedisConfig {
     @IsOptional()
     @IsString()
     public readonly CERTIFICATE_AUTHORITIES?: string;
+
+    @IsOptional()
+    @IsBoolean()
+    public readonly CLUSTERED?: boolean;
 }

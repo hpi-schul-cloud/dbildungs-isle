@@ -10,12 +10,14 @@ import {
     ManyToOne,
     OneToMany,
     Property,
+    QueryOrder,
 } from '@mikro-orm/core';
 import { TimestampedEntity } from '../../../persistence/timestamped.entity.js';
 import { DataProviderEntity } from '../../../persistence/data-provider.entity.js';
 import { Geschlecht, Vertrauensstufe } from '../domain/person.enums.js';
 import { PersonenkontextEntity } from '../../personenkontext/persistence/personenkontext.entity.js';
 import { EmailAddressEntity } from '../../email/persistence/email-address.entity.js';
+import { UserLockEntity } from '../../keycloak-administration/entity/user-lock.entity.js';
 
 @Entity({ tableName: 'person' })
 export class PersonEntity extends TimestampedEntity {
@@ -140,6 +142,19 @@ export class PersonEntity extends TimestampedEntity {
         cascade: [],
         orphanRemoval: false,
         eager: true,
+        orderBy: { updatedAt: QueryOrder.desc },
     })
     public emailAddresses: Collection<EmailAddressEntity> = new Collection<EmailAddressEntity>(this);
+
+    @AutoMap()
+    @Property({ nullable: true, type: DateTimeType })
+    public orgUnassignmentDate?: Date;
+
+    @OneToMany({
+        entity: () => UserLockEntity,
+        mappedBy: 'person',
+        cascade: [Cascade.REMOVE],
+        orphanRemoval: true,
+    })
+    public userLocks: Collection<UserLockEntity> = new Collection<UserLockEntity>(this);
 }

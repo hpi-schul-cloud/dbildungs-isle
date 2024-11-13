@@ -1,0 +1,18 @@
+{
+    "entityName": "Organisation",
+    "entities": [
+        {
+            "id": 1,
+            "overrideId": "85a5a9e2-865d-4c79-bbe9-0cff8cc57883",
+            "kennung": "Organisation1",
+            "name": "Schule1",
+            "namensergaenzung": "Keine",
+            "kuerzel": "01",
+            "typ": "SCHULE",
+            "traegerschaft": "05",
+            "administriertVon": 0
+        }
+    ]
+}
+
+

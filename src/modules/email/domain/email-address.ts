@@ -1,5 +1,7 @@
 import { PersonID } from '../../../shared/types/index.js';
 
+export const EmailAddressStatusName: string = 'EmailAddressStatus';
+
 export enum EmailAddressStatus {
     ENABLED = 'ENABLED',
     DISABLED = 'DISABLED',
@@ -24,19 +26,19 @@ export class EmailAddress<WasPersisted extends boolean> {
         updatedAt: Date,
         personId: PersonID,
         address: string,
-        enabled: EmailAddressStatus,
+        status: EmailAddressStatus,
         oxUserId?: string,
     ): EmailAddress<true> {
-        return new EmailAddress(id, createdAt, updatedAt, personId, address, enabled, oxUserId);
+        return new EmailAddress(id, createdAt, updatedAt, personId, address, status, oxUserId);
     }
 
     public static createNew(
         personId: PersonID,
         address: string,
-        enabled: EmailAddressStatus,
+        status: EmailAddressStatus,
         oxUserId?: string,
     ): EmailAddress<false> {
-        return new EmailAddress(undefined, undefined, undefined, personId, address, enabled, oxUserId);
+        return new EmailAddress(undefined, undefined, undefined, personId, address, status, oxUserId);
     }
 
     public enable(): boolean {

@@ -19,6 +19,7 @@ import { Person } from '../../src/modules/person/domain/person.js';
 import { Personenkontext } from '../../src/modules/personenkontext/domain/personenkontext.js';
 import { Organisation } from '../../src/modules/organisation/domain/organisation.js';
 import { PersonenkontextDo } from '../../src/modules/personenkontext/domain/personenkontext.do.js';
+import { ImportDataItem } from '../../src/modules/import/domain/import-data-item.js';
 
 export class DoFactory {
     public static createMany<T extends DoBase<boolean>>(
@@ -107,6 +108,7 @@ export class DoFactory {
             referrer: 'referrer',
             sichtfreigabe: SichtfreigabeType.JA,
             loeschungZeitpunkt: faker.date.anytime(),
+            befristung: faker.date.anytime(),
         };
 
         return Object.assign(Object.create(Personenkontext.prototype) as Personenkontext<boolean>, pk, props);
@@ -198,6 +200,7 @@ export class DoFactory {
             withId ? faker.string.uuid() : undefined,
             withId ? faker.date.past() : undefined,
             withId ? faker.date.recent() : undefined,
+            params.version ?? 1,
             faker.string.uuid(),
             faker.string.uuid(),
             faker.lorem.word(),
@@ -211,5 +214,23 @@ export class DoFactory {
         Object.assign(organisation, params);
 
         return organisation;
+    }
+
+    public static createImportDataItem<WasPersisted extends boolean>(
+        this: void,
+        withId: WasPersisted,
+        props?: Partial<ImportDataItem<WasPersisted>>,
+    ): ImportDataItem<WasPersisted> {
+        const person: Partial<ImportDataItem<WasPersisted>> = {
+            importvorgangId: faker.string.uuid(),
+            nachname: faker.person.lastName(),
+            vorname: faker.person.fullName(),
+            id: withId ? faker.string.uuid() : undefined,
+            createdAt: withId ? faker.date.past() : undefined,
+            updatedAt: withId ? faker.date.recent() : undefined,
+            klasse: faker.lorem.word({ length: 2 }),
+            personalnummer: undefined,
+        };
+        return Object.assign(Object.create(ImportDataItem.prototype) as ImportDataItem<boolean>, person, props);
     }
 }

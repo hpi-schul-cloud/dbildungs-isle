@@ -43,6 +43,8 @@ export class KeycloakConfigTestModule implements OnModuleDestroy {
                             keycloakConfig.ADMIN_REALM_NAME,
                             keycloakConfig.ADMIN_CLIENT_ID,
                             keycloakConfig.ADMIN_SECRET,
+                            keycloakConfig.SERVICE_CLIENT_ID,
+                            keycloakConfig.SERVICE_CLIENT_PRIVATE_JWKS,
                             keycloakConfig.REALM_NAME,
                             keycloakConfig.CLIENT_ID,
                             keycloakConfig.CLIENT_SECRET,

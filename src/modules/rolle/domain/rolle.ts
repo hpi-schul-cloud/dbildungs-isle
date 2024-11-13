@@ -126,7 +126,7 @@ export class Rolle<WasPersisted extends boolean> {
         systemrechte: RollenSystemRecht[],
         serviceProviderIds: string[],
         istTechnisch: boolean,
-        serviceProviderData: ServiceProvider<true>[] = [],
+        serviceProviderData: ServiceProvider<true>[] | undefined,
     ): Rolle<WasPersisted> {
         return new Rolle(
             organisationRepo,
@@ -142,7 +142,7 @@ export class Rolle<WasPersisted extends boolean> {
             systemrechte,
             serviceProviderIds,
             istTechnisch,
-            serviceProviderData,
+            serviceProviderData ?? [],
         );
     }
 

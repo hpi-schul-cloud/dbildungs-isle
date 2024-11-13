@@ -20,3 +20,8 @@ export enum SortFieldPersonFrontend {
     PERSONALNUMMER = 'personalnummer',
     REFERRER = 'referrer',
 }
+
+export enum PersonLockOccasion {
+    KOPERS_GESPERRT = 'KOPERS_GESPERRT',
+    MANUELL_GESPERRT = 'MANUELL_GESPERRT',
+}

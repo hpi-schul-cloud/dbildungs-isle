@@ -25,6 +25,9 @@ import { OrganisationRepository } from '../../organisation/persistence/organisat
 import { Organisation } from '../../organisation/domain/organisation.js';
 import { mapAggregateToData } from './email.repo.js';
 import { PersonAlreadyHasEnabledEmailAddressError } from '../error/person-already-has-enabled-email-address.error.js';
+import { UserLockRepository } from '../../keycloak-administration/repository/user-lock.repository.js';
+import { PersonEmailResponse } from '../../person/api/person-email-response.js';
+import { generatePassword } from '../../../shared/util/password-generator.js';
 
 describe('EmailRepo', () => {
     let module: TestingModule;
@@ -68,6 +71,10 @@ describe('EmailRepo', () => {
                             }),
                     }),
                 },
+                {
+                    provide: UserLockRepository,
+                    useValue: createMock<UserLockRepository>(),
+                },
             ],
         }).compile();
         sut = module.get(EmailRepo);
@@ -85,7 +92,7 @@ describe('EmailRepo', () => {
             vorname: faker.person.firstName(),
             familienname: faker.person.lastName(),
             username: faker.internet.userName(),
-            password: faker.string.alphanumeric(8),
+            password: generatePassword(),
         });
         if (personResult instanceof DomainError) {
             throw personResult;
@@ -256,6 +263,83 @@ describe('EmailRepo', () => {
                 );
 
                 expect(foundEmails).toBeUndefined();
+            });
+        });
+    });
+
+    describe('getEmailAddressAndStatusForPerson', () => {
+        describe('when person has NO email-address assigned', () => {
+            it('should return undefined', async () => {
+                const person: Person<true> = await createPerson();
+
+                const personEmailResponse: Option<PersonEmailResponse> =
+                    await sut.getEmailAddressAndStatusForPerson(person);
+
+                expect(personEmailResponse).toBeUndefined();
+            });
+        });
+
+        describe('when person has enabled email-address assigned', () => {
+            it('should return enabled address', async () => {
+                const person: Person<true> = await createPerson();
+                const organisation: Organisation<true> = await createOrganisation();
+                const emailRequested: Result<EmailAddress<false>> = await emailFactory.createNew(
+                    person.id,
+                    organisation.id,
+                );
+                if (!emailRequested.ok) throw new Error();
+                emailRequested.value.request();
+                const savedRequestedEmail: EmailAddress<true> | DomainError = await sut.save(emailRequested.value);
+                if (savedRequestedEmail instanceof DomainError) throw new Error();
+
+                const emailEnabled: Result<EmailAddress<false>> = await emailFactory.createNew(
+                    person.id,
+                    organisation.id,
+                );
+                if (!emailEnabled.ok) throw new Error();
+                emailEnabled.value.enable();
+                const savedEnabledEmail: EmailAddress<true> | DomainError = await sut.save(emailEnabled.value);
+                if (savedEnabledEmail instanceof DomainError) throw new Error();
+
+                const personEmailResponse: Option<PersonEmailResponse> =
+                    await sut.getEmailAddressAndStatusForPerson(person);
+
+                if (!personEmailResponse) throw Error();
+
+                expect(personEmailResponse.status).toStrictEqual(EmailAddressStatus.ENABLED);
+                expect(personEmailResponse.address).toStrictEqual(emailEnabled.value.address);
+            });
+        });
+
+        describe('when person has no enabled email-address assigned', () => {
+            it('should return the most recently updated one', async () => {
+                const person: Person<true> = await createPerson();
+                const organisation: Organisation<true> = await createOrganisation();
+                const emailRequested: Result<EmailAddress<false>> = await emailFactory.createNew(
+                    person.id,
+                    organisation.id,
+                );
+                if (!emailRequested.ok) throw new Error();
+                emailRequested.value.request();
+                const savedRequestedEmail: EmailAddress<true> | DomainError = await sut.save(emailRequested.value);
+                if (savedRequestedEmail instanceof DomainError) throw new Error();
+
+                const emailFailed: Result<EmailAddress<false>> = await emailFactory.createNew(
+                    person.id,
+                    organisation.id,
+                );
+                if (!emailFailed.ok) throw new Error();
+                emailFailed.value.failed();
+                const savedFailedEmail: EmailAddress<true> | DomainError = await sut.save(emailFailed.value);
+                if (savedFailedEmail instanceof DomainError) throw new Error();
+
+                const personEmailResponse: Option<PersonEmailResponse> =
+                    await sut.getEmailAddressAndStatusForPerson(person);
+
+                if (!personEmailResponse) throw Error();
+
+                expect(personEmailResponse.status).toStrictEqual(EmailAddressStatus.FAILED);
+                expect(personEmailResponse.address).toStrictEqual(emailFailed.value.address);
             });
         });
     });

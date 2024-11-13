@@ -93,7 +93,7 @@ describe('EmailFactory', () => {
                 const person: Person<true> = getPerson();
                 personRepositoryMock.findById.mockResolvedValueOnce(person);
 
-                jest.spyOn(EmailGenerator.prototype, 'generateAvailableAddress').mockImplementation(
+                jest.spyOn(EmailGenerator.prototype, 'generateAvailableAddress').mockImplementationOnce(
                     // eslint-disable-next-line @typescript-eslint/require-await
                     async (vorname: string, familienname: string) => {
                         return {
@@ -175,11 +175,9 @@ describe('EmailFactory', () => {
                 organisationRepositoryMock.findById.mockResolvedValueOnce(
                     createMock<Organisation<true>>({ emailDomain: undefined }),
                 );
-                organisationRepositoryMock.findParentOrgasForIdSortedByDepthAsc.mockResolvedValueOnce([
-                    createMock<Organisation<true>>({ emailDomain: faker.internet.email() }),
-                ]);
+                organisationRepositoryMock.findEmailDomainForOrganisation.mockResolvedValueOnce(faker.internet.email());
 
-                jest.spyOn(EmailGenerator.prototype, 'generateAvailableAddress').mockImplementation(
+                jest.spyOn(EmailGenerator.prototype, 'generateAvailableAddress').mockImplementationOnce(
                     // eslint-disable-next-line @typescript-eslint/require-await
                     async (vorname: string, familienname: string) => {
                         return {

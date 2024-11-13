@@ -1,0 +1,17 @@
+{
+    "entityName": "Person",
+    "entities": [
+        {
+            "id": 1,
+            "username": "ssuperadmin",
+            "vorname": "Susi",
+            "familienname": "Superadmin"
+        },
+        {
+            "id": 2,
+            "username": "migration",
+            "vorname": "migration",
+            "familienname": "migration"
+        }
+    ]
+}

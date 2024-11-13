@@ -24,6 +24,8 @@ import { createMock } from '@golevelup/ts-jest';
 import { KeycloakUserService } from '../../keycloak-administration/index.js';
 import { ServiceProviderRepo } from '../../service-provider/repo/service-provider.repo.js';
 import { DBiamPersonenkontextRepoInternal } from './internal-dbiam-personenkontext.repo.js';
+import { UserLockRepository } from '../../keycloak-administration/repository/user-lock.repository.js';
+import { generatePassword } from '../../../shared/util/password-generator.js';
 
 describe('dbiam Personenkontext Repo', () => {
     let module: TestingModule;
@@ -91,6 +93,10 @@ describe('dbiam Personenkontext Repo', () => {
                             }),
                     }),
                 },
+                {
+                    provide: UserLockRepository,
+                    useValue: createMock<UserLockRepository>(),
+                },
             ],
         }).compile();
 
@@ -110,7 +116,7 @@ describe('dbiam Personenkontext Repo', () => {
             vorname: faker.person.firstName(),
             familienname: faker.person.lastName(),
             username: faker.internet.userName(),
-            password: faker.string.alphanumeric(8),
+            password: generatePassword(),
         });
         if (personResult instanceof DomainError) {
             throw personResult;
@@ -149,6 +155,21 @@ describe('dbiam Personenkontext Repo', () => {
             const savedPersonenkontext: Personenkontext<true> = await sut.save(personenkontext);
 
             expect(savedPersonenkontext.id).toBeDefined();
+        });
+
+        it('should create a new personenkontext with a id set to overrideId', async () => {
+            const person: Person<true> = await createPerson();
+            const rolle: Rolle<true> = await rolleRepo.save(DoFactory.createRolle(false));
+            const personenkontext: Personenkontext<false> = createPersonenkontext(false, {
+                personId: person.id,
+                rolleId: rolle.id,
+            });
+
+            personenkontext.id = faker.string.uuid();
+            const savedPersonenkontext: Personenkontext<true> = await sut.create(personenkontext);
+
+            expect(savedPersonenkontext.id).toBeDefined();
+            expect(savedPersonenkontext.id).toBe(personenkontext.id);
         });
 
         it('should update an existing rolle', async () => {

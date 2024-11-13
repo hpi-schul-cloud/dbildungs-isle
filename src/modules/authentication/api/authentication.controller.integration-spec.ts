@@ -116,7 +116,12 @@ describe('AuthenticationController', () => {
 
         it('should redirect to saved redirectUrl', () => {
             const responseMock: Response = createMock<Response>();
-            const sessionMock: SessionData = createMock<SessionData>({ redirectUrl: faker.internet.url() });
+            const user: { redirect_uri: string } = { redirect_uri: faker.internet.url() };
+            const passport: { user: { redirect_uri: string } } = { user: user };
+            const sessionMock: SessionData = createMock<SessionData>({
+                redirectUrl: passport.user.redirect_uri,
+                passport: passport,
+            });
 
             authController.login(responseMock, sessionMock);
 
@@ -219,6 +224,15 @@ describe('AuthenticationController', () => {
     });
 
     describe('info', () => {
+        function setupRequest(passportUser?: PassportUser): Request {
+            const sessionMock: DeepMocked<Session> = createMock<Session>();
+            const requestMock: DeepMocked<Request> = createMock<Request>({
+                session: sessionMock,
+                passportUser,
+            });
+            return requestMock;
+        }
+
         it('should return user info', async () => {
             const person: Person<true> = Person.construct(
                 faker.string.uuid(),
@@ -260,7 +274,9 @@ describe('AuthenticationController', () => {
                 ok: true,
                 value: person.updatedAt,
             });
-            const result: UserinfoResponse = await authController.info(permissions);
+
+            const requestMock: Request = setupRequest();
+            const result: UserinfoResponse = await authController.info(permissions, requestMock);
 
             expect(result).toBeInstanceOf(UserinfoResponse);
             expect(result.birthdate!).toBe(permissions.personFields.geburtsdatum?.toISOString());

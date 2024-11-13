@@ -117,6 +117,41 @@ describe('OrganisationController', () => {
                 traegerschaft: undefined,
             };
 
+            const oeffentlich: Organisation<true> = Organisation.construct(
+                faker.string.uuid(),
+                faker.date.past(),
+                faker.date.recent(),
+                faker.number.int(),
+                faker.string.uuid(),
+                faker.string.uuid(),
+                faker.string.numeric(),
+                'Öffentliche Schulen Land Schleswig-Holstein',
+                faker.lorem.word(),
+                faker.string.uuid(),
+                OrganisationsTyp.ROOT,
+                undefined,
+            );
+            const ersatz: Organisation<true> = Organisation.construct(
+                faker.string.uuid(),
+                faker.date.past(),
+                faker.date.recent(),
+                faker.number.int(),
+                faker.string.uuid(),
+                faker.string.uuid(),
+                faker.string.numeric(),
+                'Ersatzschulen Land Schleswig-Holstein',
+                faker.lorem.word(),
+                faker.string.uuid(),
+                OrganisationsTyp.SCHULE,
+                undefined,
+            );
+            const mockedRepoResponse: [Organisation<true> | undefined, Organisation<true> | undefined] = [
+                oeffentlich,
+                ersatz,
+            ];
+
+            organisationRepositoryMock.findRootDirectChildren.mockResolvedValue(mockedRepoResponse);
+
             try {
                 await organisationController.createOrganisation(params);
 
@@ -128,6 +163,40 @@ describe('OrganisationController', () => {
 
         describe('when usecase returns a OrganisationSpecificationError', () => {
             it('should throw a HttpException', async () => {
+                const oeffentlich: Organisation<true> = Organisation.construct(
+                    faker.string.uuid(),
+                    faker.date.past(),
+                    faker.date.recent(),
+                    faker.number.int(),
+                    faker.string.uuid(),
+                    faker.string.uuid(),
+                    faker.string.numeric(),
+                    'Öffentliche Schulen Land Schleswig-Holstein',
+                    faker.lorem.word(),
+                    faker.string.uuid(),
+                    OrganisationsTyp.ROOT,
+                    undefined,
+                );
+                const ersatz: Organisation<true> = Organisation.construct(
+                    faker.string.uuid(),
+                    faker.date.past(),
+                    faker.date.recent(),
+                    faker.number.int(),
+                    faker.string.uuid(),
+                    faker.string.uuid(),
+                    faker.string.numeric(),
+                    'Ersatzschulen Land Schleswig-Holstein',
+                    faker.lorem.word(),
+                    faker.string.uuid(),
+                    OrganisationsTyp.SCHULE,
+                    undefined,
+                );
+                const mockedRepoResponse: [Organisation<true> | undefined, Organisation<true> | undefined] = [
+                    oeffentlich,
+                    ersatz,
+                ];
+
+                organisationRepositoryMock.findRootDirectChildren.mockResolvedValue(mockedRepoResponse);
                 organisationServiceMock.createOrganisation.mockResolvedValueOnce({
                     ok: false,
                     error: new OrganisationSpecificationError('error', undefined),
@@ -141,6 +210,40 @@ describe('OrganisationController', () => {
 
         describe('when usecase returns a SchulConnexError', () => {
             it('should throw a HttpException', async () => {
+                const oeffentlich: Organisation<true> = Organisation.construct(
+                    faker.string.uuid(),
+                    faker.date.past(),
+                    faker.date.recent(),
+                    faker.number.int(),
+                    faker.string.uuid(),
+                    faker.string.uuid(),
+                    faker.string.numeric(),
+                    'Öffentliche Schulen Land Schleswig-Holstein',
+                    faker.lorem.word(),
+                    faker.string.uuid(),
+                    OrganisationsTyp.ROOT,
+                    undefined,
+                );
+                const ersatz: Organisation<true> = Organisation.construct(
+                    faker.string.uuid(),
+                    faker.date.past(),
+                    faker.date.recent(),
+                    faker.number.int(),
+                    faker.string.uuid(),
+                    faker.string.uuid(),
+                    faker.string.numeric(),
+                    'Ersatzschulen Land Schleswig-Holstein',
+                    faker.lorem.word(),
+                    faker.string.uuid(),
+                    OrganisationsTyp.SCHULE,
+                    undefined,
+                );
+                const mockedRepoResponse: [Organisation<true> | undefined, Organisation<true> | undefined] = [
+                    oeffentlich,
+                    ersatz,
+                ];
+
+                organisationRepositoryMock.findRootDirectChildren.mockResolvedValue(mockedRepoResponse);
                 organisationServiceMock.createOrganisation.mockResolvedValue({
                     ok: false,
                     error: {} as EntityNotFoundError,
@@ -284,7 +387,7 @@ describe('OrganisationController', () => {
                     ]),
                 );
 
-                const mockedRepoResponse: Counted<Organisation<true>> = [
+                const mockedRepoResponse: [Organisation<true>[], number, number] = [
                     [
                         DoFactory.createOrganisationAggregate(true, {
                             id: faker.string.uuid(),
@@ -302,6 +405,7 @@ describe('OrganisationController', () => {
                         ...selectedOrganisationMap.values(),
                     ],
                     selectedOrganisationMap.size + 1,
+                    3,
                 ];
 
                 const permissionsMock: DeepMocked<PersonPermissions> = createMock<PersonPermissions>();
@@ -327,6 +431,7 @@ describe('OrganisationController', () => {
                     faker.string.uuid(),
                     faker.date.past(),
                     faker.date.recent(),
+                    faker.number.int(),
                     faker.string.uuid(),
                     faker.string.uuid(),
                     faker.string.numeric(),
@@ -340,6 +445,7 @@ describe('OrganisationController', () => {
                     faker.string.uuid(),
                     faker.date.past(),
                     faker.date.recent(),
+                    faker.number.int(),
                     faker.string.uuid(),
                     faker.string.uuid(),
                     faker.string.numeric(),
@@ -387,6 +493,7 @@ describe('OrganisationController', () => {
                     id,
                     faker.date.past(),
                     faker.date.recent(),
+                    faker.number.int(),
                     faker.string.uuid(),
                     faker.string.uuid(),
                     faker.string.numeric(),
@@ -618,6 +725,7 @@ describe('OrganisationController', () => {
                     faker.string.uuid(),
                     faker.date.past(),
                     faker.date.recent(),
+                    faker.number.int(),
                     faker.string.uuid(),
                     faker.string.uuid(),
                     faker.string.numeric(),
@@ -632,6 +740,7 @@ describe('OrganisationController', () => {
                 };
                 const body: OrganisationByNameBodyParams = {
                     name: faker.company.name(),
+                    version: faker.number.int(),
                 };
 
                 organisationRepositoryMock.updateKlassenname.mockResolvedValueOnce(oeffentlich);
@@ -647,6 +756,7 @@ describe('OrganisationController', () => {
                 };
                 const body: OrganisationByNameBodyParams = {
                     name: faker.company.name(),
+                    version: faker.number.int(),
                 };
                 organisationRepositoryMock.updateKlassenname.mockResolvedValueOnce(new NameRequiredForKlasseError());
 
@@ -663,6 +773,7 @@ describe('OrganisationController', () => {
                 };
                 const body: OrganisationByNameBodyParams = {
                     name: faker.company.name(),
+                    version: faker.number.int(),
                 };
 
                 organisationRepositoryMock.updateKlassenname.mockResolvedValueOnce(new EntityNotFoundError());
@@ -681,6 +792,7 @@ describe('OrganisationController', () => {
                     faker.string.uuid(),
                     faker.date.past(),
                     faker.date.recent(),
+                    faker.number.int(),
                     faker.string.uuid(),
                     faker.string.uuid(),
                     faker.string.numeric(),
@@ -695,6 +807,7 @@ describe('OrganisationController', () => {
                 };
                 const body: OrganisationByNameBodyParams = {
                     name: faker.company.name(),
+                    version: faker.number.int(),
                 };
 
                 organisationRepositoryMock.updateKlassenname.mockResolvedValueOnce(oeffentlich);
@@ -710,6 +823,7 @@ describe('OrganisationController', () => {
                 };
                 const body: OrganisationByNameBodyParams = {
                     name: faker.company.name(),
+                    version: faker.number.int(),
                 };
                 organisationRepositoryMock.updateKlassenname.mockResolvedValueOnce(new NameRequiredForKlasseError());
 
@@ -726,6 +840,7 @@ describe('OrganisationController', () => {
                 };
                 const body: OrganisationByNameBodyParams = {
                     name: faker.company.name(),
+                    version: faker.number.int(),
                 };
 
                 organisationRepositoryMock.updateKlassenname.mockResolvedValueOnce(new EntityNotFoundError());

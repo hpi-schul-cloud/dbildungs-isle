@@ -14,22 +14,20 @@ import { OXContextName, OXUserName } from '../../../shared/types/ox-ids.types.js
 import { KeycloakAdministrationService } from './keycloak-admin-client.service.js';
 import { UserRepresentationDto } from './keycloak-client/user-representation.dto.js';
 import { ExternalSystemIDs, User } from './user.js';
+import { UserLockRepository } from '../repository/user-lock.repository.js';
+import { UserLock } from './user-lock.js';
 
 export type FindUserFilter = {
     username?: string;
     email?: string;
 };
 
-export enum LockKeys {
-    LockedFrom = 'lock_locked_from',
-    Timestamp = 'lock_timestamp',
-}
-
 @Injectable()
 export class KeycloakUserService {
     public constructor(
         private readonly kcAdminService: KeycloakAdministrationService,
         private readonly logger: ClassLogger,
+        private readonly userLockRepository: UserLockRepository,
     ) {}
 
     public async create(user: User<false>, password?: string): Promise<Result<string, DomainError>> {
@@ -198,6 +196,7 @@ export class KeycloakUserService {
 
         const updatedUserRepresentation: UserRepresentation = {
             //only attributes shall be updated here for this event
+            username: userRepresentation.username,
             attributes: attributes,
         };
 
@@ -507,65 +506,37 @@ export class KeycloakUserService {
     }
 
     public async updateKeycloakUserStatus(
-        userId: string,
-        enabled: boolean,
-        customAttributes?: Record<string, string>,
+        personId: string,
+        keyCloakUserId: string,
+        userLock: UserLock,
+        lock: boolean,
     ): Promise<Result<void, DomainError>> {
         const kcAdminClientResult: Result<KeycloakAdminClient, DomainError> =
             await this.kcAdminService.getAuthedKcAdminClient();
         if (!kcAdminClientResult.ok) {
             return kcAdminClientResult;
         }
-
         try {
-            const kcAdminClient: KeycloakAdminClient = kcAdminClientResult.value;
-            await kcAdminClient.users.update({ id: userId }, { enabled });
-
-            if (customAttributes) {
-                await this.updateCustomAttributes(kcAdminClient, userId, customAttributes);
-            }
-
-            if (enabled) {
-                await this.removeLockedAttributes(kcAdminClient, userId);
-            }
-
-            return { ok: true, value: undefined };
-        } catch (err) {
-            this.logger.error(`Could not update user status or custom attributes, message: ${JSON.stringify(err)}`);
-            return {
-                ok: false,
-                error: new KeycloakClientError('Could not update user status or custom attributes'),
-            };
-        }
-    }
-
-    private async updateCustomAttributes(
-        kcAdminClient: KeycloakAdminClient,
-        userId: string,
-        customAttributes: Record<string, string>,
-    ): Promise<void> {
-        const user: UserRepresentation | undefined = await kcAdminClient.users.findOne({ id: userId });
-        if (user) {
-            user.attributes = user.attributes ?? {};
-            for (const key in customAttributes) {
-                if (customAttributes.hasOwnProperty(key)) {
-                    user.attributes[key] = [customAttributes[key]];
+            //lock describes whether the user should be locked or not
+            if (lock) {
+                await this.userLockRepository.createUserLock(userLock);
+                const kcAdminClient: KeycloakAdminClient = kcAdminClientResult.value;
+                await kcAdminClient.users.update({ id: keyCloakUserId }, { enabled: !lock });
+            } else {
+                await this.userLockRepository.deleteUserLock(personId, userLock.locked_occasion);
+                const userLocks: UserLock[] = await this.userLockRepository.findByPersonId(personId);
+                if (userLocks.length === 0) {
+                    const kcAdminClient: KeycloakAdminClient = kcAdminClientResult.value;
+                    await kcAdminClient.users.update({ id: keyCloakUserId }, { enabled: !lock });
                 }
             }
-            await kcAdminClient.users.update({ id: userId }, user);
-        }
-    }
-
-    private async removeLockedAttributes(kcAdminClient: KeycloakAdminClient, userId: string): Promise<void> {
-        const user: UserRepresentation | undefined = await kcAdminClient.users.findOne({ id: userId });
-        if (user) {
-            user.attributes = user.attributes ?? {};
-            const filteredAttributes: Record<string, string[]> = Object.fromEntries(
-                Object.entries(user.attributes).filter(([key]: string[]) => !(key! in LockKeys)),
-            );
-
-            user.attributes = filteredAttributes;
-            await kcAdminClient.users.update({ id: userId }, user);
+            return { ok: true, value: undefined };
+        } catch (err) {
+            this.logger.error(`Could not update user status or database, message: ${JSON.stringify(err)}`);
+            return {
+                ok: false,
+                error: new KeycloakClientError('Could not update user status or database'),
+            };
         }
     }
 

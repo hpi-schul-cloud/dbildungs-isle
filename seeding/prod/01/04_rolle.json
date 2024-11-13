@@ -1,0 +1,186 @@
+{
+    "entityName": "Rolle",
+    "entities": [
+        {
+            "id": 0,
+            "administeredBySchulstrukturknoten": 0,
+            "name": "Landesadministrator",
+            "rollenart": "SYSADMIN",
+            "merkmale": [],
+            "systemrechte": [
+                "ROLLEN_VERWALTEN",
+                "PERSONEN_VERWALTEN",
+                "SCHULEN_VERWALTEN",
+                "KLASSEN_VERWALTEN",
+                "SCHULTRAEGER_VERWALTEN",
+                "PERSONEN_SOFORT_LOESCHEN",
+                "PERSON_SYNCHRONISIEREN",
+                "IMPORT_DURCHFUEHREN"
+            ],
+            "serviceProviderIds": [5, 8, 9, 10, 11]
+        },
+        {
+            "id": 1,
+            "administeredBySchulstrukturknoten": 0,
+            "name": "itslearning-Schüler",
+            "rollenart": "LERN",
+            "merkmale": [],
+            "systemrechte": [],
+            "serviceProviderIds": [3]
+        },
+        {
+            "id": 2,
+            "administeredBySchulstrukturknoten": 1,
+            "name": "Lehrkraft",
+            "rollenart": "LEHR",
+            "merkmale": ["KOPERS_PFLICHT"],
+            "systemrechte": [],
+            "serviceProviderIds": [0, 1, 2, 4, 6, 7, 8, 9, 10, 11]
+        },
+        {
+            "id": 3,
+            "administeredBySchulstrukturknoten": 1,
+            "name": "LiV",
+            "rollenart": "LEHR",
+            "merkmale": ["BEFRISTUNG_PFLICHT", "KOPERS_PFLICHT"],
+            "systemrechte": [],
+            "serviceProviderIds": [0, 1, 2, 4, 6, 7, 8, 9, 10, 11]
+        },
+        {
+            "id": 4,
+            "administeredBySchulstrukturknoten": 1,
+            "name": "Schuladministrator öffentlich",
+            "rollenart": "LEIT",
+            "merkmale": [],
+            "systemrechte": ["PERSONEN_VERWALTEN", "KLASSEN_VERWALTEN"],
+            "serviceProviderIds": [5, 8, 9, 10, 11]
+        },
+        {
+            "id": 5,
+            "administeredBySchulstrukturknoten": 0,
+            "name": "Webuntis-Schüler",
+            "rollenart": "LERN",
+            "merkmale": [],
+            "systemrechte": [],
+            "serviceProviderIds": [7]
+        },
+        {
+            "id": 6,
+            "administeredBySchulstrukturknoten": 0,
+            "name": "Student im Praxissemester",
+            "rollenart": "LEHR",
+            "merkmale": ["BEFRISTUNG_PFLICHT"],
+            "systemrechte": [],
+            "serviceProviderIds": [0, 1, 2, 4, 6, 7, 8, 9, 10, 11]
+        },
+        {
+            "id": 7,
+            "administeredBySchulstrukturknoten": 0,
+            "name": "Schulträgeradministrator",
+            "rollenart": "ORGADMIN",
+            "merkmale": [],
+            "systemrechte": ["PERSONEN_VERWALTEN", "KLASSEN_VERWALTEN"],
+            "serviceProviderIds": [5, 8, 10]
+        },
+        {
+            "id": 8,
+            "administeredBySchulstrukturknoten": 2,
+            "name": "Schuladministrator Ersatzschule",
+            "rollenart": "LEIT",
+            "merkmale": [],
+            "systemrechte": ["PERSONEN_VERWALTEN", "KLASSEN_VERWALTEN"],
+            "serviceProviderIds": [5, 8, 10]
+        },
+        {
+            "id": 10,
+            "administeredBySchulstrukturknoten": 1,
+            "name": "Vertretungslehrkraft",
+            "rollenart": "LEHR",
+            "merkmale": ["BEFRISTUNG_PFLICHT", "KOPERS_PFLICHT"],
+            "systemrechte": [],
+            "serviceProviderIds": [0, 1, 2, 4, 6, 7, 8, 9, 10, 11]
+        },
+        {
+            "id": 11,
+            "administeredBySchulstrukturknoten": 0,
+            "name": "Ev./Kat. Religionslehrkraft",
+            "rollenart": "LEHR",
+            "merkmale": [],
+            "systemrechte": [],
+            "serviceProviderIds": [0, 1, 2, 4, 6, 7, 8, 9, 10, 11]
+        },
+        {
+            "id": 12,
+            "administeredBySchulstrukturknoten": 1,
+            "name": "Pilotprojekt-Schulverwaltungskraft",
+            "rollenart": "LEHR",
+            "merkmale": ["KOPERS_PFLICHT"],
+            "systemrechte": [],
+            "serviceProviderIds": [0, 1, 2, 6, 7, 8, 9, 10, 11]
+        },
+        {
+            "id": 13,
+            "administeredBySchulstrukturknoten": 2,
+            "name": "Ersatzschullehrkraft",
+            "rollenart": "LEHR",
+            "merkmale": [],
+            "systemrechte": [],
+            "serviceProviderIds": [0, 1, 2, 8, 10]
+        },
+        {
+            "id": 14,
+            "administeredBySchulstrukturknoten": 0,
+            "name": "IQSH Mitarbeiter ohne Landes-E-Mail",
+            "rollenart": "LEHR",
+            "merkmale": ["KOPERS_PFLICHT"],
+            "systemrechte": [],
+            "serviceProviderIds": [0, 1, 2, 3, 4, 6, 7, 8, 9, 10, 11]
+        },
+        {
+            "id": 15,
+            "administeredBySchulstrukturknoten": 0,
+            "name": "itslearning-Lehrkraft",
+            "rollenart": "LEHR",
+            "merkmale": [],
+            "systemrechte": [],
+            "serviceProviderIds": [3]
+        },
+        {
+            "id": 16,
+            "administeredBySchulstrukturknoten": 0,
+            "name": "itslearning-Administrator",
+            "rollenart": "LEIT",
+            "merkmale": [],
+            "systemrechte": [],
+            "serviceProviderIds": [3]
+        },
+        {
+            "id": 100,
+            "administeredBySchulstrukturknoten": 0,
+            "name": "Technical User CRON",
+            "rollenart": "SYSADMIN",
+            "merkmale": [],
+            "systemrechte": ["CRON_DURCHFUEHREN"],
+            "serviceProviderIds": [],
+            "istTechnisch": true
+        },
+        {
+            "id": 101,
+            "administeredBySchulstrukturknoten": 0,
+            "name": "Migration",
+            "rollenart": "SYSADMIN",
+            "merkmale": [],
+            "systemrechte": [
+                "ROLLEN_VERWALTEN",
+                "PERSONEN_VERWALTEN",
+                "SCHULEN_VERWALTEN",
+                "KLASSEN_VERWALTEN",
+                "SCHULTRAEGER_VERWALTEN",
+                "MIGRATION_DURCHFUEHREN",
+                "PERSON_SYNCHRONISIEREN"
+            ],
+            "serviceProviderIds": [],
+            "istTechnisch": true
+        }
+    ]
+}

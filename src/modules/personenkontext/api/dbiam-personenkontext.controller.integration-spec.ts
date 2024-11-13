@@ -35,6 +35,7 @@ import { Organisation } from '../../organisation/domain/organisation.js';
 import { PersonFactory } from '../../person/domain/person.factory.js';
 import { UsernameGeneratorService } from '../../person/domain/username-generator.service.js';
 import { PersonenkontextMigrationRuntype } from '../domain/personenkontext.enums.js';
+import { generatePassword } from '../../../shared/util/password-generator.js';
 
 describe('dbiam Personenkontext API', () => {
     let app: INestApplication;
@@ -105,7 +106,7 @@ describe('dbiam Personenkontext API', () => {
             vorname: faker.person.firstName(),
             familienname: faker.person.lastName(),
             username: faker.internet.userName(),
-            password: faker.string.alphanumeric(8),
+            password: generatePassword(),
         });
         if (personResult instanceof DomainError) {
             throw personResult;

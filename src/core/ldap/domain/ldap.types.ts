@@ -1,5 +1,10 @@
 export type LdapPersonEntry = {
+    uid: string; //required for posixAccount objectClass
+    uidNumber: string; //required for posixAccount objectClass
+    gidNumber: string; //required for posixAccount objectClass
+    homeDirectory: string; //required for posixAccount objectClass
     cn: string;
+    givenName: string;
     sn: string;
     mailPrimaryAddress?: string;
     mailAlternativeAddress?: string;
@@ -8,18 +13,6 @@ export type LdapPersonEntry = {
     personID?: string;
 };
 
-export type LdapOrganisationEntry = {
-    ou: string;
-    objectclass: string[];
-};
-
-export type LdapRoleEntry = {
-    cn: string;
-    ou: string;
-    objectclass: string[];
-};
-
 export enum LdapEntityType {
-    SCHULE = 'SCHULE',
     LEHRER = 'LEHRER',
 }

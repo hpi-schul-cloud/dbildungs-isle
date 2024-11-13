@@ -32,6 +32,9 @@ export class OrganisationResponse {
     @ApiProperty({ enum: Traegerschaft, enumName: TraegerschaftTypName })
     public traegerschaft?: Traegerschaft;
 
+    @ApiProperty()
+    public version: number;
+
     public constructor(organisation: Organisation<true>) {
         this.id = organisation.id;
         this.administriertVon = organisation.administriertVon;
@@ -41,5 +44,6 @@ export class OrganisationResponse {
         this.kuerzel = organisation.kuerzel;
         this.typ = organisation.typ!;
         this.traegerschaft = organisation.traegerschaft;
+        this.version = organisation.version;
     }
 }

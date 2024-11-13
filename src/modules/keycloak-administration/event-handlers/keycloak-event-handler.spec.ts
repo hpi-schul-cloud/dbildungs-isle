@@ -9,6 +9,7 @@ import { OXContextID, OXContextName, OXUserID, OXUserName } from '../../../share
 import { PersonID } from '../../../shared/types/aggregate-ids.types.js';
 import { EventService } from '../../../core/eventbus/services/event.service.js';
 import { OxUserChangedEvent } from '../../../shared/events/ox-user-changed.event.js';
+import { KeycloakClientError } from '../../../shared/error/keycloak-client.error.js';
 
 describe('KeycloakEventHandler', () => {
     let module: TestingModule;
@@ -44,13 +45,22 @@ describe('KeycloakEventHandler', () => {
     });
 
     describe('handleOxUserCreatedEvent', () => {
+        let fakePersonID: PersonID;
+        let fakeOXUserID: OXUserID;
+        let fakeOXContextID: OXContextID;
+        let fakeOXUserName: OXUserName;
+        let fakeOXContextName: OXContextName;
+        let fakeEmail: string;
+
+        beforeEach(() => {
+            fakePersonID = faker.string.uuid();
+            fakeOXUserID = faker.string.uuid();
+            fakeOXContextID = faker.string.uuid();
+            fakeOXUserName = faker.internet.userName();
+            fakeOXContextName = 'context1';
+            fakeEmail = faker.internet.email();
+        });
         it('should log info and call KeycloakUserService', async () => {
-            const fakePersonID: PersonID = faker.string.uuid();
-            const fakeOXUserID: OXUserID = faker.string.uuid();
-            const fakeOXContextID: OXContextID = faker.string.uuid();
-            const fakeOXUserName: OXUserName = faker.internet.userName();
-            const fakeOXContextName: OXContextName = 'context1';
-            const fakeEmail: string = faker.internet.email();
             await sut.handleOxUserChangedEvent(
                 new OxUserChangedEvent(
                     fakePersonID,
@@ -66,6 +76,37 @@ describe('KeycloakEventHandler', () => {
                 `Received OxUserChangedEvent personId:${fakePersonID}, userId:${fakeOXUserID}, userName:${fakeOXUserName} contextId:${fakeOXContextID}, contextName:${fakeOXContextName}, primaryEmail:${fakeEmail}`,
             );
             expect(keycloakUserServiceMock.updateOXUserAttributes).toHaveBeenCalledTimes(1);
+        });
+
+        describe('when updating user-attributes fails', () => {
+            it('should log info and call KeycloakUserService', async () => {
+                keycloakUserServiceMock.updateOXUserAttributes.mockResolvedValueOnce({
+                    ok: false,
+                    error: new KeycloakClientError('Could not update user-attributes'),
+                });
+
+                await sut.handleOxUserChangedEvent(
+                    new OxUserChangedEvent(
+                        fakePersonID,
+                        faker.internet.userName(),
+                        fakeOXUserID,
+                        fakeOXUserName,
+                        fakeOXContextID,
+                        fakeOXContextName,
+                        fakeEmail,
+                    ),
+                );
+
+                expect(loggerMock.info).toHaveBeenLastCalledWith(
+                    `Received OxUserChangedEvent personId:${fakePersonID}, userId:${fakeOXUserID}, userName:${fakeOXUserName} contextId:${fakeOXContextID}, contextName:${fakeOXContextName}, primaryEmail:${fakeEmail}`,
+                );
+                expect(loggerMock.error).toHaveBeenCalledWith(
+                    `Updating user in Keycloak FAILED for OxUserChangedEvent, personId:${fakePersonID}, userId:${fakeOXUserID}, userName:${fakeOXUserName} contextId:${fakeOXContextID}, contextName:${fakeOXContextName}, primaryEmail:${fakeEmail}`,
+                );
+                expect(loggerMock.error).toHaveBeenLastCalledWith(
+                    `OxMetadataInKeycloakChangedEvent will NOT be published, email-address for personId:${fakePersonID} in REQUESTED status will NOT be ENABLED!`,
+                );
+            });
         });
     });
 });

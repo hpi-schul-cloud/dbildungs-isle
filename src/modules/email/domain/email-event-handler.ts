@@ -232,9 +232,9 @@ export class EmailEventHandler {
     }
 
     @EventHandler(OxMetadataInKeycloakChangedEvent)
-    public async handleOxUserAttributesChangedEvent(event: OxMetadataInKeycloakChangedEvent): Promise<void> {
+    public async handleOxMetadataInKeycloakChangedEvent(event: OxMetadataInKeycloakChangedEvent): Promise<void> {
         this.logger.info(
-            `Received OxUserAttributesChangedEvent personId:${event.personId}, keycloakUsername: ${event.keycloakUsername}, userName:${event.oxUserName}, contextName:${event.oxContextName}, email:${event.emailAddress}`,
+            `Received OxMetadataInKeycloakChangedEvent personId:${event.personId}, keycloakUsername: ${event.keycloakUsername}, userName:${event.oxUserName}, contextName:${event.oxContextName}, email:${event.emailAddress}`,
         );
         const email: Option<EmailAddress<true>> = await this.emailRepo.findRequestedByPerson(event.personId);
 
@@ -327,16 +327,35 @@ export class EmailEventHandler {
         }
     }
 
+    private async createAndPersistFailedEmailAddress(personId: PersonID): Promise<void> {
+        const personIdAndTimestamp: string = personId + '-' + Date.now();
+        const failedEmailAddress: EmailAddress<false> = EmailAddress.createNew(
+            personId,
+            personIdAndTimestamp,
+            EmailAddressStatus.FAILED,
+        );
+
+        const persistenceResult: EmailAddress<true> | DomainError = await this.emailRepo.save(failedEmailAddress);
+        if (persistenceResult instanceof EmailAddress) {
+            this.logger.info(
+                `Successfully persisted email with FAILED status for address:${persistenceResult.address}`,
+            );
+        } else {
+            this.logger.error(`Could not persist email, error is ${persistenceResult.message}`);
+        }
+    }
+
     private async createNewEmail(personId: PersonID, organisationId: OrganisationID): Promise<void> {
         const email: Result<EmailAddress<false>> = await this.emailFactory.createNew(personId, organisationId);
         if (!email.ok) {
-            return this.logger.error(`Could not create email, error is ${email.error.message}`);
+            await this.createAndPersistFailedEmailAddress(personId);
+            return this.logger.error(`Could not create email, error is: ${email.error.message}`);
         }
         email.value.request();
         const persistenceResult: EmailAddress<true> | DomainError = await this.emailRepo.save(email.value);
         if (persistenceResult instanceof EmailAddress) {
             this.logger.info(
-                `Successfully persisted email with Request status for address:${persistenceResult.address}`,
+                `Successfully persisted email with REQUEST status for address:${persistenceResult.address}`,
             );
             this.eventService.publish(
                 new EmailAddressGeneratedEvent(
@@ -358,13 +377,15 @@ export class EmailEventHandler {
     ): Promise<void> {
         const email: Result<EmailAddress<false>> = await this.emailFactory.createNew(personId, organisationId);
         if (!email.ok) {
+            await this.createAndPersistFailedEmailAddress(personId);
+
             return this.logger.error(`Could not create change-email, error is ${email.error.message}`);
         }
         email.value.request();
         const persistenceResult: EmailAddress<true> | DomainError = await this.emailRepo.save(email.value);
         if (persistenceResult instanceof EmailAddress) {
             this.logger.info(
-                `Successfully persisted change-email with Request status for address:${persistenceResult.address}`,
+                `Successfully persisted change-email with REQUEST status for address:${persistenceResult.address}`,
             );
             this.eventService.publish(
                 new EmailAddressChangedEvent(

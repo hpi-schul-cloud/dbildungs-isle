@@ -10,7 +10,7 @@ import {
 } from '../../../../test/utils/index.js';
 import { PersonEntity } from './person.entity.js';
 import {
-    getEnabledEmailAddress,
+    getEnabledOrAlternativeEmailAddress,
     getOxUserId,
     mapAggregateToData,
     mapEntityToAggregate,
@@ -28,6 +28,7 @@ import {
     DomainError,
     EntityCouldNotBeDeleted,
     EntityNotFoundError,
+    InvalidCharacterSetError,
     InvalidNameError,
     KeycloakClientError,
     MismatchedRevisionError,
@@ -48,7 +49,7 @@ import { OrganisationsTyp } from '../../organisation/domain/organisation.enums.j
 import { OrganisationEntity } from '../../organisation/persistence/organisation.entity.js';
 import { RolleEntity } from '../../rolle/entity/rolle.entity.js';
 import { EmailAddressStatus } from '../../email/domain/email-address.js';
-import { SortFieldPersonFrontend } from '../domain/person.enums.js';
+import { PersonLockOccasion, SortFieldPersonFrontend } from '../domain/person.enums.js';
 import { RolleFactory } from '../../rolle/domain/rolle.factory.js';
 import { PersonenkontextFactory } from '../../personenkontext/domain/personenkontext.factory.js';
 import { DBiamPersonenkontextRepoInternal } from '../../personenkontext/persistence/internal-dbiam-personenkontext.repo.js';
@@ -56,9 +57,15 @@ import { RolleRepo } from '../../rolle/repo/rolle.repo.js';
 import { Rolle } from '../../rolle/domain/rolle.js';
 import { OrganisationRepository } from '../../organisation/persistence/organisation.repository.js';
 import { ServiceProviderRepo } from '../../service-provider/repo/service-provider.repo.js';
+import { UserLockRepository } from '../../keycloak-administration/repository/user-lock.repository.js';
 import { PersonUpdateOutdatedError } from '../domain/update-outdated.error.js';
 import { PersonalnummerRequiredError } from '../domain/personalnummer-required.error.js';
+import { VornameForPersonWithTrailingSpaceError } from '../domain/vorname-with-trailing-space.error.js';
+import { FamiliennameForPersonWithTrailingSpaceError } from '../domain/familienname-with-trailing-space.error.js';
+import { PersonalNummerForPersonWithTrailingSpaceError } from '../domain/personalnummer-with-trailing-space.error.js';
 import { Personenkontext } from '../../personenkontext/domain/personenkontext.js';
+import { PersonID } from '../../../shared/types/aggregate-ids.types.js';
+import { UserLock } from '../../keycloak-administration/domain/user-lock.js';
 
 describe('PersonRepository Integration', () => {
     let module: TestingModule;
@@ -73,6 +80,7 @@ describe('PersonRepository Integration', () => {
     let rolleRepo: RolleRepo;
     let dbiamPersonenkontextRepoInternal: DBiamPersonenkontextRepoInternal;
     let personenkontextFactory: PersonenkontextFactory;
+    let userLockRepository: UserLockRepository;
 
     beforeAll(async () => {
         module = await Test.createTestingModule({
@@ -106,6 +114,7 @@ describe('PersonRepository Integration', () => {
                 RolleRepo,
                 DBiamPersonenkontextRepoInternal,
                 PersonenkontextFactory,
+                UserLockRepository,
             ],
         }).compile();
         sut = module.get(PersonRepository);
@@ -120,6 +129,7 @@ describe('PersonRepository Integration', () => {
         rolleRepo = module.get(RolleRepo);
         dbiamPersonenkontextRepoInternal = module.get(DBiamPersonenkontextRepoInternal);
         personenkontextFactory = module.get(PersonenkontextFactory);
+        userLockRepository = module.get(UserLockRepository);
 
         await DatabaseTestModule.setupDatabase(orm);
     }, DEFAULT_TIMEOUT_FOR_TESTCONTAINERS);
@@ -182,7 +192,7 @@ describe('PersonRepository Integration', () => {
         }
     }
 
-    function getEmailAddress(status?: EmailAddressStatus, address?: string, oxUserId?: string): EmailAddressEntity {
+    function getFakeEmailAddress(status?: EmailAddressStatus, address?: string, oxUserId?: string): EmailAddressEntity {
         const emailAddressEntity: EmailAddressEntity = new EmailAddressEntity();
         emailAddressEntity.status = status ?? EmailAddressStatus.ENABLED;
         emailAddressEntity.address = address ?? faker.internet.email();
@@ -295,7 +305,7 @@ describe('PersonRepository Integration', () => {
                     });
                     expect(person).not.toBeInstanceOf(DomainError);
                     if (person instanceof DomainError) {
-                        return;
+                        throw person;
                     }
                     person.keycloakUserId = faker.string.uuid();
                     kcUserServiceMock.create.mockResolvedValueOnce({
@@ -329,7 +339,7 @@ describe('PersonRepository Integration', () => {
                     });
                     expect(person).not.toBeInstanceOf(DomainError);
                     if (person instanceof DomainError) {
-                        return;
+                        throw person;
                     }
                     person.username = undefined;
                     kcUserServiceMock.create.mockResolvedValueOnce({
@@ -402,7 +412,7 @@ describe('PersonRepository Integration', () => {
                     });
                     expect(person).not.toBeInstanceOf(DomainError);
                     if (person instanceof DomainError) {
-                        return;
+                        throw person;
                     }
                     kcUserServiceMock.create.mockResolvedValueOnce({
                         ok: false,
@@ -438,7 +448,7 @@ describe('PersonRepository Integration', () => {
                     });
                     expect(person).not.toBeInstanceOf(DomainError);
                     if (person instanceof DomainError) {
-                        return;
+                        throw person;
                     }
                     kcUserServiceMock.create.mockResolvedValueOnce({
                         ok: true,
@@ -475,7 +485,7 @@ describe('PersonRepository Integration', () => {
                     });
                     expect(person).not.toBeInstanceOf(DomainError);
                     if (person instanceof DomainError) {
-                        return;
+                        throw person;
                     }
                     const personEntity: PersonEntity = em.create(PersonEntity, mapAggregateToData(person));
 
@@ -654,7 +664,7 @@ describe('PersonRepository Integration', () => {
                     });
                     expect(person).not.toBeInstanceOf(DomainError);
                     if (person instanceof DomainError) {
-                        return;
+                        throw person;
                     }
                     person.username = undefined;
                     kcUserServiceMock.create.mockResolvedValueOnce({
@@ -708,7 +718,7 @@ describe('PersonRepository Integration', () => {
                     });
                     expect(person).not.toBeInstanceOf(DomainError);
                     if (person instanceof DomainError) {
-                        return;
+                        throw person;
                     }
                     person.username = 'name';
                     //person.keycloakUserId = faker.string.uuid();
@@ -764,7 +774,7 @@ describe('PersonRepository Integration', () => {
                         });
                         expect(person).not.toBeInstanceOf(DomainError);
                         if (person instanceof DomainError) {
-                            return;
+                            throw person;
                         }
                         person.username = undefined;
                         kcUserServiceMock.create.mockResolvedValueOnce({
@@ -860,6 +870,125 @@ describe('PersonRepository Integration', () => {
                 await expect(sut.update(person)).rejects.toBeDefined();
             });
         });
+        describe('when referrer is defined', () => {
+            it('should use the existing referrer if the person has not been renamed', async () => {
+                const existingPerson: Person<true> = await savePerson();
+                kcUserServiceMock.setPassword.mockResolvedValueOnce({
+                    ok: true,
+                    value: 'mockedPassword',
+                });
+                const result: Person<true> | DomainError = await sut.update(existingPerson);
+
+                expect(result).toBeInstanceOf(Person);
+                if (result instanceof Person) {
+                    expect(result.referrer).toEqual(existingPerson.referrer);
+                }
+            });
+        });
+        describe('when referrer is undefined', () => {
+            beforeEach(() => {
+                jest.restoreAllMocks();
+            });
+
+            it('should return an error if the username generator fails', async () => {
+                usernameGeneratorService.generateUsername.mockResolvedValue({ ok: true, value: 'testusername' });
+                const person: Person<false> | DomainError = await Person.createNew(usernameGeneratorService, {
+                    familienname: 'lastname',
+                    vorname: 'firstname',
+                });
+                expect(person).not.toBeInstanceOf(DomainError);
+                if (person instanceof DomainError) {
+                    throw person;
+                }
+                kcUserServiceMock.create.mockResolvedValueOnce({
+                    ok: true,
+                    value: 'something',
+                });
+                kcUserServiceMock.setPassword.mockResolvedValueOnce({
+                    ok: true,
+                    value: '',
+                });
+                kcUserServiceMock.delete.mockResolvedValueOnce({
+                    ok: true,
+                    value: undefined,
+                });
+                const existingPerson: Person<true> | DomainError = await sut.create(person);
+                if (existingPerson instanceof DomainError) {
+                    return;
+                }
+                const firstname: string = faker.person.firstName();
+                const lastname: string = faker.person.lastName();
+                const personConstructed: Person<true> = Person.construct(
+                    existingPerson.id,
+                    faker.date.past(),
+                    faker.date.recent(),
+                    lastname,
+                    firstname,
+                    '1',
+                    faker.lorem.word(),
+                    faker.lorem.word(),
+                    faker.string.uuid(),
+                );
+                usernameGeneratorService.generateUsername.mockResolvedValueOnce({
+                    ok: false,
+                    error: new InvalidCharacterSetError('name.vorname', 'DIN-91379A'),
+                });
+                jest.spyOn(sut, 'getReferrer').mockReturnValueOnce(undefined);
+
+                const result: Person<true> | DomainError = await sut.update(personConstructed);
+                expect(result).toBeInstanceOf(DomainError);
+                expect(usernameGeneratorService.generateUsername).toHaveBeenCalledWith(firstname, lastname);
+            });
+
+            it('should generate a new referrer if the person has been renamed', async () => {
+                usernameGeneratorService.generateUsername.mockResolvedValue({ ok: true, value: 'testusername' });
+                const person: Person<false> | DomainError = await Person.createNew(usernameGeneratorService, {
+                    familienname: 'lastname',
+                    vorname: 'firstname',
+                });
+                expect(person).not.toBeInstanceOf(DomainError);
+                if (person instanceof DomainError) {
+                    throw person;
+                }
+                kcUserServiceMock.create.mockResolvedValueOnce({
+                    ok: true,
+                    value: 'something',
+                });
+                kcUserServiceMock.setPassword.mockResolvedValueOnce({
+                    ok: true,
+                    value: '',
+                });
+                kcUserServiceMock.delete.mockResolvedValueOnce({
+                    ok: true,
+                    value: undefined,
+                });
+                const existingPerson: Person<true> | DomainError = await sut.create(person);
+                if (existingPerson instanceof DomainError) {
+                    return;
+                }
+                const firstname: string = faker.person.firstName();
+                const lastname: string = faker.person.lastName();
+                const personConstructed: Person<true> = Person.construct(
+                    existingPerson.id,
+                    faker.date.past(),
+                    faker.date.recent(),
+                    lastname,
+                    firstname,
+                    '1',
+                    faker.lorem.word(),
+                    faker.lorem.word(),
+                    'newtestusername',
+                );
+                usernameGeneratorService.generateUsername.mockResolvedValue({ ok: true, value: 'newtestusername' });
+                jest.spyOn(sut, 'getReferrer').mockReturnValueOnce(undefined);
+                const result: Person<true> | DomainError = await sut.update(personConstructed);
+                expect(result).toBeInstanceOf(Person);
+                if (result instanceof Person) {
+                    expect(result.referrer).toEqual('newtestusername');
+                }
+                expect(usernameGeneratorService.generateUsername).toHaveBeenCalledWith(firstname, lastname);
+            });
+        });
     });
 
     describe('getEnabledEmailAddress', () => {
@@ -875,29 +1004,29 @@ describe('PersonRepository Integration', () => {
 
         describe('when enabled emailAddress is in collection', () => {
             it('should return address of (first found) enabled address', () => {
-                const emailAddressEntity: EmailAddressEntity = getEmailAddress();
+                const emailAddressEntity: EmailAddressEntity = getFakeEmailAddress();
                 personEntity.emailAddresses.add(emailAddressEntity);
 
-                const result: string | undefined = getEnabledEmailAddress(personEntity);
+                const result: string | undefined = getEnabledOrAlternativeEmailAddress(personEntity);
 
                 expect(result).toBeDefined();
             });
         });
 
-        describe('when only failed emailAddresses are in collection', () => {
-            it('should return undefined', () => {
-                const emailAddressEntity: EmailAddressEntity = getEmailAddress(EmailAddressStatus.FAILED);
+        describe('when only non-enabled emailAddresses are in collection', () => {
+            it('should return defined emailAddress', () => {
+                const emailAddressEntity: EmailAddressEntity = getFakeEmailAddress(EmailAddressStatus.FAILED);
                 personEntity.emailAddresses.add(emailAddressEntity);
 
-                const result: string | undefined = getEnabledEmailAddress(personEntity);
+                const result: string | undefined = getEnabledOrAlternativeEmailAddress(personEntity);
 
-                expect(result).toBeUndefined();
+                expect(result).toBeDefined();
             });
         });
 
         describe('when NO emailAddress at all is found in collection', () => {
             it('should return undefined', () => {
-                const result: string | undefined = getEnabledEmailAddress(personEntity);
+                const result: string | undefined = getEnabledOrAlternativeEmailAddress(personEntity);
 
                 expect(result).toBeUndefined();
             });
@@ -917,7 +1046,7 @@ describe('PersonRepository Integration', () => {
 
         describe('when enabled emailAddress is in collection', () => {
             it('should return address of (first found) enabled address', () => {
-                const emailAddressEntity: EmailAddressEntity = getEmailAddress();
+                const emailAddressEntity: EmailAddressEntity = getFakeEmailAddress();
 
                 personEntity.emailAddresses.add(emailAddressEntity);
 
@@ -929,7 +1058,7 @@ describe('PersonRepository Integration', () => {
 
         describe('when only failed emailAddresses are in collection', () => {
             it('should return undefined', () => {
-                const emailAddressEntity: EmailAddressEntity = getEmailAddress(EmailAddressStatus.FAILED);
+                const emailAddressEntity: EmailAddressEntity = getFakeEmailAddress(EmailAddressStatus.FAILED);
                 personEntity.emailAddresses.add(emailAddressEntity);
 
                 const result: string | undefined = getOxUserId(personEntity);
@@ -1094,7 +1223,15 @@ describe('PersonRepository Integration', () => {
                 const personEntity: PersonEntity = new PersonEntity();
                 await em.persistAndFlush(personEntity.assign(mapAggregateToData(person1)));
                 person1.id = personEntity.id;
-                person1.lockInfo = { lock_locked_from: '', lock_timestamp: '' };
+                person1.userLock = [
+                    {
+                        person: person1.id,
+                        locked_by: '',
+                        locked_until: new Date(),
+                        locked_occasion: PersonLockOccasion.MANUELL_GESPERRT,
+                        created_at: new Date(),
+                    },
+                ];
                 person1.isLocked = false;
 
                 kcUserServiceMock.findById.mockResolvedValue({
@@ -1369,6 +1506,9 @@ describe('PersonRepository Integration', () => {
         });
     });
     describe('save', () => {
+        beforeEach(() => {
+            jest.restoreAllMocks();
+        });
         describe('when person has an id', () => {
             it('should call the update method and return the updated person', async () => {
                 const existingPerson: Person<true> = await savePerson();
@@ -1620,13 +1760,20 @@ describe('PersonRepository Integration', () => {
             expect(persons[0]?.id).toEqual(person1.id);
         });
     });
-
     describe('updatePersonMetadata', () => {
         it('should return the updated person', async () => {
             const person: Person<true> = await savePerson(true);
             const newFamilienname: string = faker.name.lastName();
             const newVorname: string = faker.name.firstName();
             const newPersonalnummer: string = faker.finance.pin(7);
+            const kopersLock: UserLock = {
+                person: person.id,
+                created_at: new Date(),
+                locked_by: 'cron',
+                locked_until: new Date(),
+                locked_occasion: PersonLockOccasion.KOPERS_GESPERRT,
+            };
+            await userLockRepository.createUserLock(kopersLock);
             personPermissionsMock.canModifyPerson.mockResolvedValueOnce(true);
             usernameGeneratorService.generateUsername.mockResolvedValueOnce({ ok: true, value: 'testusername1' });
             kcUserServiceMock.updateUsername.mockResolvedValueOnce({
@@ -1802,6 +1949,63 @@ describe('PersonRepository Integration', () => {
             );
             expect(result).toBeInstanceOf(DomainError);
         });
+
+        it('should return VornameForPersonWithTrailingSpaceError when vorname is invalid', async () => {
+            const person: Person<true> = await savePerson(true);
+            personPermissionsMock.canModifyPerson.mockResolvedValueOnce(true);
+
+            const invalidVorname: string = ' Max ';
+
+            const result: Person<true> | DomainError = await sut.updatePersonMetadata(
+                person.id,
+                faker.name.lastName(),
+                invalidVorname,
+                faker.finance.pin(7),
+                person.updatedAt,
+                person.revision,
+                personPermissionsMock,
+            );
+
+            expect(result).toBeInstanceOf(VornameForPersonWithTrailingSpaceError);
+        });
+
+        it('should return FamiliennameForPersonWithTrailingSpaceError when familienname is invalid', async () => {
+            const person: Person<true> = await savePerson(true);
+            personPermissionsMock.canModifyPerson.mockResolvedValueOnce(true);
+
+            const invalidFamilienname: string = ' Mustermann ';
+
+            const result: Person<true> | DomainError = await sut.updatePersonMetadata(
+                person.id,
+                invalidFamilienname, // Pass invalid familienname
+                faker.name.firstName(),
+                faker.finance.pin(7),
+                person.updatedAt,
+                person.revision,
+                personPermissionsMock,
+            );
+
+            expect(result).toBeInstanceOf(FamiliennameForPersonWithTrailingSpaceError);
+        });
+
+        it('should return PersonalNummerForPersonWithTrailingSpaceError when personalnummer is invalid', async () => {
+            const person: Person<true> = await savePerson(true);
+            personPermissionsMock.canModifyPerson.mockResolvedValueOnce(true);
+
+            const invalidPersonalnummer: string = ' 12345678';
+
+            const result: Person<true> | DomainError = await sut.updatePersonMetadata(
+                person.id,
+                faker.name.lastName(),
+                faker.name.firstName(),
+                invalidPersonalnummer,
+                person.updatedAt,
+                person.revision,
+                personPermissionsMock,
+            );
+
+            expect(result).toBeInstanceOf(PersonalNummerForPersonWithTrailingSpaceError);
+        });
     });
     describe('getKoPersUserLockList', () => {
         it('should return a list of keycloakUserIds for persons older than 56 days without a personalnummer', async () => {
@@ -1865,12 +2069,63 @@ describe('PersonRepository Integration', () => {
             await dbiamPersonenkontextRepoInternal.save(personenKontext4);
             await dbiamPersonenkontextRepoInternal.save(personenKontext5);
 
-            const lockList: string[] = await sut.getKoPersUserLockList();
+            const lockList: [PersonID, string][] = await sut.getKoPersUserLockList();
 
-            expect(lockList).toContain(person1.keycloakUserId);
-            expect(lockList).toContain(person2.keycloakUserId);
-            expect(lockList).toContain(person3.keycloakUserId);
-            expect(lockList).not.toContain(person4.keycloakUserId);
+            // Create tuples for the expected values
+            const expectedPerson1: [PersonID, string | undefined] = [person1.id, person1.keycloakUserId];
+            const expectedPerson2: [PersonID, string | undefined] = [person2.id, person2.keycloakUserId];
+            const expectedPerson3: [PersonID, string | undefined] = [person3.id, person3.keycloakUserId];
+            const unexpectedPerson4: [PersonID, string | undefined] = [person4.id, person4.keycloakUserId];
+
+            // Perform the assertions
+            expect(lockList).toContainEqual(expectedPerson1);
+            expect(lockList).toContainEqual(expectedPerson2);
+            expect(lockList).toContainEqual(expectedPerson3);
+            expect(lockList).not.toContainEqual(unexpectedPerson4);
+        });
+        describe('getPersonWithoutOrgDeleteList', () => {
+            it('should return a list of personIds for persons without a personenkontext', async () => {
+                // person without personenkontext & org_unassignment_date older than 84 days
+                const daysAgo: Date = new Date();
+                daysAgo.setDate(daysAgo.getDate() - 84);
+
+                const personEntity1: PersonEntity = new PersonEntity();
+                const person1: Person<true> = DoFactory.createPerson(true, { orgUnassignmentDate: daysAgo });
+                await em.persistAndFlush(personEntity1.assign(mapAggregateToData(person1)));
+                person1.id = personEntity1.id;
+
+                const personEntity2: PersonEntity = new PersonEntity();
+                const person2: Person<true> = DoFactory.createPerson(true, { orgUnassignmentDate: daysAgo });
+                await em.persistAndFlush(personEntity2.assign(mapAggregateToData(person2)));
+                person2.id = personEntity2.id;
+
+                // person with personenkontext
+                const person3: Person<true> = await savePerson(false);
+                const rolle1: Rolle<false> = DoFactory.createRolle(false, {
+                    name: 'rolle1',
+                    rollenart: RollenArt.LEHR,
+                    merkmale: [RollenMerkmal.KOPERS_PFLICHT],
+                });
+                const rolle1Result: Rolle<true> = await rolleRepo.save(rolle1);
+                const personenKontext1: Personenkontext<false> = DoFactory.createPersonenkontext(false, {
+                    personId: person3.id,
+                    rolleId: rolle1Result.id,
+                });
+                await dbiamPersonenkontextRepoInternal.save(personenKontext1);
+                // person without personenkontext but within the time limit for org_unassignment_Date
+                const person4: Person<true> = DoFactory.createPerson(true, { orgUnassignmentDate: new Date() });
+                const personEntity4: PersonEntity = new PersonEntity();
+                await em.persistAndFlush(personEntity4.assign(mapAggregateToData(person4)));
+                person4.id = personEntity4.id;
+
+                //get person ids without personenkontext
+                const personsWithOrgList: string[] = await sut.getPersonWithoutOrgDeleteList();
+
+                expect(personsWithOrgList).toContain(person1.id);
+                expect(personsWithOrgList).toContain(person2.id);
+                expect(personsWithOrgList).not.toContain(person3.id);
+                expect(personsWithOrgList).not.toContain(person4.id);
+            });
         });
     });
 });

@@ -26,6 +26,11 @@
               secretKeyRef:
                   name: {{ default .Values.auth.existingSecret .Values.auth.secretName }}
                   key: keycloak-clientSecret
+          - name: KC_SERVICE_CLIENT_PRIVATE_JWKS
+            valueFrom:
+              secretKeyRef:
+                  name: {{ default .Values.auth.existingSecret .Values.auth.secretName }}
+                  key: service-account-private-jwks
           - name: FRONTEND_SESSION_SECRET
             valueFrom:
               secretKeyRef:
@@ -81,4 +86,14 @@
               secretKeyRef:
                   name: {{ default .Values.auth.existingSecret .Values.auth.secretName }}
                   key: pi-user-realm
+          - name: PI_RENAME_WAITING_TIME
+            valueFrom:
+              secretKeyRef:
+                  name: {{ default .Values.auth.existingSecret .Values.auth.secretName }}
+                  key: pi-rename-waiting-time
+          - name: REDIS_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                  name: {{ default .Values.auth.existingSecret .Values.auth.secretName }}
+                  key: redis-password
 {{- end}}

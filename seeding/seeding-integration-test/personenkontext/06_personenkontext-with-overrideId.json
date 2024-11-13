@@ -1,0 +1,11 @@
+{
+    "entityName": "Personenkontext",
+    "entities": [
+        {
+            "personId": 1234,
+            "overrideId": "85a5a9e2-865d-4c79-bbe9-0cff8cc57883",
+            "organisationId": 1234,
+            "rolleId": 1234
+        }
+    ]
+}

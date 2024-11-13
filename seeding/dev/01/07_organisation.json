@@ -1,0 +1,5305 @@
+{
+    "entityName": "Organisation",
+    "entities": [
+        {
+            "id": 15,
+            "kennung": "1111115",
+            "name": "Testschule-15",
+            "namensergaenzung": "Keine",
+            "kuerzel": "Testschule-15",
+            "typ": "SCHULE",
+            "administriertVon": 1,
+            "zugehoerigZu": 1
+        },
+        {
+            "id": 65,
+            "name": "1A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 15,
+            "zugehoerigZu": 15
+        },
+        {
+            "id": 66,
+            "name": "1B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 15,
+            "zugehoerigZu": 15
+        },
+        {
+            "id": 67,
+            "name": "1C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 15,
+            "zugehoerigZu": 15
+        },
+        {
+            "id": 68,
+            "name": "2A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 15,
+            "zugehoerigZu": 15
+        },
+        {
+            "id": 69,
+            "name": "2B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 15,
+            "zugehoerigZu": 15
+        },
+        {
+            "id": 70,
+            "name": "2C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 15,
+            "zugehoerigZu": 15
+        },
+        {
+            "id": 71,
+            "name": "3A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 15,
+            "zugehoerigZu": 15
+        },
+        {
+            "id": 72,
+            "name": "3B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 15,
+            "zugehoerigZu": 15
+        },
+        {
+            "id": 73,
+            "name": "3C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 15,
+            "zugehoerigZu": 15
+        },
+        {
+            "id": 74,
+            "name": "4A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 15,
+            "zugehoerigZu": 15
+        },
+        {
+            "id": 75,
+            "name": "4B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 15,
+            "zugehoerigZu": 15
+        },
+        {
+            "id": 76,
+            "name": "4C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 15,
+            "zugehoerigZu": 15
+        },
+        {
+            "id": 16,
+            "kennung": "1111116",
+            "name": "Testschule-16",
+            "namensergaenzung": "Keine",
+            "kuerzel": "Testschule-16",
+            "typ": "SCHULE",
+            "administriertVon": 1,
+            "zugehoerigZu": 1
+        },
+        {
+            "id": 77,
+            "name": "1A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 16,
+            "zugehoerigZu": 16
+        },
+        {
+            "id": 78,
+            "name": "1B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 16,
+            "zugehoerigZu": 16
+        },
+        {
+            "id": 79,
+            "name": "1C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 16,
+            "zugehoerigZu": 16
+        },
+        {
+            "id": 80,
+            "name": "2A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 16,
+            "zugehoerigZu": 16
+        },
+        {
+            "id": 81,
+            "name": "2B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 16,
+            "zugehoerigZu": 16
+        },
+        {
+            "id": 82,
+            "name": "2C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 16,
+            "zugehoerigZu": 16
+        },
+        {
+            "id": 83,
+            "name": "3A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 16,
+            "zugehoerigZu": 16
+        },
+        {
+            "id": 84,
+            "name": "3B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 16,
+            "zugehoerigZu": 16
+        },
+        {
+            "id": 85,
+            "name": "3C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 16,
+            "zugehoerigZu": 16
+        },
+        {
+            "id": 86,
+            "name": "4A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 16,
+            "zugehoerigZu": 16
+        },
+        {
+            "id": 87,
+            "name": "4B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 16,
+            "zugehoerigZu": 16
+        },
+        {
+            "id": 88,
+            "name": "4C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 16,
+            "zugehoerigZu": 16
+        },
+        {
+            "id": 17,
+            "kennung": "1111117",
+            "name": "Testschule-17",
+            "namensergaenzung": "Keine",
+            "kuerzel": "Testschule-17",
+            "typ": "SCHULE",
+            "administriertVon": 1,
+            "zugehoerigZu": 1
+        },
+        {
+            "id": 89,
+            "name": "1A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 17,
+            "zugehoerigZu": 17
+        },
+        {
+            "id": 90,
+            "name": "1B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 17,
+            "zugehoerigZu": 17
+        },
+        {
+            "id": 91,
+            "name": "1C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 17,
+            "zugehoerigZu": 17
+        },
+        {
+            "id": 92,
+            "name": "2A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 17,
+            "zugehoerigZu": 17
+        },
+        {
+            "id": 93,
+            "name": "2B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 17,
+            "zugehoerigZu": 17
+        },
+        {
+            "id": 94,
+            "name": "2C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 17,
+            "zugehoerigZu": 17
+        },
+        {
+            "id": 95,
+            "name": "3A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 17,
+            "zugehoerigZu": 17
+        },
+        {
+            "id": 96,
+            "name": "3B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 17,
+            "zugehoerigZu": 17
+        },
+        {
+            "id": 97,
+            "name": "3C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 17,
+            "zugehoerigZu": 17
+        },
+        {
+            "id": 98,
+            "name": "4A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 17,
+            "zugehoerigZu": 17
+        },
+        {
+            "id": 99,
+            "name": "4B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 17,
+            "zugehoerigZu": 17
+        },
+        {
+            "id": 100,
+            "name": "4C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 17,
+            "zugehoerigZu": 17
+        },
+        {
+            "id": 18,
+            "kennung": "1111118",
+            "name": "Testschule-18",
+            "namensergaenzung": "Keine",
+            "kuerzel": "Testschule-18",
+            "typ": "SCHULE",
+            "administriertVon": 1,
+            "zugehoerigZu": 1
+        },
+        {
+            "id": 101,
+            "name": "1A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 18,
+            "zugehoerigZu": 18
+        },
+        {
+            "id": 102,
+            "name": "1B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 18,
+            "zugehoerigZu": 18
+        },
+        {
+            "id": 103,
+            "name": "1C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 18,
+            "zugehoerigZu": 18
+        },
+        {
+            "id": 104,
+            "name": "2A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 18,
+            "zugehoerigZu": 18
+        },
+        {
+            "id": 105,
+            "name": "2B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 18,
+            "zugehoerigZu": 18
+        },
+        {
+            "id": 106,
+            "name": "2C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 18,
+            "zugehoerigZu": 18
+        },
+        {
+            "id": 107,
+            "name": "3A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 18,
+            "zugehoerigZu": 18
+        },
+        {
+            "id": 108,
+            "name": "3B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 18,
+            "zugehoerigZu": 18
+        },
+        {
+            "id": 109,
+            "name": "3C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 18,
+            "zugehoerigZu": 18
+        },
+        {
+            "id": 110,
+            "name": "4A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 18,
+            "zugehoerigZu": 18
+        },
+        {
+            "id": 111,
+            "name": "4B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 18,
+            "zugehoerigZu": 18
+        },
+        {
+            "id": 112,
+            "name": "4C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 18,
+            "zugehoerigZu": 18
+        },
+        {
+            "id": 19,
+            "kennung": "1111119",
+            "name": "Testschule-19",
+            "namensergaenzung": "Keine",
+            "kuerzel": "Testschule-19",
+            "typ": "SCHULE",
+            "administriertVon": 1,
+            "zugehoerigZu": 1
+        },
+        {
+            "id": 113,
+            "name": "1A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 19,
+            "zugehoerigZu": 19
+        },
+        {
+            "id": 114,
+            "name": "1B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 19,
+            "zugehoerigZu": 19
+        },
+        {
+            "id": 115,
+            "name": "1C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 19,
+            "zugehoerigZu": 19
+        },
+        {
+            "id": 116,
+            "name": "2A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 19,
+            "zugehoerigZu": 19
+        },
+        {
+            "id": 117,
+            "name": "2B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 19,
+            "zugehoerigZu": 19
+        },
+        {
+            "id": 118,
+            "name": "2C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 19,
+            "zugehoerigZu": 19
+        },
+        {
+            "id": 119,
+            "name": "3A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 19,
+            "zugehoerigZu": 19
+        },
+        {
+            "id": 120,
+            "name": "3B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 19,
+            "zugehoerigZu": 19
+        },
+        {
+            "id": 121,
+            "name": "3C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 19,
+            "zugehoerigZu": 19
+        },
+        {
+            "id": 122,
+            "name": "4A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 19,
+            "zugehoerigZu": 19
+        },
+        {
+            "id": 123,
+            "name": "4B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 19,
+            "zugehoerigZu": 19
+        },
+        {
+            "id": 124,
+            "name": "4C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 19,
+            "zugehoerigZu": 19
+        },
+        {
+            "id": 20,
+            "kennung": "1111120",
+            "name": "Testschule-20",
+            "namensergaenzung": "Keine",
+            "kuerzel": "Testschule-20",
+            "typ": "SCHULE",
+            "administriertVon": 1,
+            "zugehoerigZu": 1
+        },
+        {
+            "id": 125,
+            "name": "1A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 20,
+            "zugehoerigZu": 20
+        },
+        {
+            "id": 126,
+            "name": "1B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 20,
+            "zugehoerigZu": 20
+        },
+        {
+            "id": 127,
+            "name": "1C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 20,
+            "zugehoerigZu": 20
+        },
+        {
+            "id": 128,
+            "name": "2A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 20,
+            "zugehoerigZu": 20
+        },
+        {
+            "id": 129,
+            "name": "2B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 20,
+            "zugehoerigZu": 20
+        },
+        {
+            "id": 130,
+            "name": "2C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 20,
+            "zugehoerigZu": 20
+        },
+        {
+            "id": 131,
+            "name": "3A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 20,
+            "zugehoerigZu": 20
+        },
+        {
+            "id": 132,
+            "name": "3B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 20,
+            "zugehoerigZu": 20
+        },
+        {
+            "id": 133,
+            "name": "3C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 20,
+            "zugehoerigZu": 20
+        },
+        {
+            "id": 134,
+            "name": "4A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 20,
+            "zugehoerigZu": 20
+        },
+        {
+            "id": 135,
+            "name": "4B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 20,
+            "zugehoerigZu": 20
+        },
+        {
+            "id": 136,
+            "name": "4C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 20,
+            "zugehoerigZu": 20
+        },
+        {
+            "id": 21,
+            "kennung": "1111121",
+            "name": "Testschule-21",
+            "namensergaenzung": "Keine",
+            "kuerzel": "Testschule-21",
+            "typ": "SCHULE",
+            "administriertVon": 1,
+            "zugehoerigZu": 1
+        },
+        {
+            "id": 137,
+            "name": "1A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 21,
+            "zugehoerigZu": 21
+        },
+        {
+            "id": 138,
+            "name": "1B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 21,
+            "zugehoerigZu": 21
+        },
+        {
+            "id": 139,
+            "name": "1C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 21,
+            "zugehoerigZu": 21
+        },
+        {
+            "id": 140,
+            "name": "2A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 21,
+            "zugehoerigZu": 21
+        },
+        {
+            "id": 141,
+            "name": "2B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 21,
+            "zugehoerigZu": 21
+        },
+        {
+            "id": 142,
+            "name": "2C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 21,
+            "zugehoerigZu": 21
+        },
+        {
+            "id": 143,
+            "name": "3A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 21,
+            "zugehoerigZu": 21
+        },
+        {
+            "id": 144,
+            "name": "3B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 21,
+            "zugehoerigZu": 21
+        },
+        {
+            "id": 145,
+            "name": "3C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 21,
+            "zugehoerigZu": 21
+        },
+        {
+            "id": 146,
+            "name": "4A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 21,
+            "zugehoerigZu": 21
+        },
+        {
+            "id": 147,
+            "name": "4B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 21,
+            "zugehoerigZu": 21
+        },
+        {
+            "id": 148,
+            "name": "4C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 21,
+            "zugehoerigZu": 21
+        },
+        {
+            "id": 22,
+            "kennung": "1111122",
+            "name": "Testschule-22",
+            "namensergaenzung": "Keine",
+            "kuerzel": "Testschule-22",
+            "typ": "SCHULE",
+            "administriertVon": 1,
+            "zugehoerigZu": 1
+        },
+        {
+            "id": 149,
+            "name": "1A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 22,
+            "zugehoerigZu": 22
+        },
+        {
+            "id": 150,
+            "name": "1B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 22,
+            "zugehoerigZu": 22
+        },
+        {
+            "id": 151,
+            "name": "1C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 22,
+            "zugehoerigZu": 22
+        },
+        {
+            "id": 152,
+            "name": "2A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 22,
+            "zugehoerigZu": 22
+        },
+        {
+            "id": 153,
+            "name": "2B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 22,
+            "zugehoerigZu": 22
+        },
+        {
+            "id": 154,
+            "name": "2C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 22,
+            "zugehoerigZu": 22
+        },
+        {
+            "id": 155,
+            "name": "3A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 22,
+            "zugehoerigZu": 22
+        },
+        {
+            "id": 156,
+            "name": "3B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 22,
+            "zugehoerigZu": 22
+        },
+        {
+            "id": 157,
+            "name": "3C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 22,
+            "zugehoerigZu": 22
+        },
+        {
+            "id": 158,
+            "name": "4A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 22,
+            "zugehoerigZu": 22
+        },
+        {
+            "id": 159,
+            "name": "4B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 22,
+            "zugehoerigZu": 22
+        },
+        {
+            "id": 160,
+            "name": "4C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 22,
+            "zugehoerigZu": 22
+        },
+        {
+            "id": 23,
+            "kennung": "1111123",
+            "name": "Testschule-23",
+            "namensergaenzung": "Keine",
+            "kuerzel": "Testschule-23",
+            "typ": "SCHULE",
+            "administriertVon": 1,
+            "zugehoerigZu": 1
+        },
+        {
+            "id": 161,
+            "name": "1A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 23,
+            "zugehoerigZu": 23
+        },
+        {
+            "id": 162,
+            "name": "1B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 23,
+            "zugehoerigZu": 23
+        },
+        {
+            "id": 163,
+            "name": "1C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 23,
+            "zugehoerigZu": 23
+        },
+        {
+            "id": 164,
+            "name": "2A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 23,
+            "zugehoerigZu": 23
+        },
+        {
+            "id": 165,
+            "name": "2B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 23,
+            "zugehoerigZu": 23
+        },
+        {
+            "id": 166,
+            "name": "2C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 23,
+            "zugehoerigZu": 23
+        },
+        {
+            "id": 167,
+            "name": "3A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 23,
+            "zugehoerigZu": 23
+        },
+        {
+            "id": 168,
+            "name": "3B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 23,
+            "zugehoerigZu": 23
+        },
+        {
+            "id": 169,
+            "name": "3C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 23,
+            "zugehoerigZu": 23
+        },
+        {
+            "id": 170,
+            "name": "4A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 23,
+            "zugehoerigZu": 23
+        },
+        {
+            "id": 171,
+            "name": "4B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 23,
+            "zugehoerigZu": 23
+        },
+        {
+            "id": 172,
+            "name": "4C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 23,
+            "zugehoerigZu": 23
+        },
+        {
+            "id": 24,
+            "kennung": "1111124",
+            "name": "Testschule-24",
+            "namensergaenzung": "Keine",
+            "kuerzel": "Testschule-24",
+            "typ": "SCHULE",
+            "administriertVon": 1,
+            "zugehoerigZu": 1
+        },
+        {
+            "id": 173,
+            "name": "1A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 24,
+            "zugehoerigZu": 24
+        },
+        {
+            "id": 174,
+            "name": "1B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 24,
+            "zugehoerigZu": 24
+        },
+        {
+            "id": 175,
+            "name": "1C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 24,
+            "zugehoerigZu": 24
+        },
+        {
+            "id": 176,
+            "name": "2A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 24,
+            "zugehoerigZu": 24
+        },
+        {
+            "id": 177,
+            "name": "2B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 24,
+            "zugehoerigZu": 24
+        },
+        {
+            "id": 178,
+            "name": "2C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 24,
+            "zugehoerigZu": 24
+        },
+        {
+            "id": 179,
+            "name": "3A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 24,
+            "zugehoerigZu": 24
+        },
+        {
+            "id": 180,
+            "name": "3B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 24,
+            "zugehoerigZu": 24
+        },
+        {
+            "id": 181,
+            "name": "3C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 24,
+            "zugehoerigZu": 24
+        },
+        {
+            "id": 182,
+            "name": "4A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 24,
+            "zugehoerigZu": 24
+        },
+        {
+            "id": 183,
+            "name": "4B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 24,
+            "zugehoerigZu": 24
+        },
+        {
+            "id": 184,
+            "name": "4C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 24,
+            "zugehoerigZu": 24
+        },
+        {
+            "id": 25,
+            "kennung": "1111125",
+            "name": "Testschule-25",
+            "namensergaenzung": "Keine",
+            "kuerzel": "Testschule-25",
+            "typ": "SCHULE",
+            "administriertVon": 1,
+            "zugehoerigZu": 1
+        },
+        {
+            "id": 185,
+            "name": "1A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 25,
+            "zugehoerigZu": 25
+        },
+        {
+            "id": 186,
+            "name": "1B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 25,
+            "zugehoerigZu": 25
+        },
+        {
+            "id": 187,
+            "name": "1C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 25,
+            "zugehoerigZu": 25
+        },
+        {
+            "id": 188,
+            "name": "2A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 25,
+            "zugehoerigZu": 25
+        },
+        {
+            "id": 189,
+            "name": "2B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 25,
+            "zugehoerigZu": 25
+        },
+        {
+            "id": 190,
+            "name": "2C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 25,
+            "zugehoerigZu": 25
+        },
+        {
+            "id": 191,
+            "name": "3A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 25,
+            "zugehoerigZu": 25
+        },
+        {
+            "id": 192,
+            "name": "3B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 25,
+            "zugehoerigZu": 25
+        },
+        {
+            "id": 193,
+            "name": "3C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 25,
+            "zugehoerigZu": 25
+        },
+        {
+            "id": 194,
+            "name": "4A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 25,
+            "zugehoerigZu": 25
+        },
+        {
+            "id": 195,
+            "name": "4B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 25,
+            "zugehoerigZu": 25
+        },
+        {
+            "id": 196,
+            "name": "4C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 25,
+            "zugehoerigZu": 25
+        },
+        {
+            "id": 26,
+            "kennung": "1111126",
+            "name": "Testschule-26",
+            "namensergaenzung": "Keine",
+            "kuerzel": "Testschule-26",
+            "typ": "SCHULE",
+            "administriertVon": 1,
+            "zugehoerigZu": 1
+        },
+        {
+            "id": 197,
+            "name": "1A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 26,
+            "zugehoerigZu": 26
+        },
+        {
+            "id": 198,
+            "name": "1B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 26,
+            "zugehoerigZu": 26
+        },
+        {
+            "id": 199,
+            "name": "1C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 26,
+            "zugehoerigZu": 26
+        },
+        {
+            "id": 200,
+            "name": "2A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 26,
+            "zugehoerigZu": 26
+        },
+        {
+            "id": 201,
+            "name": "2B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 26,
+            "zugehoerigZu": 26
+        },
+        {
+            "id": 202,
+            "name": "2C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 26,
+            "zugehoerigZu": 26
+        },
+        {
+            "id": 203,
+            "name": "3A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 26,
+            "zugehoerigZu": 26
+        },
+        {
+            "id": 204,
+            "name": "3B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 26,
+            "zugehoerigZu": 26
+        },
+        {
+            "id": 205,
+            "name": "3C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 26,
+            "zugehoerigZu": 26
+        },
+        {
+            "id": 206,
+            "name": "4A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 26,
+            "zugehoerigZu": 26
+        },
+        {
+            "id": 207,
+            "name": "4B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 26,
+            "zugehoerigZu": 26
+        },
+        {
+            "id": 208,
+            "name": "4C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 26,
+            "zugehoerigZu": 26
+        },
+        {
+            "id": 27,
+            "kennung": "1111127",
+            "name": "Testschule-27",
+            "namensergaenzung": "Keine",
+            "kuerzel": "Testschule-27",
+            "typ": "SCHULE",
+            "administriertVon": 1,
+            "zugehoerigZu": 1
+        },
+        {
+            "id": 209,
+            "name": "1A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 27,
+            "zugehoerigZu": 27
+        },
+        {
+            "id": 210,
+            "name": "1B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 27,
+            "zugehoerigZu": 27
+        },
+        {
+            "id": 211,
+            "name": "1C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 27,
+            "zugehoerigZu": 27
+        },
+        {
+            "id": 212,
+            "name": "2A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 27,
+            "zugehoerigZu": 27
+        },
+        {
+            "id": 213,
+            "name": "2B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 27,
+            "zugehoerigZu": 27
+        },
+        {
+            "id": 214,
+            "name": "2C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 27,
+            "zugehoerigZu": 27
+        },
+        {
+            "id": 215,
+            "name": "3A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 27,
+            "zugehoerigZu": 27
+        },
+        {
+            "id": 216,
+            "name": "3B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 27,
+            "zugehoerigZu": 27
+        },
+        {
+            "id": 217,
+            "name": "3C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 27,
+            "zugehoerigZu": 27
+        },
+        {
+            "id": 218,
+            "name": "4A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 27,
+            "zugehoerigZu": 27
+        },
+        {
+            "id": 219,
+            "name": "4B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 27,
+            "zugehoerigZu": 27
+        },
+        {
+            "id": 220,
+            "name": "4C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 27,
+            "zugehoerigZu": 27
+        },
+        {
+            "id": 28,
+            "kennung": "1111128",
+            "name": "Testschule-28",
+            "namensergaenzung": "Keine",
+            "kuerzel": "Testschule-28",
+            "typ": "SCHULE",
+            "administriertVon": 1,
+            "zugehoerigZu": 1
+        },
+        {
+            "id": 221,
+            "name": "1A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 28,
+            "zugehoerigZu": 28
+        },
+        {
+            "id": 222,
+            "name": "1B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 28,
+            "zugehoerigZu": 28
+        },
+        {
+            "id": 223,
+            "name": "1C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 28,
+            "zugehoerigZu": 28
+        },
+        {
+            "id": 224,
+            "name": "2A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 28,
+            "zugehoerigZu": 28
+        },
+        {
+            "id": 225,
+            "name": "2B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 28,
+            "zugehoerigZu": 28
+        },
+        {
+            "id": 226,
+            "name": "2C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 28,
+            "zugehoerigZu": 28
+        },
+        {
+            "id": 227,
+            "name": "3A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 28,
+            "zugehoerigZu": 28
+        },
+        {
+            "id": 228,
+            "name": "3B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 28,
+            "zugehoerigZu": 28
+        },
+        {
+            "id": 229,
+            "name": "3C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 28,
+            "zugehoerigZu": 28
+        },
+        {
+            "id": 230,
+            "name": "4A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 28,
+            "zugehoerigZu": 28
+        },
+        {
+            "id": 231,
+            "name": "4B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 28,
+            "zugehoerigZu": 28
+        },
+        {
+            "id": 232,
+            "name": "4C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 28,
+            "zugehoerigZu": 28
+        },
+        {
+            "id": 29,
+            "kennung": "1111129",
+            "name": "Testschule-29",
+            "namensergaenzung": "Keine",
+            "kuerzel": "Testschule-29",
+            "typ": "SCHULE",
+            "administriertVon": 1,
+            "zugehoerigZu": 1
+        },
+        {
+            "id": 233,
+            "name": "1A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 29,
+            "zugehoerigZu": 29
+        },
+        {
+            "id": 234,
+            "name": "1B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 29,
+            "zugehoerigZu": 29
+        },
+        {
+            "id": 235,
+            "name": "1C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 29,
+            "zugehoerigZu": 29
+        },
+        {
+            "id": 236,
+            "name": "2A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 29,
+            "zugehoerigZu": 29
+        },
+        {
+            "id": 237,
+            "name": "2B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 29,
+            "zugehoerigZu": 29
+        },
+        {
+            "id": 238,
+            "name": "2C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 29,
+            "zugehoerigZu": 29
+        },
+        {
+            "id": 239,
+            "name": "3A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 29,
+            "zugehoerigZu": 29
+        },
+        {
+            "id": 240,
+            "name": "3B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 29,
+            "zugehoerigZu": 29
+        },
+        {
+            "id": 241,
+            "name": "3C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 29,
+            "zugehoerigZu": 29
+        },
+        {
+            "id": 242,
+            "name": "4A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 29,
+            "zugehoerigZu": 29
+        },
+        {
+            "id": 243,
+            "name": "4B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 29,
+            "zugehoerigZu": 29
+        },
+        {
+            "id": 244,
+            "name": "4C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 29,
+            "zugehoerigZu": 29
+        },
+        {
+            "id": 30,
+            "kennung": "1111130",
+            "name": "Testschule-30",
+            "namensergaenzung": "Keine",
+            "kuerzel": "Testschule-30",
+            "typ": "SCHULE",
+            "administriertVon": 1,
+            "zugehoerigZu": 1
+        },
+        {
+            "id": 245,
+            "name": "1A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 30,
+            "zugehoerigZu": 30
+        },
+        {
+            "id": 246,
+            "name": "1B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 30,
+            "zugehoerigZu": 30
+        },
+        {
+            "id": 247,
+            "name": "1C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 30,
+            "zugehoerigZu": 30
+        },
+        {
+            "id": 248,
+            "name": "2A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 30,
+            "zugehoerigZu": 30
+        },
+        {
+            "id": 249,
+            "name": "2B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 30,
+            "zugehoerigZu": 30
+        },
+        {
+            "id": 250,
+            "name": "2C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 30,
+            "zugehoerigZu": 30
+        },
+        {
+            "id": 251,
+            "name": "3A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 30,
+            "zugehoerigZu": 30
+        },
+        {
+            "id": 252,
+            "name": "3B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 30,
+            "zugehoerigZu": 30
+        },
+        {
+            "id": 253,
+            "name": "3C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 30,
+            "zugehoerigZu": 30
+        },
+        {
+            "id": 254,
+            "name": "4A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 30,
+            "zugehoerigZu": 30
+        },
+        {
+            "id": 255,
+            "name": "4B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 30,
+            "zugehoerigZu": 30
+        },
+        {
+            "id": 256,
+            "name": "4C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 30,
+            "zugehoerigZu": 30
+        },
+        {
+            "id": 31,
+            "kennung": "1111131",
+            "name": "Testschule-31",
+            "namensergaenzung": "Keine",
+            "kuerzel": "Testschule-31",
+            "typ": "SCHULE",
+            "administriertVon": 1,
+            "zugehoerigZu": 1
+        },
+        {
+            "id": 257,
+            "name": "1A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 31,
+            "zugehoerigZu": 31
+        },
+        {
+            "id": 258,
+            "name": "1B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 31,
+            "zugehoerigZu": 31
+        },
+        {
+            "id": 259,
+            "name": "1C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 31,
+            "zugehoerigZu": 31
+        },
+        {
+            "id": 260,
+            "name": "2A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 31,
+            "zugehoerigZu": 31
+        },
+        {
+            "id": 261,
+            "name": "2B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 31,
+            "zugehoerigZu": 31
+        },
+        {
+            "id": 262,
+            "name": "2C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 31,
+            "zugehoerigZu": 31
+        },
+        {
+            "id": 263,
+            "name": "3A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 31,
+            "zugehoerigZu": 31
+        },
+        {
+            "id": 264,
+            "name": "3B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 31,
+            "zugehoerigZu": 31
+        },
+        {
+            "id": 265,
+            "name": "3C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 31,
+            "zugehoerigZu": 31
+        },
+        {
+            "id": 266,
+            "name": "4A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 31,
+            "zugehoerigZu": 31
+        },
+        {
+            "id": 267,
+            "name": "4B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 31,
+            "zugehoerigZu": 31
+        },
+        {
+            "id": 268,
+            "name": "4C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 31,
+            "zugehoerigZu": 31
+        },
+        {
+            "id": 32,
+            "kennung": "1111132",
+            "name": "Testschule-32",
+            "namensergaenzung": "Keine",
+            "kuerzel": "Testschule-32",
+            "typ": "SCHULE",
+            "administriertVon": 1,
+            "zugehoerigZu": 1
+        },
+        {
+            "id": 269,
+            "name": "1A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 32,
+            "zugehoerigZu": 32
+        },
+        {
+            "id": 270,
+            "name": "1B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 32,
+            "zugehoerigZu": 32
+        },
+        {
+            "id": 271,
+            "name": "1C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 32,
+            "zugehoerigZu": 32
+        },
+        {
+            "id": 272,
+            "name": "2A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 32,
+            "zugehoerigZu": 32
+        },
+        {
+            "id": 273,
+            "name": "2B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 32,
+            "zugehoerigZu": 32
+        },
+        {
+            "id": 274,
+            "name": "2C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 32,
+            "zugehoerigZu": 32
+        },
+        {
+            "id": 275,
+            "name": "3A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 32,
+            "zugehoerigZu": 32
+        },
+        {
+            "id": 276,
+            "name": "3B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 32,
+            "zugehoerigZu": 32
+        },
+        {
+            "id": 277,
+            "name": "3C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 32,
+            "zugehoerigZu": 32
+        },
+        {
+            "id": 278,
+            "name": "4A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 32,
+            "zugehoerigZu": 32
+        },
+        {
+            "id": 279,
+            "name": "4B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 32,
+            "zugehoerigZu": 32
+        },
+        {
+            "id": 280,
+            "name": "4C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 32,
+            "zugehoerigZu": 32
+        },
+        {
+            "id": 33,
+            "kennung": "1111133",
+            "name": "Testschule-33",
+            "namensergaenzung": "Keine",
+            "kuerzel": "Testschule-33",
+            "typ": "SCHULE",
+            "administriertVon": 1,
+            "zugehoerigZu": 1
+        },
+        {
+            "id": 281,
+            "name": "1A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 33,
+            "zugehoerigZu": 33
+        },
+        {
+            "id": 282,
+            "name": "1B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 33,
+            "zugehoerigZu": 33
+        },
+        {
+            "id": 283,
+            "name": "1C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 33,
+            "zugehoerigZu": 33
+        },
+        {
+            "id": 284,
+            "name": "2A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 33,
+            "zugehoerigZu": 33
+        },
+        {
+            "id": 285,
+            "name": "2B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 33,
+            "zugehoerigZu": 33
+        },
+        {
+            "id": 286,
+            "name": "2C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 33,
+            "zugehoerigZu": 33
+        },
+        {
+            "id": 287,
+            "name": "3A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 33,
+            "zugehoerigZu": 33
+        },
+        {
+            "id": 288,
+            "name": "3B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 33,
+            "zugehoerigZu": 33
+        },
+        {
+            "id": 289,
+            "name": "3C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 33,
+            "zugehoerigZu": 33
+        },
+        {
+            "id": 290,
+            "name": "4A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 33,
+            "zugehoerigZu": 33
+        },
+        {
+            "id": 291,
+            "name": "4B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 33,
+            "zugehoerigZu": 33
+        },
+        {
+            "id": 292,
+            "name": "4C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 33,
+            "zugehoerigZu": 33
+        },
+        {
+            "id": 34,
+            "kennung": "1111134",
+            "name": "Testschule-34",
+            "namensergaenzung": "Keine",
+            "kuerzel": "Testschule-34",
+            "typ": "SCHULE",
+            "administriertVon": 1,
+            "zugehoerigZu": 1
+        },
+        {
+            "id": 293,
+            "name": "1A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 34,
+            "zugehoerigZu": 34
+        },
+        {
+            "id": 294,
+            "name": "1B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 34,
+            "zugehoerigZu": 34
+        },
+        {
+            "id": 295,
+            "name": "1C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 34,
+            "zugehoerigZu": 34
+        },
+        {
+            "id": 296,
+            "name": "2A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 34,
+            "zugehoerigZu": 34
+        },
+        {
+            "id": 297,
+            "name": "2B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 34,
+            "zugehoerigZu": 34
+        },
+        {
+            "id": 298,
+            "name": "2C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 34,
+            "zugehoerigZu": 34
+        },
+        {
+            "id": 299,
+            "name": "3A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 34,
+            "zugehoerigZu": 34
+        },
+        {
+            "id": 300,
+            "name": "3B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 34,
+            "zugehoerigZu": 34
+        },
+        {
+            "id": 301,
+            "name": "3C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 34,
+            "zugehoerigZu": 34
+        },
+        {
+            "id": 302,
+            "name": "4A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 34,
+            "zugehoerigZu": 34
+        },
+        {
+            "id": 303,
+            "name": "4B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 34,
+            "zugehoerigZu": 34
+        },
+        {
+            "id": 304,
+            "name": "4C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 34,
+            "zugehoerigZu": 34
+        },
+        {
+            "id": 35,
+            "kennung": "1111135",
+            "name": "Testschule-35",
+            "namensergaenzung": "Keine",
+            "kuerzel": "Testschule-35",
+            "typ": "SCHULE",
+            "administriertVon": 1,
+            "zugehoerigZu": 1
+        },
+        {
+            "id": 305,
+            "name": "1A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 35,
+            "zugehoerigZu": 35
+        },
+        {
+            "id": 306,
+            "name": "1B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 35,
+            "zugehoerigZu": 35
+        },
+        {
+            "id": 307,
+            "name": "1C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 35,
+            "zugehoerigZu": 35
+        },
+        {
+            "id": 308,
+            "name": "2A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 35,
+            "zugehoerigZu": 35
+        },
+        {
+            "id": 309,
+            "name": "2B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 35,
+            "zugehoerigZu": 35
+        },
+        {
+            "id": 310,
+            "name": "2C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 35,
+            "zugehoerigZu": 35
+        },
+        {
+            "id": 311,
+            "name": "3A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 35,
+            "zugehoerigZu": 35
+        },
+        {
+            "id": 312,
+            "name": "3B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 35,
+            "zugehoerigZu": 35
+        },
+        {
+            "id": 313,
+            "name": "3C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 35,
+            "zugehoerigZu": 35
+        },
+        {
+            "id": 314,
+            "name": "4A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 35,
+            "zugehoerigZu": 35
+        },
+        {
+            "id": 315,
+            "name": "4B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 35,
+            "zugehoerigZu": 35
+        },
+        {
+            "id": 316,
+            "name": "4C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 35,
+            "zugehoerigZu": 35
+        },
+        {
+            "id": 36,
+            "kennung": "1111136",
+            "name": "Testschule-36",
+            "namensergaenzung": "Keine",
+            "kuerzel": "Testschule-36",
+            "typ": "SCHULE",
+            "administriertVon": 1,
+            "zugehoerigZu": 1
+        },
+        {
+            "id": 317,
+            "name": "1A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 36,
+            "zugehoerigZu": 36
+        },
+        {
+            "id": 318,
+            "name": "1B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 36,
+            "zugehoerigZu": 36
+        },
+        {
+            "id": 319,
+            "name": "1C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 36,
+            "zugehoerigZu": 36
+        },
+        {
+            "id": 320,
+            "name": "2A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 36,
+            "zugehoerigZu": 36
+        },
+        {
+            "id": 321,
+            "name": "2B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 36,
+            "zugehoerigZu": 36
+        },
+        {
+            "id": 322,
+            "name": "2C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 36,
+            "zugehoerigZu": 36
+        },
+        {
+            "id": 323,
+            "name": "3A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 36,
+            "zugehoerigZu": 36
+        },
+        {
+            "id": 324,
+            "name": "3B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 36,
+            "zugehoerigZu": 36
+        },
+        {
+            "id": 325,
+            "name": "3C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 36,
+            "zugehoerigZu": 36
+        },
+        {
+            "id": 326,
+            "name": "4A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 36,
+            "zugehoerigZu": 36
+        },
+        {
+            "id": 327,
+            "name": "4B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 36,
+            "zugehoerigZu": 36
+        },
+        {
+            "id": 328,
+            "name": "4C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 36,
+            "zugehoerigZu": 36
+        },
+        {
+            "id": 37,
+            "kennung": "1111137",
+            "name": "Testschule-37",
+            "namensergaenzung": "Keine",
+            "kuerzel": "Testschule-37",
+            "typ": "SCHULE",
+            "administriertVon": 1,
+            "zugehoerigZu": 1
+        },
+        {
+            "id": 329,
+            "name": "1A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 37,
+            "zugehoerigZu": 37
+        },
+        {
+            "id": 330,
+            "name": "1B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 37,
+            "zugehoerigZu": 37
+        },
+        {
+            "id": 331,
+            "name": "1C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 37,
+            "zugehoerigZu": 37
+        },
+        {
+            "id": 332,
+            "name": "2A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 37,
+            "zugehoerigZu": 37
+        },
+        {
+            "id": 333,
+            "name": "2B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 37,
+            "zugehoerigZu": 37
+        },
+        {
+            "id": 334,
+            "name": "2C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 37,
+            "zugehoerigZu": 37
+        },
+        {
+            "id": 335,
+            "name": "3A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 37,
+            "zugehoerigZu": 37
+        },
+        {
+            "id": 336,
+            "name": "3B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 37,
+            "zugehoerigZu": 37
+        },
+        {
+            "id": 337,
+            "name": "3C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 37,
+            "zugehoerigZu": 37
+        },
+        {
+            "id": 338,
+            "name": "4A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 37,
+            "zugehoerigZu": 37
+        },
+        {
+            "id": 339,
+            "name": "4B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 37,
+            "zugehoerigZu": 37
+        },
+        {
+            "id": 340,
+            "name": "4C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 37,
+            "zugehoerigZu": 37
+        },
+        {
+            "id": 38,
+            "kennung": "1111138",
+            "name": "Testschule-38",
+            "namensergaenzung": "Keine",
+            "kuerzel": "Testschule-38",
+            "typ": "SCHULE",
+            "administriertVon": 1,
+            "zugehoerigZu": 1
+        },
+        {
+            "id": 341,
+            "name": "1A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 38,
+            "zugehoerigZu": 38
+        },
+        {
+            "id": 342,
+            "name": "1B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 38,
+            "zugehoerigZu": 38
+        },
+        {
+            "id": 343,
+            "name": "1C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 38,
+            "zugehoerigZu": 38
+        },
+        {
+            "id": 344,
+            "name": "2A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 38,
+            "zugehoerigZu": 38
+        },
+        {
+            "id": 345,
+            "name": "2B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 38,
+            "zugehoerigZu": 38
+        },
+        {
+            "id": 346,
+            "name": "2C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 38,
+            "zugehoerigZu": 38
+        },
+        {
+            "id": 347,
+            "name": "3A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 38,
+            "zugehoerigZu": 38
+        },
+        {
+            "id": 348,
+            "name": "3B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 38,
+            "zugehoerigZu": 38
+        },
+        {
+            "id": 349,
+            "name": "3C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 38,
+            "zugehoerigZu": 38
+        },
+        {
+            "id": 350,
+            "name": "4A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 38,
+            "zugehoerigZu": 38
+        },
+        {
+            "id": 351,
+            "name": "4B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 38,
+            "zugehoerigZu": 38
+        },
+        {
+            "id": 352,
+            "name": "4C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 38,
+            "zugehoerigZu": 38
+        },
+        {
+            "id": 39,
+            "kennung": "1111139",
+            "name": "Testschule-39",
+            "namensergaenzung": "Keine",
+            "kuerzel": "Testschule-39",
+            "typ": "SCHULE",
+            "administriertVon": 1,
+            "zugehoerigZu": 1
+        },
+        {
+            "id": 353,
+            "name": "1A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 39,
+            "zugehoerigZu": 39
+        },
+        {
+            "id": 354,
+            "name": "1B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 39,
+            "zugehoerigZu": 39
+        },
+        {
+            "id": 355,
+            "name": "1C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 39,
+            "zugehoerigZu": 39
+        },
+        {
+            "id": 356,
+            "name": "2A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 39,
+            "zugehoerigZu": 39
+        },
+        {
+            "id": 357,
+            "name": "2B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 39,
+            "zugehoerigZu": 39
+        },
+        {
+            "id": 358,
+            "name": "2C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 39,
+            "zugehoerigZu": 39
+        },
+        {
+            "id": 359,
+            "name": "3A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 39,
+            "zugehoerigZu": 39
+        },
+        {
+            "id": 360,
+            "name": "3B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 39,
+            "zugehoerigZu": 39
+        },
+        {
+            "id": 361,
+            "name": "3C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 39,
+            "zugehoerigZu": 39
+        },
+        {
+            "id": 362,
+            "name": "4A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 39,
+            "zugehoerigZu": 39
+        },
+        {
+            "id": 363,
+            "name": "4B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 39,
+            "zugehoerigZu": 39
+        },
+        {
+            "id": 364,
+            "name": "4C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 39,
+            "zugehoerigZu": 39
+        },
+        {
+            "id": 40,
+            "kennung": "1111140",
+            "name": "Testschule-40",
+            "namensergaenzung": "Keine",
+            "kuerzel": "Testschule-40",
+            "typ": "SCHULE",
+            "administriertVon": 1,
+            "zugehoerigZu": 1
+        },
+        {
+            "id": 365,
+            "name": "1A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 40,
+            "zugehoerigZu": 40
+        },
+        {
+            "id": 366,
+            "name": "1B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 40,
+            "zugehoerigZu": 40
+        },
+        {
+            "id": 367,
+            "name": "1C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 40,
+            "zugehoerigZu": 40
+        },
+        {
+            "id": 368,
+            "name": "2A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 40,
+            "zugehoerigZu": 40
+        },
+        {
+            "id": 369,
+            "name": "2B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 40,
+            "zugehoerigZu": 40
+        },
+        {
+            "id": 370,
+            "name": "2C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 40,
+            "zugehoerigZu": 40
+        },
+        {
+            "id": 371,
+            "name": "3A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 40,
+            "zugehoerigZu": 40
+        },
+        {
+            "id": 372,
+            "name": "3B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 40,
+            "zugehoerigZu": 40
+        },
+        {
+            "id": 373,
+            "name": "3C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 40,
+            "zugehoerigZu": 40
+        },
+        {
+            "id": 374,
+            "name": "4A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 40,
+            "zugehoerigZu": 40
+        },
+        {
+            "id": 375,
+            "name": "4B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 40,
+            "zugehoerigZu": 40
+        },
+        {
+            "id": 376,
+            "name": "4C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 40,
+            "zugehoerigZu": 40
+        },
+        {
+            "id": 41,
+            "kennung": "1111141",
+            "name": "Testschule-41",
+            "namensergaenzung": "Keine",
+            "kuerzel": "Testschule-41",
+            "typ": "SCHULE",
+            "administriertVon": 1,
+            "zugehoerigZu": 1
+        },
+        {
+            "id": 377,
+            "name": "1A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 41,
+            "zugehoerigZu": 41
+        },
+        {
+            "id": 378,
+            "name": "1B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 41,
+            "zugehoerigZu": 41
+        },
+        {
+            "id": 379,
+            "name": "1C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 41,
+            "zugehoerigZu": 41
+        },
+        {
+            "id": 380,
+            "name": "2A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 41,
+            "zugehoerigZu": 41
+        },
+        {
+            "id": 381,
+            "name": "2B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 41,
+            "zugehoerigZu": 41
+        },
+        {
+            "id": 382,
+            "name": "2C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 41,
+            "zugehoerigZu": 41
+        },
+        {
+            "id": 383,
+            "name": "3A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 41,
+            "zugehoerigZu": 41
+        },
+        {
+            "id": 384,
+            "name": "3B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 41,
+            "zugehoerigZu": 41
+        },
+        {
+            "id": 385,
+            "name": "3C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 41,
+            "zugehoerigZu": 41
+        },
+        {
+            "id": 386,
+            "name": "4A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 41,
+            "zugehoerigZu": 41
+        },
+        {
+            "id": 387,
+            "name": "4B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 41,
+            "zugehoerigZu": 41
+        },
+        {
+            "id": 388,
+            "name": "4C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 41,
+            "zugehoerigZu": 41
+        },
+        {
+            "id": 42,
+            "kennung": "1111142",
+            "name": "Testschule-42",
+            "namensergaenzung": "Keine",
+            "kuerzel": "Testschule-42",
+            "typ": "SCHULE",
+            "administriertVon": 1,
+            "zugehoerigZu": 1
+        },
+        {
+            "id": 389,
+            "name": "1A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 42,
+            "zugehoerigZu": 42
+        },
+        {
+            "id": 390,
+            "name": "1B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 42,
+            "zugehoerigZu": 42
+        },
+        {
+            "id": 391,
+            "name": "1C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 42,
+            "zugehoerigZu": 42
+        },
+        {
+            "id": 392,
+            "name": "2A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 42,
+            "zugehoerigZu": 42
+        },
+        {
+            "id": 393,
+            "name": "2B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 42,
+            "zugehoerigZu": 42
+        },
+        {
+            "id": 394,
+            "name": "2C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 42,
+            "zugehoerigZu": 42
+        },
+        {
+            "id": 395,
+            "name": "3A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 42,
+            "zugehoerigZu": 42
+        },
+        {
+            "id": 396,
+            "name": "3B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 42,
+            "zugehoerigZu": 42
+        },
+        {
+            "id": 397,
+            "name": "3C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 42,
+            "zugehoerigZu": 42
+        },
+        {
+            "id": 398,
+            "name": "4A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 42,
+            "zugehoerigZu": 42
+        },
+        {
+            "id": 399,
+            "name": "4B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 42,
+            "zugehoerigZu": 42
+        },
+        {
+            "id": 400,
+            "name": "4C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 42,
+            "zugehoerigZu": 42
+        },
+        {
+            "id": 43,
+            "kennung": "1111143",
+            "name": "Testschule-43",
+            "namensergaenzung": "Keine",
+            "kuerzel": "Testschule-43",
+            "typ": "SCHULE",
+            "administriertVon": 1,
+            "zugehoerigZu": 1
+        },
+        {
+            "id": 401,
+            "name": "1A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 43,
+            "zugehoerigZu": 43
+        },
+        {
+            "id": 402,
+            "name": "1B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 43,
+            "zugehoerigZu": 43
+        },
+        {
+            "id": 403,
+            "name": "1C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 43,
+            "zugehoerigZu": 43
+        },
+        {
+            "id": 404,
+            "name": "2A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 43,
+            "zugehoerigZu": 43
+        },
+        {
+            "id": 405,
+            "name": "2B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 43,
+            "zugehoerigZu": 43
+        },
+        {
+            "id": 406,
+            "name": "2C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 43,
+            "zugehoerigZu": 43
+        },
+        {
+            "id": 407,
+            "name": "3A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 43,
+            "zugehoerigZu": 43
+        },
+        {
+            "id": 408,
+            "name": "3B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 43,
+            "zugehoerigZu": 43
+        },
+        {
+            "id": 409,
+            "name": "3C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 43,
+            "zugehoerigZu": 43
+        },
+        {
+            "id": 410,
+            "name": "4A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 43,
+            "zugehoerigZu": 43
+        },
+        {
+            "id": 411,
+            "name": "4B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 43,
+            "zugehoerigZu": 43
+        },
+        {
+            "id": 412,
+            "name": "4C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 43,
+            "zugehoerigZu": 43
+        },
+        {
+            "id": 44,
+            "kennung": "1111144",
+            "name": "Testschule-44",
+            "namensergaenzung": "Keine",
+            "kuerzel": "Testschule-44",
+            "typ": "SCHULE",
+            "administriertVon": 1,
+            "zugehoerigZu": 1
+        },
+        {
+            "id": 413,
+            "name": "1A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 44,
+            "zugehoerigZu": 44
+        },
+        {
+            "id": 414,
+            "name": "1B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 44,
+            "zugehoerigZu": 44
+        },
+        {
+            "id": 415,
+            "name": "1C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 44,
+            "zugehoerigZu": 44
+        },
+        {
+            "id": 416,
+            "name": "2A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 44,
+            "zugehoerigZu": 44
+        },
+        {
+            "id": 417,
+            "name": "2B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 44,
+            "zugehoerigZu": 44
+        },
+        {
+            "id": 418,
+            "name": "2C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 44,
+            "zugehoerigZu": 44
+        },
+        {
+            "id": 419,
+            "name": "3A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 44,
+            "zugehoerigZu": 44
+        },
+        {
+            "id": 420,
+            "name": "3B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 44,
+            "zugehoerigZu": 44
+        },
+        {
+            "id": 421,
+            "name": "3C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 44,
+            "zugehoerigZu": 44
+        },
+        {
+            "id": 422,
+            "name": "4A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 44,
+            "zugehoerigZu": 44
+        },
+        {
+            "id": 423,
+            "name": "4B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 44,
+            "zugehoerigZu": 44
+        },
+        {
+            "id": 424,
+            "name": "4C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 44,
+            "zugehoerigZu": 44
+        },
+        {
+            "id": 45,
+            "kennung": "1111145",
+            "name": "Testschule-45",
+            "namensergaenzung": "Keine",
+            "kuerzel": "Testschule-45",
+            "typ": "SCHULE",
+            "administriertVon": 1,
+            "zugehoerigZu": 1
+        },
+        {
+            "id": 425,
+            "name": "1A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 45,
+            "zugehoerigZu": 45
+        },
+        {
+            "id": 426,
+            "name": "1B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 45,
+            "zugehoerigZu": 45
+        },
+        {
+            "id": 427,
+            "name": "1C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 45,
+            "zugehoerigZu": 45
+        },
+        {
+            "id": 428,
+            "name": "2A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 45,
+            "zugehoerigZu": 45
+        },
+        {
+            "id": 429,
+            "name": "2B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 45,
+            "zugehoerigZu": 45
+        },
+        {
+            "id": 430,
+            "name": "2C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 45,
+            "zugehoerigZu": 45
+        },
+        {
+            "id": 431,
+            "name": "3A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 45,
+            "zugehoerigZu": 45
+        },
+        {
+            "id": 432,
+            "name": "3B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 45,
+            "zugehoerigZu": 45
+        },
+        {
+            "id": 433,
+            "name": "3C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 45,
+            "zugehoerigZu": 45
+        },
+        {
+            "id": 434,
+            "name": "4A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 45,
+            "zugehoerigZu": 45
+        },
+        {
+            "id": 435,
+            "name": "4B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 45,
+            "zugehoerigZu": 45
+        },
+        {
+            "id": 436,
+            "name": "4C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 45,
+            "zugehoerigZu": 45
+        },
+        {
+            "id": 46,
+            "kennung": "1111146",
+            "name": "Testschule-46",
+            "namensergaenzung": "Keine",
+            "kuerzel": "Testschule-46",
+            "typ": "SCHULE",
+            "administriertVon": 1,
+            "zugehoerigZu": 1
+        },
+        {
+            "id": 437,
+            "name": "1A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 46,
+            "zugehoerigZu": 46
+        },
+        {
+            "id": 438,
+            "name": "1B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 46,
+            "zugehoerigZu": 46
+        },
+        {
+            "id": 439,
+            "name": "1C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 46,
+            "zugehoerigZu": 46
+        },
+        {
+            "id": 440,
+            "name": "2A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 46,
+            "zugehoerigZu": 46
+        },
+        {
+            "id": 441,
+            "name": "2B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 46,
+            "zugehoerigZu": 46
+        },
+        {
+            "id": 442,
+            "name": "2C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 46,
+            "zugehoerigZu": 46
+        },
+        {
+            "id": 443,
+            "name": "3A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 46,
+            "zugehoerigZu": 46
+        },
+        {
+            "id": 444,
+            "name": "3B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 46,
+            "zugehoerigZu": 46
+        },
+        {
+            "id": 445,
+            "name": "3C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 46,
+            "zugehoerigZu": 46
+        },
+        {
+            "id": 446,
+            "name": "4A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 46,
+            "zugehoerigZu": 46
+        },
+        {
+            "id": 447,
+            "name": "4B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 46,
+            "zugehoerigZu": 46
+        },
+        {
+            "id": 448,
+            "name": "4C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 46,
+            "zugehoerigZu": 46
+        },
+        {
+            "id": 47,
+            "kennung": "1111147",
+            "name": "Testschule-47",
+            "namensergaenzung": "Keine",
+            "kuerzel": "Testschule-47",
+            "typ": "SCHULE",
+            "administriertVon": 1,
+            "zugehoerigZu": 1
+        },
+        {
+            "id": 449,
+            "name": "1A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 47,
+            "zugehoerigZu": 47
+        },
+        {
+            "id": 450,
+            "name": "1B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 47,
+            "zugehoerigZu": 47
+        },
+        {
+            "id": 451,
+            "name": "1C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 47,
+            "zugehoerigZu": 47
+        },
+        {
+            "id": 452,
+            "name": "2A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 47,
+            "zugehoerigZu": 47
+        },
+        {
+            "id": 453,
+            "name": "2B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 47,
+            "zugehoerigZu": 47
+        },
+        {
+            "id": 454,
+            "name": "2C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 47,
+            "zugehoerigZu": 47
+        },
+        {
+            "id": 455,
+            "name": "3A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 47,
+            "zugehoerigZu": 47
+        },
+        {
+            "id": 456,
+            "name": "3B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 47,
+            "zugehoerigZu": 47
+        },
+        {
+            "id": 457,
+            "name": "3C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 47,
+            "zugehoerigZu": 47
+        },
+        {
+            "id": 458,
+            "name": "4A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 47,
+            "zugehoerigZu": 47
+        },
+        {
+            "id": 459,
+            "name": "4B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 47,
+            "zugehoerigZu": 47
+        },
+        {
+            "id": 460,
+            "name": "4C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 47,
+            "zugehoerigZu": 47
+        },
+        {
+            "id": 48,
+            "kennung": "1111148",
+            "name": "Testschule-48",
+            "namensergaenzung": "Keine",
+            "kuerzel": "Testschule-48",
+            "typ": "SCHULE",
+            "administriertVon": 1,
+            "zugehoerigZu": 1
+        },
+        {
+            "id": 461,
+            "name": "1A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 48,
+            "zugehoerigZu": 48
+        },
+        {
+            "id": 462,
+            "name": "1B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 48,
+            "zugehoerigZu": 48
+        },
+        {
+            "id": 463,
+            "name": "1C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 48,
+            "zugehoerigZu": 48
+        },
+        {
+            "id": 464,
+            "name": "2A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 48,
+            "zugehoerigZu": 48
+        },
+        {
+            "id": 465,
+            "name": "2B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 48,
+            "zugehoerigZu": 48
+        },
+        {
+            "id": 466,
+            "name": "2C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 48,
+            "zugehoerigZu": 48
+        },
+        {
+            "id": 467,
+            "name": "3A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 48,
+            "zugehoerigZu": 48
+        },
+        {
+            "id": 468,
+            "name": "3B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 48,
+            "zugehoerigZu": 48
+        },
+        {
+            "id": 469,
+            "name": "3C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 48,
+            "zugehoerigZu": 48
+        },
+        {
+            "id": 470,
+            "name": "4A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 48,
+            "zugehoerigZu": 48
+        },
+        {
+            "id": 471,
+            "name": "4B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 48,
+            "zugehoerigZu": 48
+        },
+        {
+            "id": 472,
+            "name": "4C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 48,
+            "zugehoerigZu": 48
+        },
+        {
+            "id": 49,
+            "kennung": "1111149",
+            "name": "Testschule-49",
+            "namensergaenzung": "Keine",
+            "kuerzel": "Testschule-49",
+            "typ": "SCHULE",
+            "administriertVon": 1,
+            "zugehoerigZu": 1
+        },
+        {
+            "id": 473,
+            "name": "1A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 49,
+            "zugehoerigZu": 49
+        },
+        {
+            "id": 474,
+            "name": "1B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 49,
+            "zugehoerigZu": 49
+        },
+        {
+            "id": 475,
+            "name": "1C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 49,
+            "zugehoerigZu": 49
+        },
+        {
+            "id": 476,
+            "name": "2A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 49,
+            "zugehoerigZu": 49
+        },
+        {
+            "id": 477,
+            "name": "2B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 49,
+            "zugehoerigZu": 49
+        },
+        {
+            "id": 478,
+            "name": "2C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 49,
+            "zugehoerigZu": 49
+        },
+        {
+            "id": 479,
+            "name": "3A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 49,
+            "zugehoerigZu": 49
+        },
+        {
+            "id": 480,
+            "name": "3B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 49,
+            "zugehoerigZu": 49
+        },
+        {
+            "id": 481,
+            "name": "3C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 49,
+            "zugehoerigZu": 49
+        },
+        {
+            "id": 482,
+            "name": "4A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 49,
+            "zugehoerigZu": 49
+        },
+        {
+            "id": 483,
+            "name": "4B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 49,
+            "zugehoerigZu": 49
+        },
+        {
+            "id": 484,
+            "name": "4C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 49,
+            "zugehoerigZu": 49
+        },
+        {
+            "id": 50,
+            "kennung": "1111150",
+            "name": "Testschule-50",
+            "namensergaenzung": "Keine",
+            "kuerzel": "Testschule-50",
+            "typ": "SCHULE",
+            "administriertVon": 1,
+            "zugehoerigZu": 1
+        },
+        {
+            "id": 485,
+            "name": "1A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 50,
+            "zugehoerigZu": 50
+        },
+        {
+            "id": 486,
+            "name": "1B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 50,
+            "zugehoerigZu": 50
+        },
+        {
+            "id": 487,
+            "name": "1C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 50,
+            "zugehoerigZu": 50
+        },
+        {
+            "id": 488,
+            "name": "2A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 50,
+            "zugehoerigZu": 50
+        },
+        {
+            "id": 489,
+            "name": "2B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 50,
+            "zugehoerigZu": 50
+        },
+        {
+            "id": 490,
+            "name": "2C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 50,
+            "zugehoerigZu": 50
+        },
+        {
+            "id": 491,
+            "name": "3A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 50,
+            "zugehoerigZu": 50
+        },
+        {
+            "id": 492,
+            "name": "3B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 50,
+            "zugehoerigZu": 50
+        },
+        {
+            "id": 493,
+            "name": "3C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 50,
+            "zugehoerigZu": 50
+        },
+        {
+            "id": 494,
+            "name": "4A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 50,
+            "zugehoerigZu": 50
+        },
+        {
+            "id": 495,
+            "name": "4B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 50,
+            "zugehoerigZu": 50
+        },
+        {
+            "id": 496,
+            "name": "4C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 50,
+            "zugehoerigZu": 50
+        },
+        {
+            "id": 51,
+            "kennung": "1111151",
+            "name": "Testschule-51",
+            "namensergaenzung": "Keine",
+            "kuerzel": "Testschule-51",
+            "typ": "SCHULE",
+            "administriertVon": 1,
+            "zugehoerigZu": 1
+        },
+        {
+            "id": 497,
+            "name": "1A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 51,
+            "zugehoerigZu": 51
+        },
+        {
+            "id": 498,
+            "name": "1B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 51,
+            "zugehoerigZu": 51
+        },
+        {
+            "id": 499,
+            "name": "1C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 51,
+            "zugehoerigZu": 51
+        },
+        {
+            "id": 500,
+            "name": "2A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 51,
+            "zugehoerigZu": 51
+        },
+        {
+            "id": 501,
+            "name": "2B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 51,
+            "zugehoerigZu": 51
+        },
+        {
+            "id": 502,
+            "name": "2C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 51,
+            "zugehoerigZu": 51
+        },
+        {
+            "id": 503,
+            "name": "3A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 51,
+            "zugehoerigZu": 51
+        },
+        {
+            "id": 504,
+            "name": "3B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 51,
+            "zugehoerigZu": 51
+        },
+        {
+            "id": 505,
+            "name": "3C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 51,
+            "zugehoerigZu": 51
+        },
+        {
+            "id": 506,
+            "name": "4A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 51,
+            "zugehoerigZu": 51
+        },
+        {
+            "id": 507,
+            "name": "4B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 51,
+            "zugehoerigZu": 51
+        },
+        {
+            "id": 508,
+            "name": "4C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 51,
+            "zugehoerigZu": 51
+        },
+        {
+            "id": 52,
+            "kennung": "1111152",
+            "name": "Testschule-52",
+            "namensergaenzung": "Keine",
+            "kuerzel": "Testschule-52",
+            "typ": "SCHULE",
+            "administriertVon": 1,
+            "zugehoerigZu": 1
+        },
+        {
+            "id": 509,
+            "name": "1A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 52,
+            "zugehoerigZu": 52
+        },
+        {
+            "id": 510,
+            "name": "1B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 52,
+            "zugehoerigZu": 52
+        },
+        {
+            "id": 511,
+            "name": "1C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 52,
+            "zugehoerigZu": 52
+        },
+        {
+            "id": 512,
+            "name": "2A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 52,
+            "zugehoerigZu": 52
+        },
+        {
+            "id": 513,
+            "name": "2B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 52,
+            "zugehoerigZu": 52
+        },
+        {
+            "id": 514,
+            "name": "2C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 52,
+            "zugehoerigZu": 52
+        },
+        {
+            "id": 515,
+            "name": "3A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 52,
+            "zugehoerigZu": 52
+        },
+        {
+            "id": 516,
+            "name": "3B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 52,
+            "zugehoerigZu": 52
+        },
+        {
+            "id": 517,
+            "name": "3C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 52,
+            "zugehoerigZu": 52
+        },
+        {
+            "id": 518,
+            "name": "4A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 52,
+            "zugehoerigZu": 52
+        },
+        {
+            "id": 519,
+            "name": "4B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 52,
+            "zugehoerigZu": 52
+        },
+        {
+            "id": 520,
+            "name": "4C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 52,
+            "zugehoerigZu": 52
+        },
+        {
+            "id": 53,
+            "kennung": "1111153",
+            "name": "Testschule-53",
+            "namensergaenzung": "Keine",
+            "kuerzel": "Testschule-53",
+            "typ": "SCHULE",
+            "administriertVon": 1,
+            "zugehoerigZu": 1
+        },
+        {
+            "id": 521,
+            "name": "1A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 53,
+            "zugehoerigZu": 53
+        },
+        {
+            "id": 522,
+            "name": "1B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 53,
+            "zugehoerigZu": 53
+        },
+        {
+            "id": 523,
+            "name": "1C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 53,
+            "zugehoerigZu": 53
+        },
+        {
+            "id": 524,
+            "name": "2A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 53,
+            "zugehoerigZu": 53
+        },
+        {
+            "id": 525,
+            "name": "2B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 53,
+            "zugehoerigZu": 53
+        },
+        {
+            "id": 526,
+            "name": "2C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 53,
+            "zugehoerigZu": 53
+        },
+        {
+            "id": 527,
+            "name": "3A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 53,
+            "zugehoerigZu": 53
+        },
+        {
+            "id": 528,
+            "name": "3B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 53,
+            "zugehoerigZu": 53
+        },
+        {
+            "id": 529,
+            "name": "3C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 53,
+            "zugehoerigZu": 53
+        },
+        {
+            "id": 530,
+            "name": "4A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 53,
+            "zugehoerigZu": 53
+        },
+        {
+            "id": 531,
+            "name": "4B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 53,
+            "zugehoerigZu": 53
+        },
+        {
+            "id": 532,
+            "name": "4C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 53,
+            "zugehoerigZu": 53
+        },
+        {
+            "id": 54,
+            "kennung": "1111154",
+            "name": "Testschule-54",
+            "namensergaenzung": "Keine",
+            "kuerzel": "Testschule-54",
+            "typ": "SCHULE",
+            "administriertVon": 1,
+            "zugehoerigZu": 1
+        },
+        {
+            "id": 533,
+            "name": "1A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 54,
+            "zugehoerigZu": 54
+        },
+        {
+            "id": 534,
+            "name": "1B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 54,
+            "zugehoerigZu": 54
+        },
+        {
+            "id": 535,
+            "name": "1C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 54,
+            "zugehoerigZu": 54
+        },
+        {
+            "id": 536,
+            "name": "2A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 54,
+            "zugehoerigZu": 54
+        },
+        {
+            "id": 537,
+            "name": "2B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 54,
+            "zugehoerigZu": 54
+        },
+        {
+            "id": 538,
+            "name": "2C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 54,
+            "zugehoerigZu": 54
+        },
+        {
+            "id": 539,
+            "name": "3A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 54,
+            "zugehoerigZu": 54
+        },
+        {
+            "id": 540,
+            "name": "3B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 54,
+            "zugehoerigZu": 54
+        },
+        {
+            "id": 541,
+            "name": "3C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 54,
+            "zugehoerigZu": 54
+        },
+        {
+            "id": 542,
+            "name": "4A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 54,
+            "zugehoerigZu": 54
+        },
+        {
+            "id": 543,
+            "name": "4B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 54,
+            "zugehoerigZu": 54
+        },
+        {
+            "id": 544,
+            "name": "4C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 54,
+            "zugehoerigZu": 54
+        },
+        {
+            "id": 55,
+            "kennung": "1111155",
+            "name": "Testschule-55",
+            "namensergaenzung": "Keine",
+            "kuerzel": "Testschule-55",
+            "typ": "SCHULE",
+            "administriertVon": 1,
+            "zugehoerigZu": 1
+        },
+        {
+            "id": 545,
+            "name": "1A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 55,
+            "zugehoerigZu": 55
+        },
+        {
+            "id": 546,
+            "name": "1B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 55,
+            "zugehoerigZu": 55
+        },
+        {
+            "id": 547,
+            "name": "1C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 55,
+            "zugehoerigZu": 55
+        },
+        {
+            "id": 548,
+            "name": "2A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 55,
+            "zugehoerigZu": 55
+        },
+        {
+            "id": 549,
+            "name": "2B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 55,
+            "zugehoerigZu": 55
+        },
+        {
+            "id": 550,
+            "name": "2C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 55,
+            "zugehoerigZu": 55
+        },
+        {
+            "id": 551,
+            "name": "3A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 55,
+            "zugehoerigZu": 55
+        },
+        {
+            "id": 552,
+            "name": "3B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 55,
+            "zugehoerigZu": 55
+        },
+        {
+            "id": 553,
+            "name": "3C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 55,
+            "zugehoerigZu": 55
+        },
+        {
+            "id": 554,
+            "name": "4A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 55,
+            "zugehoerigZu": 55
+        },
+        {
+            "id": 555,
+            "name": "4B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 55,
+            "zugehoerigZu": 55
+        },
+        {
+            "id": 556,
+            "name": "4C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 55,
+            "zugehoerigZu": 55
+        },
+        {
+            "id": 56,
+            "kennung": "1111156",
+            "name": "Testschule-56",
+            "namensergaenzung": "Keine",
+            "kuerzel": "Testschule-56",
+            "typ": "SCHULE",
+            "administriertVon": 1,
+            "zugehoerigZu": 1
+        },
+        {
+            "id": 557,
+            "name": "1A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 56,
+            "zugehoerigZu": 56
+        },
+        {
+            "id": 558,
+            "name": "1B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 56,
+            "zugehoerigZu": 56
+        },
+        {
+            "id": 559,
+            "name": "1C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 56,
+            "zugehoerigZu": 56
+        },
+        {
+            "id": 560,
+            "name": "2A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 56,
+            "zugehoerigZu": 56
+        },
+        {
+            "id": 561,
+            "name": "2B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 56,
+            "zugehoerigZu": 56
+        },
+        {
+            "id": 562,
+            "name": "2C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 56,
+            "zugehoerigZu": 56
+        },
+        {
+            "id": 563,
+            "name": "3A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 56,
+            "zugehoerigZu": 56
+        },
+        {
+            "id": 564,
+            "name": "3B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 56,
+            "zugehoerigZu": 56
+        },
+        {
+            "id": 565,
+            "name": "3C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 56,
+            "zugehoerigZu": 56
+        },
+        {
+            "id": 566,
+            "name": "4A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 56,
+            "zugehoerigZu": 56
+        },
+        {
+            "id": 567,
+            "name": "4B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 56,
+            "zugehoerigZu": 56
+        },
+        {
+            "id": 568,
+            "name": "4C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 56,
+            "zugehoerigZu": 56
+        },
+        {
+            "id": 57,
+            "kennung": "1111157",
+            "name": "Testschule-57",
+            "namensergaenzung": "Keine",
+            "kuerzel": "Testschule-57",
+            "typ": "SCHULE",
+            "administriertVon": 1,
+            "zugehoerigZu": 1
+        },
+        {
+            "id": 569,
+            "name": "1A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 57,
+            "zugehoerigZu": 57
+        },
+        {
+            "id": 570,
+            "name": "1B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 57,
+            "zugehoerigZu": 57
+        },
+        {
+            "id": 571,
+            "name": "1C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 57,
+            "zugehoerigZu": 57
+        },
+        {
+            "id": 572,
+            "name": "2A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 57,
+            "zugehoerigZu": 57
+        },
+        {
+            "id": 573,
+            "name": "2B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 57,
+            "zugehoerigZu": 57
+        },
+        {
+            "id": 574,
+            "name": "2C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 57,
+            "zugehoerigZu": 57
+        },
+        {
+            "id": 575,
+            "name": "3A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 57,
+            "zugehoerigZu": 57
+        },
+        {
+            "id": 576,
+            "name": "3B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 57,
+            "zugehoerigZu": 57
+        },
+        {
+            "id": 577,
+            "name": "3C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 57,
+            "zugehoerigZu": 57
+        },
+        {
+            "id": 578,
+            "name": "4A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 57,
+            "zugehoerigZu": 57
+        },
+        {
+            "id": 579,
+            "name": "4B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 57,
+            "zugehoerigZu": 57
+        },
+        {
+            "id": 580,
+            "name": "4C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 57,
+            "zugehoerigZu": 57
+        },
+        {
+            "id": 58,
+            "kennung": "1111158",
+            "name": "Testschule-58",
+            "namensergaenzung": "Keine",
+            "kuerzel": "Testschule-58",
+            "typ": "SCHULE",
+            "administriertVon": 1,
+            "zugehoerigZu": 1
+        },
+        {
+            "id": 581,
+            "name": "1A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 58,
+            "zugehoerigZu": 58
+        },
+        {
+            "id": 582,
+            "name": "1B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 58,
+            "zugehoerigZu": 58
+        },
+        {
+            "id": 583,
+            "name": "1C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 58,
+            "zugehoerigZu": 58
+        },
+        {
+            "id": 584,
+            "name": "2A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 58,
+            "zugehoerigZu": 58
+        },
+        {
+            "id": 585,
+            "name": "2B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 58,
+            "zugehoerigZu": 58
+        },
+        {
+            "id": 586,
+            "name": "2C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 58,
+            "zugehoerigZu": 58
+        },
+        {
+            "id": 587,
+            "name": "3A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 58,
+            "zugehoerigZu": 58
+        },
+        {
+            "id": 588,
+            "name": "3B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 58,
+            "zugehoerigZu": 58
+        },
+        {
+            "id": 589,
+            "name": "3C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 58,
+            "zugehoerigZu": 58
+        },
+        {
+            "id": 590,
+            "name": "4A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 58,
+            "zugehoerigZu": 58
+        },
+        {
+            "id": 591,
+            "name": "4B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 58,
+            "zugehoerigZu": 58
+        },
+        {
+            "id": 592,
+            "name": "4C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 58,
+            "zugehoerigZu": 58
+        },
+        {
+            "id": 59,
+            "kennung": "1111159",
+            "name": "Testschule-59",
+            "namensergaenzung": "Keine",
+            "kuerzel": "Testschule-59",
+            "typ": "SCHULE",
+            "administriertVon": 1,
+            "zugehoerigZu": 1
+        },
+        {
+            "id": 593,
+            "name": "1A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 59,
+            "zugehoerigZu": 59
+        },
+        {
+            "id": 594,
+            "name": "1B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 59,
+            "zugehoerigZu": 59
+        },
+        {
+            "id": 595,
+            "name": "1C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 59,
+            "zugehoerigZu": 59
+        },
+        {
+            "id": 596,
+            "name": "2A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 59,
+            "zugehoerigZu": 59
+        },
+        {
+            "id": 597,
+            "name": "2B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 59,
+            "zugehoerigZu": 59
+        },
+        {
+            "id": 598,
+            "name": "2C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 59,
+            "zugehoerigZu": 59
+        },
+        {
+            "id": 599,
+            "name": "3A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 59,
+            "zugehoerigZu": 59
+        },
+        {
+            "id": 600,
+            "name": "3B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 59,
+            "zugehoerigZu": 59
+        },
+        {
+            "id": 601,
+            "name": "3C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 59,
+            "zugehoerigZu": 59
+        },
+        {
+            "id": 602,
+            "name": "4A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 59,
+            "zugehoerigZu": 59
+        },
+        {
+            "id": 603,
+            "name": "4B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 59,
+            "zugehoerigZu": 59
+        },
+        {
+            "id": 604,
+            "name": "4C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 59,
+            "zugehoerigZu": 59
+        },
+        {
+            "id": 60,
+            "kennung": "1111160",
+            "name": "Testschule-60",
+            "namensergaenzung": "Keine",
+            "kuerzel": "Testschule-60",
+            "typ": "SCHULE",
+            "administriertVon": 1,
+            "zugehoerigZu": 1
+        },
+        {
+            "id": 605,
+            "name": "1A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 60,
+            "zugehoerigZu": 60
+        },
+        {
+            "id": 606,
+            "name": "1B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 60,
+            "zugehoerigZu": 60
+        },
+        {
+            "id": 607,
+            "name": "1C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 60,
+            "zugehoerigZu": 60
+        },
+        {
+            "id": 608,
+            "name": "2A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 60,
+            "zugehoerigZu": 60
+        },
+        {
+            "id": 609,
+            "name": "2B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 60,
+            "zugehoerigZu": 60
+        },
+        {
+            "id": 610,
+            "name": "2C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 60,
+            "zugehoerigZu": 60
+        },
+        {
+            "id": 611,
+            "name": "3A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 60,
+            "zugehoerigZu": 60
+        },
+        {
+            "id": 612,
+            "name": "3B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 60,
+            "zugehoerigZu": 60
+        },
+        {
+            "id": 613,
+            "name": "3C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 60,
+            "zugehoerigZu": 60
+        },
+        {
+            "id": 614,
+            "name": "4A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 60,
+            "zugehoerigZu": 60
+        },
+        {
+            "id": 615,
+            "name": "4B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 60,
+            "zugehoerigZu": 60
+        },
+        {
+            "id": 616,
+            "name": "4C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 60,
+            "zugehoerigZu": 60
+        },
+        {
+            "id": 61,
+            "kennung": "1111161",
+            "name": "Testschule-61",
+            "namensergaenzung": "Keine",
+            "kuerzel": "Testschule-61",
+            "typ": "SCHULE",
+            "administriertVon": 1,
+            "zugehoerigZu": 1
+        },
+        {
+            "id": 617,
+            "name": "1A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 61,
+            "zugehoerigZu": 61
+        },
+        {
+            "id": 618,
+            "name": "1B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 61,
+            "zugehoerigZu": 61
+        },
+        {
+            "id": 619,
+            "name": "1C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 61,
+            "zugehoerigZu": 61
+        },
+        {
+            "id": 620,
+            "name": "2A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 61,
+            "zugehoerigZu": 61
+        },
+        {
+            "id": 621,
+            "name": "2B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 61,
+            "zugehoerigZu": 61
+        },
+        {
+            "id": 622,
+            "name": "2C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 61,
+            "zugehoerigZu": 61
+        },
+        {
+            "id": 623,
+            "name": "3A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 61,
+            "zugehoerigZu": 61
+        },
+        {
+            "id": 624,
+            "name": "3B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 61,
+            "zugehoerigZu": 61
+        },
+        {
+            "id": 625,
+            "name": "3C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 61,
+            "zugehoerigZu": 61
+        },
+        {
+            "id": 626,
+            "name": "4A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 61,
+            "zugehoerigZu": 61
+        },
+        {
+            "id": 627,
+            "name": "4B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 61,
+            "zugehoerigZu": 61
+        },
+        {
+            "id": 628,
+            "name": "4C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 61,
+            "zugehoerigZu": 61
+        },
+        {
+            "id": 62,
+            "kennung": "1111162",
+            "name": "Testschule-62",
+            "namensergaenzung": "Keine",
+            "kuerzel": "Testschule-62",
+            "typ": "SCHULE",
+            "administriertVon": 1,
+            "zugehoerigZu": 1
+        },
+        {
+            "id": 629,
+            "name": "1A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 62,
+            "zugehoerigZu": 62
+        },
+        {
+            "id": 630,
+            "name": "1B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 62,
+            "zugehoerigZu": 62
+        },
+        {
+            "id": 631,
+            "name": "1C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 62,
+            "zugehoerigZu": 62
+        },
+        {
+            "id": 632,
+            "name": "2A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 62,
+            "zugehoerigZu": 62
+        },
+        {
+            "id": 633,
+            "name": "2B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 62,
+            "zugehoerigZu": 62
+        },
+        {
+            "id": 634,
+            "name": "2C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 62,
+            "zugehoerigZu": 62
+        },
+        {
+            "id": 635,
+            "name": "3A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 62,
+            "zugehoerigZu": 62
+        },
+        {
+            "id": 636,
+            "name": "3B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 62,
+            "zugehoerigZu": 62
+        },
+        {
+            "id": 637,
+            "name": "3C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 62,
+            "zugehoerigZu": 62
+        },
+        {
+            "id": 638,
+            "name": "4A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 62,
+            "zugehoerigZu": 62
+        },
+        {
+            "id": 639,
+            "name": "4B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 62,
+            "zugehoerigZu": 62
+        },
+        {
+            "id": 640,
+            "name": "4C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 62,
+            "zugehoerigZu": 62
+        },
+        {
+            "id": 63,
+            "kennung": "1111163",
+            "name": "Testschule-63",
+            "namensergaenzung": "Keine",
+            "kuerzel": "Testschule-63",
+            "typ": "SCHULE",
+            "administriertVon": 1,
+            "zugehoerigZu": 1
+        },
+        {
+            "id": 641,
+            "name": "1A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 63,
+            "zugehoerigZu": 63
+        },
+        {
+            "id": 642,
+            "name": "1B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 63,
+            "zugehoerigZu": 63
+        },
+        {
+            "id": 643,
+            "name": "1C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 63,
+            "zugehoerigZu": 63
+        },
+        {
+            "id": 644,
+            "name": "2A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 63,
+            "zugehoerigZu": 63
+        },
+        {
+            "id": 645,
+            "name": "2B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 63,
+            "zugehoerigZu": 63
+        },
+        {
+            "id": 646,
+            "name": "2C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 63,
+            "zugehoerigZu": 63
+        },
+        {
+            "id": 647,
+            "name": "3A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 63,
+            "zugehoerigZu": 63
+        },
+        {
+            "id": 648,
+            "name": "3B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 63,
+            "zugehoerigZu": 63
+        },
+        {
+            "id": 649,
+            "name": "3C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 63,
+            "zugehoerigZu": 63
+        },
+        {
+            "id": 650,
+            "name": "4A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 63,
+            "zugehoerigZu": 63
+        },
+        {
+            "id": 651,
+            "name": "4B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 63,
+            "zugehoerigZu": 63
+        },
+        {
+            "id": 652,
+            "name": "4C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 63,
+            "zugehoerigZu": 63
+        },
+        {
+            "id": 64,
+            "kennung": "1111164",
+            "name": "Testschule-64",
+            "namensergaenzung": "Keine",
+            "kuerzel": "Testschule-64",
+            "typ": "SCHULE",
+            "administriertVon": 1,
+            "zugehoerigZu": 1
+        },
+        {
+            "id": 653,
+            "name": "1A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 64,
+            "zugehoerigZu": 64
+        },
+        {
+            "id": 654,
+            "name": "1B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 64,
+            "zugehoerigZu": 64
+        },
+        {
+            "id": 655,
+            "name": "1C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 64,
+            "zugehoerigZu": 64
+        },
+        {
+            "id": 656,
+            "name": "2A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 64,
+            "zugehoerigZu": 64
+        },
+        {
+            "id": 657,
+            "name": "2B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 64,
+            "zugehoerigZu": 64
+        },
+        {
+            "id": 658,
+            "name": "2C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 64,
+            "zugehoerigZu": 64
+        },
+        {
+            "id": 659,
+            "name": "3A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 64,
+            "zugehoerigZu": 64
+        },
+        {
+            "id": 660,
+            "name": "3B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 64,
+            "zugehoerigZu": 64
+        },
+        {
+            "id": 661,
+            "name": "3C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 64,
+            "zugehoerigZu": 64
+        },
+        {
+            "id": 662,
+            "name": "4A",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 64,
+            "zugehoerigZu": 64
+        },
+        {
+            "id": 663,
+            "name": "4B",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 64,
+            "zugehoerigZu": 64
+        },
+        {
+            "id": 664,
+            "name": "4C",
+            "namensergaenzung": "Keine",
+            "typ": "KLASSE",
+            "administriertVon": 64,
+            "zugehoerigZu": 64
+        }
+    ]
+}

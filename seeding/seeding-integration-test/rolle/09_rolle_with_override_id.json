@@ -1,0 +1,17 @@
+{
+    "entityName": "Rolle",
+    "entities": [
+        {
+            "id": 0,
+            "overrideId": "85a5a9e2-865d-4c79-bbe9-0cff8cc57883",
+            "name": "Rolle1",
+            "administeredBySchulstrukturknoten": 0,
+            "rollenart": "LERN",
+            "merkmale": [],
+            "systemrechte": [],
+            "serviceProviderIds": [],
+            "istTechnisch": false,
+            "serviceProviderData": []
+        }
+    ]
+}

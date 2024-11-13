@@ -1,4 +1,4 @@
-import { Loaded } from '@mikro-orm/core';
+import { Loaded, QBFilterQuery } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/postgresql';
 import { Injectable } from '@nestjs/common';
 import { OrganisationID, PersonID, PersonenkontextID, RolleID } from '../../../shared/types/index.js';
@@ -275,5 +275,36 @@ export class DBiamPersonenkontextRepo {
 
     public async isRolleAlreadyAssigned(id: RolleID): Promise<boolean> {
         return (await this.findByRolle(id)).length > 0;
+    }
+
+    public async getPersonenKontexteWithExpiredBefristung(): Promise<Map<PersonID, Personenkontext<true>[]>> {
+        const filters: QBFilterQuery<PersonenkontextEntity> = {
+            personId: {
+                personenKontexte: {
+                    $some: {
+                        befristung: {
+                            $lt: new Date(),
+                        },
+                    },
+                },
+            },
+        };
+
+        const personenKontexteEntities: PersonenkontextEntity[] = await this.em.find(PersonenkontextEntity, filters);
+        const personenKontexte: Personenkontext<true>[] = personenKontexteEntities.map((pk: PersonenkontextEntity) =>
+            mapEntityToAggregate(pk, this.personenkontextFactory),
+        );
+
+        // Grouping the entities by personId
+        const groupedByPerson: Map<PersonID, Personenkontext<true>[]> = new Map();
+        for (const kontext of personenKontexte) {
+            const group: Personenkontext<true>[] = groupedByPerson.get(kontext.personId) ?? [];
+            if (group.length === 0) {
+                groupedByPerson.set(kontext.personId, group);
+            }
+            group.push(kontext);
+        }
+
+        return groupedByPerson;
     }
 }

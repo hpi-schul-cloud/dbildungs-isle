@@ -11,6 +11,8 @@ import { DbiamPersonenkontextFactory } from './domain/dbiam-personenkontext.fact
 import { PersonenkontextFactory } from './domain/personenkontext.factory.js';
 import { EventModule } from '../../core/eventbus/index.js';
 import { DBiamPersonenkontextRepoInternal } from './persistence/internal-dbiam-personenkontext.repo.js';
+import { PersonenkontextCreationService } from './domain/personenkontext-creation.service.js';
+import { PersonenkontextWorkflowFactory } from './domain/personenkontext-workflow.factory.js';
 
 @Module({
     imports: [
@@ -28,6 +30,8 @@ import { DBiamPersonenkontextRepoInternal } from './persistence/internal-dbiam-p
         DBiamPersonenkontextRepoInternal,
         DbiamPersonenkontextFactory,
         PersonenkontextFactory,
+        PersonenkontextCreationService,
+        PersonenkontextWorkflowFactory,
     ],
     exports: [
         PersonenkontextService,
@@ -37,6 +41,8 @@ import { DBiamPersonenkontextRepoInternal } from './persistence/internal-dbiam-p
         DbiamPersonenkontextFactory,
         DBiamPersonenkontextRepoInternal, // TODO: Needed by seeding
         PersonenkontextFactory,
+        PersonenkontextCreationService,
+        PersonenkontextWorkflowFactory,
     ],
 })
 export class PersonenKontextModule {}

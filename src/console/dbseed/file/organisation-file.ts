@@ -3,6 +3,8 @@ import { OrganisationsTyp, Traegerschaft } from '../../../modules/organisation/d
 export class OrganisationFile {
     public id!: number;
 
+    public overrideId?: string;
+
     public administriertVon?: number;
 
     public zugehoerigZu?: number;

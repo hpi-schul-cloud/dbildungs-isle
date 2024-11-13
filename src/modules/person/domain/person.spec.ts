@@ -8,6 +8,7 @@ import { MapperTestModule } from '../../../../test/utils/mapper-test.module.js';
 import { UsernameGeneratorService } from './username-generator.service.js';
 import { VornameForPersonWithTrailingSpaceError } from './vorname-with-trailing-space.error.js';
 import { FamiliennameForPersonWithTrailingSpaceError } from './familienname-with-trailing-space.error.js';
+import { PersonalNummerForPersonWithTrailingSpaceError } from './personalnummer-with-trailing-space.error.js';
 
 describe('Person', () => {
     let module: TestingModule;
@@ -73,6 +74,7 @@ describe('Person', () => {
             expect(person).toBeDefined();
             expect(person).toBeInstanceOf(Person<true>);
             expect(person.revision).toEqual('5');
+            expect(person.userLock).toEqual([]);
         });
     });
 
@@ -198,6 +200,66 @@ describe('Person', () => {
                 expect(person).toBeInstanceOf(Person<false>);
             });
         });
+
+        describe('personalnummer validation', () => {
+            it('should return an error if the personalnummer starts with whitespace', async () => {
+                const creationParams: PersonCreationParams = {
+                    familienname: 'Mustermann',
+                    vorname: 'Max',
+                    personalnummer: ' 123',
+                };
+                const result: DomainError | Person<false> = await Person.createNew(
+                    usernameGeneratorService,
+                    creationParams,
+                );
+                expect(result).toBeInstanceOf(PersonalNummerForPersonWithTrailingSpaceError);
+            });
+
+            it('should return an error if the personalnummer ends with whitespace', async () => {
+                const creationParams: PersonCreationParams = {
+                    familienname: 'Mustermann',
+                    vorname: 'Max',
+                    personalnummer: '123 ',
+                };
+                const result: DomainError | Person<false> = await Person.createNew(
+                    usernameGeneratorService,
+                    creationParams,
+                );
+                expect(result).toBeInstanceOf(PersonalNummerForPersonWithTrailingSpaceError);
+            });
+
+            it('should return an error if the personalnummer is only whitespace', async () => {
+                const creationParams: PersonCreationParams = {
+                    familienname: 'Mustermann',
+                    vorname: 'Max',
+                    personalnummer: ' ',
+                };
+                const result: DomainError | Person<false> = await Person.createNew(
+                    usernameGeneratorService,
+                    creationParams,
+                );
+                expect(result).toBeInstanceOf(PersonalNummerForPersonWithTrailingSpaceError);
+            });
+
+            it('should create a new person if names are valid', async () => {
+                usernameGeneratorService.generateUsername.mockResolvedValue({ ok: true, value: '' });
+                const creationParams: PersonCreationParams = {
+                    familienname: 'Mustermann',
+                    vorname: 'Max',
+                };
+                const person: Person<false> | DomainError = await Person.createNew(
+                    usernameGeneratorService,
+                    creationParams,
+                );
+
+                expect(person).not.toBeInstanceOf(DomainError);
+                if (person instanceof DomainError) {
+                    return;
+                }
+                expect(person).toBeDefined();
+                expect(person).toBeInstanceOf(Person<false>);
+            });
+        });
     });
 
     describe('update', () => {
@@ -292,6 +354,82 @@ describe('Person', () => {
                 );
                 const result: void | DomainError = person.update('5', 'familienname ', undefined, 'abc');
                 expect(result).toBeInstanceOf(FamiliennameForPersonWithTrailingSpaceError);
+            });
+        });
+
+        describe('personalnummer validation', () => {
+            it('should return an error if the personalnummer starts with whitespace', () => {
+                const person: Person<true> = Person.construct(
+                    faker.string.uuid(),
+                    faker.date.past(),
+                    faker.date.recent(),
+                    'Mustermann',
+                    'Max',
+                    '5',
+                    faker.lorem.word(),
+                    faker.lorem.word(),
+                    faker.string.uuid(),
+                );
+                const result: void | DomainError = person.update(
+                    '5',
+                    undefined, // familienname
+                    undefined, // vorname
+                    undefined, // referrer
+                    undefined, // stammorganisation
+                    undefined, // initialenFamilienname
+                    undefined, // initialenVorname
+                    undefined, // rufname
+                    undefined, // nameTitel
+                    undefined, // nameAnrede
+                    undefined, // namePraefix
+                    undefined, // nameSuffix
+                    undefined, // nameSortierindex
+                    undefined, // geburtsdatum
+                    undefined, // geburtsort
+                    undefined, // geschlecht
+                    undefined, // lokalisierung
+                    undefined, // vertrauensstufe
+                    undefined, // auskunftssperre
+                    ' 12345678', // personalnummer with whitespace
+                );
+                expect(result).toBeInstanceOf(PersonalNummerForPersonWithTrailingSpaceError);
+            });
+
+            it('should return an error if the Personalnummer ends with whitespace', () => {
+                const person: Person<true> = Person.construct(
+                    faker.string.uuid(),
+                    faker.date.past(),
+                    faker.date.recent(),
+                    'Mustermann',
+                    'Max',
+                    '5',
+                    faker.lorem.word(),
+                    faker.lorem.word(),
+                    faker.string.uuid(),
+                );
+                const result: void | DomainError = person.update(
+                    '5',
+                    undefined, // familienname
+                    undefined, // vorname
+                    undefined, // referrer
+                    undefined, // stammorganisation
+                    undefined, // initialenFamilienname
+                    undefined, // initialenVorname
+                    undefined, // rufname
+                    undefined, // nameTitel
+                    undefined, // nameAnrede
+                    undefined, // namePraefix
+                    undefined, // nameSuffix
+                    undefined, // nameSortierindex
+                    undefined, // geburtsdatum
+                    undefined, // geburtsort
+                    undefined, // geschlecht
+                    undefined, // lokalisierung
+                    undefined, // vertrauensstufe
+                    undefined, // auskunftssperre
+                    '12345678 ', // personalnummer with whitespace
+                );
+                expect(result).toBeInstanceOf(PersonalNummerForPersonWithTrailingSpaceError);
             });
         });
     });

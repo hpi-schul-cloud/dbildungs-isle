@@ -3,12 +3,15 @@ import { PersonResponse } from './person.response.js';
 import { Person } from '../domain/person.js';
 import { PersonBirthParams } from './person-birth.params.js';
 import { PersonNameParams } from './person-name.params.js';
+import { UserLockParams } from '../../keycloak-administration/api/user-lock.params.js';
+import { PersonEmailResponse } from './person-email-response.js';
+import { UserLock } from '../../keycloak-administration/domain/user-lock.js';
 
 export class PersonendatensatzResponse {
     @ApiProperty()
     public person!: PersonResponse;
 
-    public constructor(person: Person<true>, withStartPasswort: boolean) {
+    public constructor(person: Person<true>, withStartPasswort: boolean, personEmailResponse?: PersonEmailResponse) {
         const personResponseName: PersonNameParams = {
             familienname: person.familienname,
             vorname: person.vorname,
@@ -25,6 +28,14 @@ export class PersonendatensatzResponse {
             datum: person.geburtsdatum,
             geburtsort: person.geburtsort,
         };
+        const userLockParams: UserLockParams[] = person.userLock.map((lock: UserLock) => ({
+            personId: person.id,
+            locked_by: lock.locked_by,
+            locked_until: lock.locked_until?.toISOString(),
+            lock_occasion: lock.locked_occasion,
+            created_at: lock.created_at?.toISOString(),
+        }));
+
         const personResponse: PersonResponse = {
             id: person.id,
             referrer: person.referrer,
@@ -39,8 +50,9 @@ export class PersonendatensatzResponse {
             startpasswort: withStartPasswort === true ? person.newPassword : undefined,
             personalnummer: person.personalnummer,
             isLocked: person.isLocked,
-            lockInfo: person.lockInfo,
+            userLock: userLockParams,
             lastModified: person.updatedAt,
+            email: personEmailResponse,
         };
 
         this.person = personResponse;

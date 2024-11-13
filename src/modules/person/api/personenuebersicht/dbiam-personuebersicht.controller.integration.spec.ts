@@ -44,6 +44,7 @@ import {
 } from '../../../../../test/utils/organisation-test-helper.js';
 import { OrganisationEntity } from '../../../organisation/persistence/organisation.entity.js';
 import { OrganisationsTyp } from '../../../organisation/domain/organisation.enums.js';
+import { UserLockRepository } from '../../../keycloak-administration/repository/user-lock.repository.js';
 
 describe('Personenuebersicht API', () => {
     let app: INestApplication;
@@ -90,6 +91,10 @@ describe('Personenuebersicht API', () => {
                 {
                     provide: PersonPermissionsRepo,
                     useValue: createMock<PersonPermissionsRepo>(),
+                },
+                {
+                    provide: UserLockRepository,
+                    useValue: createMock<UserLockRepository>(),
                 },
                 ServiceProviderRepo,
                 PersonRepository,

@@ -8,6 +8,7 @@ import { OrganisationRepository } from '../../organisation/persistence/organisat
 import { RolleRepo } from '../../rolle/repo/rolle.repo.js';
 import { PersonenkontextRolleFieldsResponse } from './personen-kontext-rolle-fields.response.js';
 import { createMock } from '@golevelup/ts-jest';
+import { StepUpLevel } from '../passport/oidc.strategy.js';
 
 describe('UserinfoResponse', () => {
     const permissions: PersonPermissions = new PersonPermissions(
@@ -22,14 +23,19 @@ describe('UserinfoResponse', () => {
     };
 
     it('constructs the object without optional extension', () => {
-        const userinfoResponse: UserinfoResponse = new UserinfoResponse(permissions, [pk]);
+        const userinfoResponse: UserinfoResponse = new UserinfoResponse(permissions, [pk], StepUpLevel.SILVER);
         expect(userinfoResponse).toBeDefined();
         expect(userinfoResponse.password_updated_at).toBeUndefined();
     });
 
     it('constructs the object with optional extension', () => {
         const extension: UserinfoExtension = { password_updated_at: faker.date.past() };
-        const userinfoResponse: UserinfoResponse = new UserinfoResponse(permissions, [pk], extension);
+        const userinfoResponse: UserinfoResponse = new UserinfoResponse(
+            permissions,
+            [pk],
+            StepUpLevel.SILVER,
+            extension,
+        );
         expect(userinfoResponse).toBeDefined();
         expect(userinfoResponse.password_updated_at).toEqual(extension.password_updated_at?.toISOString());
     });

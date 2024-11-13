@@ -43,6 +43,7 @@ export class PersonenkontextCreationService {
         if (person instanceof DomainError) {
             return person;
         }
+
         const anlage: PersonenkontextWorkflowAggregate = this.personenkontextWorkflowFactory.createNew();
         /* eslint-disable no-await-in-loop */
         for (const createPersonenkontext of createPersonenkontexte) {
@@ -52,7 +53,6 @@ export class PersonenkontextCreationService {
                 return canCommit;
             }
         }
-        /* eslint-disable no-await-in-loop */
 
         //Save Person
         const savedPerson: DomainError | Person<true> = await this.personRepository.create(person);

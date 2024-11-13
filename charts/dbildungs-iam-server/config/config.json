@@ -1,75 +1,81 @@
 {
-    "HOST": {
-        "PORT": 8080
-    },
-    "FRONTEND": {
-        "PORT": 8080,
-        "SECURE_COOKIE": true,
-        "SESSION_SECRET": "SessionSecretForDevelopment",
-        "SESSION_TTL_MS": 3600000,
-        "BACKEND_ADDRESS": "http://dbildungs-iam-server-backend:80",
-        "DEFAULT_AUTH_REDIRECT": "/",
-        "TRUST_PROXY": 1,
-        "ERROR_PAGE_REDIRECT": "/login-error"
-    },
-    "DB": {
-        "USE_SSL": true
-    },
-    "KEYCLOAK": {
-        "ADMIN_REALM_NAME": "SPSH",
-        "REALM_NAME": "SPSH",
-        "ADMIN_CLIENT_ID": "spsh-admin",
-        "CLIENT_ID": "spsh",
-        "TEST_CLIENT_ID": "spsh-test"
-    },
-    "REDIS": {
-        "HOST": "dbildungs-iam-server-redis",
-        "PORT": 6379,
-        "USERNAME": "default",
-        "USE_TLS": false
-    },
-    "LDAP": {
-        "URL": "ldap://spsh-xxx.svc.cluster.local",
-        "BIND_DN": "cn=admin,dc=schule-sh,dc=de",
-        "ADMIN_PASSWORD": "password"
-    },
-    "DATA": {
-        "ROOT_ORGANISATION_ID": "d39cb7cf-2f9b-45f1-849f-973661f2f057"
-    },
-    "LOGGING": {
-        "DEFAULT_LOG_LEVEL": "info",
-        "PERSON_MODULE_LOG_LEVEL": "debug",
-        "PERSON_API_MODULE_LOG_LEVEL": "debug",
-        "ORGANISATION_MODULE_LOG_LEVEL": "debug",
-        "ORGANISATION_API_MODULE_LOG_LEVEL": "debug",
-        "ROLLE_MODULE_LOG_LEVEL": "debug",
-        "ROLLE_API_MODULE_LOG_LEVEL": "debug",
-        "KEYCLOAK_ADMINISTRATION_MODULE_LOG_LEVEL": "debug",
-        "HEALTH_MODULE_LOG_LEVEL": "debug",
-        "BACKEND_FOR_FRONTEND_MODULE_LOG_LEVEL": "debug"
-    },
-    "ITSLEARNING": {
-        "ENABLED": "false",
-        "ENDPOINT": "https://itslearning.example.com",
-        "USERNAME": "username",
-        "PASSWORD": "password",
-        "ROOT": "sh",
-        "ROOT_OEFFENTLICH": "oeffentlich",
-        "ROOT_ERSATZ": "ersatz"
-    },
-    "OX": {
-        "ENABLED": "false",
-        "ENDPOINT": "https://ox_ip:ox_port/webservices/OXUserService",
-        "CONTEXT_ID": "1337",
-        "CONTEXT_NAME": "contextname",
-        "USERNAME": "username",
-        "PASSWORD": "password"
-    },
-    "PRIVACYIDEA": {
-        "ENDPOINT": "http://localhost:5000",
-        "USERNAME": "admin",
-        "PASSWORD": "admin",
-        "USER_RESOLVER": "mariadb_resolver",
-        "REALM": "defrealm"
-    }
+  "HOST": {
+    "PORT": 8080
+  },
+  "FRONTEND": {
+    "PORT": 8080,
+    "SECURE_COOKIE": true,
+    "SESSION_SECRET": "SessionSecretForDevelopment",
+    "SESSION_TTL_MS": 3600000,
+    "BACKEND_ADDRESS": "http://dbildungs-iam-server-backend:80",
+    "DEFAULT_AUTH_REDIRECT": "/",
+    "TRUST_PROXY": 1,
+    "ERROR_PAGE_REDIRECT": "/login-error"
+  },
+  "DB": {
+    "USE_SSL": true
+  },
+  "KEYCLOAK": {
+    "ADMIN_REALM_NAME": "SPSH",
+    "REALM_NAME": "SPSH",
+    "ADMIN_CLIENT_ID": "spsh-admin",
+    "CLIENT_ID": "spsh",
+    "TEST_CLIENT_ID": "spsh-test",
+    "SERVICE_CLIENT_ID": "spsh-service"
+  },
+  "REDIS": {
+    "HOST": "dbildungs-iam-server-redis-cluster",
+    "PORT": 6379,
+    "USERNAME": "default",
+    "PASSWORD": "",
+    "USE_TLS": false,
+    "CLUSTERED": true
+  },
+  "LDAP": {
+    "URL": "ldap://spsh-xxx.svc.cluster.local",
+    "BIND_DN": "cn=admin,dc=schule-sh,dc=de",
+    "ADMIN_PASSWORD": "password"
+  },
+  "DATA": {
+    "ROOT_ORGANISATION_ID": "d39cb7cf-2f9b-45f1-849f-973661f2f057"
+  },
+  "LOGGING": {
+    "DEFAULT_LOG_LEVEL": "info",
+    "PERSON_MODULE_LOG_LEVEL": "debug",
+    "PERSON_API_MODULE_LOG_LEVEL": "debug",
+    "ORGANISATION_MODULE_LOG_LEVEL": "debug",
+    "ORGANISATION_API_MODULE_LOG_LEVEL": "debug",
+    "ROLLE_MODULE_LOG_LEVEL": "debug",
+    "ROLLE_API_MODULE_LOG_LEVEL": "debug",
+    "KEYCLOAK_ADMINISTRATION_MODULE_LOG_LEVEL": "debug",
+    "HEALTH_MODULE_LOG_LEVEL": "debug",
+    "BACKEND_FOR_FRONTEND_MODULE_LOG_LEVEL": "debug"
+  },
+  "ITSLEARNING": {
+    "ENABLED": "false",
+    "ENDPOINT": "https://itslearning.example.com",
+    "USERNAME": "username",
+    "PASSWORD": "password",
+    "ROOT": "sh",
+    "ROOT_OEFFENTLICH": "oeffentlich",
+    "ROOT_ERSATZ": "ersatz"
+  },
+  "OX": {
+    "ENABLED": "false",
+    "ENDPOINT": "https://ox_ip:ox_port/webservices/OXUserService",
+    "CONTEXT_ID": "1337",
+    "CONTEXT_NAME": "contextname",
+    "USERNAME": "username",
+    "PASSWORD": "password"
+  },
+  "PRIVACYIDEA": {
+    "ENDPOINT": "http://localhost:5000",
+    "USERNAME": "admin",
+    "PASSWORD": "admin",
+    "USER_RESOLVER": "mariadb_resolver",
+    "REALM": "defrealm"
+  },
+  "IMPORT": {
+    "IMPORT_FILE_MAXGROESSE_IN_MB": 10
+  }
 }

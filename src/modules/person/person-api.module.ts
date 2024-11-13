@@ -12,10 +12,12 @@ import { DBiamPersonenuebersichtController } from './api/personenuebersicht/dbia
 import { PersonInfoController } from './api/person-info.controller.js';
 import { PersonApiMapper } from './mapper/person-api.mapper.js';
 import { PersonDeleteModule } from './person-deletion/person-delete.module.js';
+import { EmailModule } from '../email/email.module.js';
 
 @Module({
     imports: [
         PersonModule,
+        EmailModule,
         RolleModule,
         OrganisationModule,
         PersonenKontextModule,

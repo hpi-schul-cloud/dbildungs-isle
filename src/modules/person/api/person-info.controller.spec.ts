@@ -11,12 +11,16 @@ import { DoFactory } from '../../../../test/utils/do-factory.js';
 import { DBiamPersonenkontextRepo } from '../../personenkontext/persistence/dbiam-personenkontext.repo.js';
 import { PersonRepository } from '../persistence/person.repository.js';
 import { Person } from '../domain/person.js';
+import { EmailRepo } from '../../email/persistence/email.repo.js';
+import { EmailAddressStatus } from '../../email/domain/email-address.js';
+import { PersonEmailResponse } from './person-email-response.js';
 
 describe('PersonInfoController', () => {
     let module: TestingModule;
     let sut: PersonInfoController;
     let personRepoMock: DeepMocked<PersonRepository>;
     let personenkontextRepoMock: DeepMocked<DBiamPersonenkontextRepo>;
+    let emailRepoMock: DeepMocked<EmailRepo>;
 
     beforeAll(async () => {
         module = await Test.createTestingModule({
@@ -35,12 +39,17 @@ describe('PersonInfoController', () => {
                     provide: PersonRepository,
                     useValue: createMock<PersonRepository>(),
                 },
+                {
+                    provide: EmailRepo,
+                    useValue: createMock<EmailRepo>(),
+                },
             ],
         }).compile();
 
         sut = module.get<PersonInfoController>(PersonInfoController);
         personRepoMock = module.get(PersonRepository);
         personenkontextRepoMock = module.get(DBiamPersonenkontextRepo);
+        emailRepoMock = module.get(EmailRepo);
     });
 
     afterAll(async () => {
@@ -65,9 +74,14 @@ describe('PersonInfoController', () => {
                         id: faker.string.uuid(),
                     },
                 } as PersonPermissions;
+                const email: PersonEmailResponse = {
+                    address: faker.internet.email(),
+                    status: faker.helpers.enumValue(EmailAddressStatus),
+                };
 
                 personRepoMock.findById.mockResolvedValue(person);
                 personenkontextRepoMock.findBy.mockResolvedValue([[], 0]);
+                emailRepoMock.getEmailAddressAndStatusForPerson.mockResolvedValueOnce(email);
 
                 // Act
                 const result: PersonInfoResponse = await sut.info(permissions);
@@ -104,6 +118,10 @@ describe('PersonInfoController', () => {
                     },
                     personenkontexte: [],
                     gruppen: [],
+                    email: {
+                        address: email.address,
+                        status: email.status,
+                    },
                 });
             });
         });

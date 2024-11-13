@@ -1,0 +1,550 @@
+{
+    "entityName": "Personenkontext",
+    "entities": [
+        {
+            "personId": 1,
+            "organisationId": 0,
+            "rolleId": 0
+        },
+        {
+            "personId": 2,
+            "organisationId": 0,
+            "rolleId": 0
+        },
+        {
+            "personId": 4,
+            "organisationId": 6,
+            "rolleId": 1
+        },
+        {
+            "personId": 5,
+            "organisationId": 8,
+            "rolleId": 2
+        },
+        {
+            "personId": 6,
+            "organisationId": 6,
+            "rolleId": 4
+        },
+        {
+            "personId": 7,
+            "organisationId": 6,
+            "rolleId": 3
+        },
+        {
+            "personId": 8,
+            "organisationId": 4,
+            "rolleId": 2
+        },
+        {
+            "personId": 9,
+            "organisationId": 9,
+            "rolleId": 2
+        },
+        {
+            "personId": 5,
+            "organisationId": 3,
+            "rolleId": 2
+        },
+        {
+            "personId": 10,
+            "organisationId": 3,
+            "rolleId": 1
+        },
+        {
+            "personId": 11,
+            "organisationId": 3,
+            "rolleId": 1
+        },
+        {
+            "personId": 12,
+            "organisationId": 4,
+            "rolleId": 1
+        },
+        {
+            "personId": 13,
+            "organisationId": 4,
+            "rolleId": 1
+        },
+        {
+            "personId": 10,
+            "organisationId": 10,
+            "rolleId": 1
+        },
+        {
+            "personId": 11,
+            "organisationId": 10,
+            "rolleId": 1
+        },
+        {
+            "personId": 12,
+            "organisationId": 11,
+            "rolleId": 1
+        },
+        {
+            "personId": 13,
+            "organisationId": 11,
+            "rolleId": 1
+        },
+        {
+            "personId": 14,
+            "organisationId": 3,
+            "rolleId": 4
+        },
+        {
+            "personId": 14,
+            "organisationId": 4,
+            "rolleId": 4
+        },
+        {
+            "personId": 15,
+            "organisationId": 5,
+            "rolleId": 4
+        },
+        {
+            "personId": 16,
+            "organisationId": 3,
+            "rolleId": 2
+        },
+        {
+            "personId": 16,
+            "organisationId": 4,
+            "rolleId": 2
+        },
+        {
+            "personId": 17,
+            "organisationId": 8,
+            "rolleId": 4
+        },
+        {
+            "personId": 18,
+            "organisationId": 3,
+            "rolleId": 4
+        },
+        {
+            "personId": 19,
+            "organisationId": 4,
+            "rolleId": 4
+        },
+        {
+            "personId": 20,
+            "organisationId": 0,
+            "rolleId": 101
+        },
+        {
+            "personId": 7777777,
+            "organisationId": 0,
+            "rolleId": 100
+        },
+        {
+            "personId": 21,
+            "organisationId": 665,
+            "rolleId": 1
+        },
+        {
+            "personId": 22,
+            "organisationId": 665,
+            "rolleId": 1
+        },
+        {
+            "personId": 23,
+            "organisationId": 665,
+            "rolleId": 1
+        },
+        {
+            "personId": 24,
+            "organisationId": 665,
+            "rolleId": 1
+        },
+        {
+            "personId": 25,
+            "organisationId": 665,
+            "rolleId": 1
+        },
+        {
+            "personId": 26,
+            "organisationId": 665,
+            "rolleId": 1
+        },
+        {
+            "personId": 27,
+            "organisationId": 665,
+            "rolleId": 1
+        },
+        {
+            "personId": 28,
+            "organisationId": 665,
+            "rolleId": 1
+        },
+        {
+            "personId": 29,
+            "organisationId": 665,
+            "rolleId": 1
+        },
+        {
+            "personId": 30,
+            "organisationId": 665,
+            "rolleId": 1
+        },
+        {
+            "personId": 31,
+            "organisationId": 665,
+            "rolleId": 1
+        },
+        {
+            "personId": 32,
+            "organisationId": 665,
+            "rolleId": 1
+        },
+        {
+            "personId": 33,
+            "organisationId": 665,
+            "rolleId": 1
+        },
+        {
+            "personId": 34,
+            "organisationId": 665,
+            "rolleId": 1
+        },
+        {
+            "personId": 35,
+            "organisationId": 665,
+            "rolleId": 1
+        },
+        {
+            "personId": 36,
+            "organisationId": 665,
+            "rolleId": 1
+        },
+        {
+            "personId": 37,
+            "organisationId": 665,
+            "rolleId": 1
+        },
+        {
+            "personId": 38,
+            "organisationId": 665,
+            "rolleId": 1
+        },
+        {
+            "personId": 39,
+            "organisationId": 665,
+            "rolleId": 1
+        },
+        {
+            "personId": 40,
+            "organisationId": 665,
+            "rolleId": 1
+        },
+        {
+            "personId": 41,
+            "organisationId": 665,
+            "rolleId": 1
+        },
+        {
+            "personId": 42,
+            "organisationId": 665,
+            "rolleId": 1
+        },
+        {
+            "personId": 43,
+            "organisationId": 665,
+            "rolleId": 1
+        },
+        {
+            "personId": 44,
+            "organisationId": 665,
+            "rolleId": 1
+        },
+        {
+            "personId": 45,
+            "organisationId": 665,
+            "rolleId": 1
+        },
+        {
+            "personId": 46,
+            "organisationId": 665,
+            "rolleId": 1
+        },
+        {
+            "personId": 47,
+            "organisationId": 665,
+            "rolleId": 1
+        },
+        {
+            "personId": 48,
+            "organisationId": 665,
+            "rolleId": 1
+        },
+        {
+            "personId": 49,
+            "organisationId": 665,
+            "rolleId": 1
+        },
+        {
+            "personId": 50,
+            "organisationId": 665,
+            "rolleId": 1
+        },
+        {
+            "personId": 51,
+            "organisationId": 665,
+            "rolleId": 1
+        },
+        {
+            "personId": 52,
+            "organisationId": 665,
+            "rolleId": 1
+        },
+        {
+            "personId": 53,
+            "organisationId": 665,
+            "rolleId": 1
+        },
+        {
+            "personId": 54,
+            "organisationId": 665,
+            "rolleId": 1
+        },
+        {
+            "personId": 55,
+            "organisationId": 665,
+            "rolleId": 1
+        },
+        {
+            "personId": 56,
+            "organisationId": 665,
+            "rolleId": 1
+        },
+        {
+            "personId": 57,
+            "organisationId": 665,
+            "rolleId": 1
+        },
+        {
+            "personId": 58,
+            "organisationId": 665,
+            "rolleId": 1
+        },
+        {
+            "personId": 59,
+            "organisationId": 665,
+            "rolleId": 1
+        },
+        {
+            "personId": 60,
+            "organisationId": 665,
+            "rolleId": 1
+        },
+        {
+            "personId": 61,
+            "organisationId": 665,
+            "rolleId": 2
+        },
+        {
+            "personId": 62,
+            "organisationId": 665,
+            "rolleId": 2
+        },
+        {
+            "personId": 21,
+            "organisationId": 700,
+            "rolleId": 1
+        },
+        {
+            "personId": 22,
+            "organisationId": 700,
+            "rolleId": 1
+        },
+        {
+            "personId": 23,
+            "organisationId": 700,
+            "rolleId": 1
+        },
+        {
+            "personId": 24,
+            "organisationId": 700,
+            "rolleId": 1
+        },
+        {
+            "personId": 25,
+            "organisationId": 700,
+            "rolleId": 1
+        },
+        {
+            "personId": 26,
+            "organisationId": 700,
+            "rolleId": 1
+        },
+        {
+            "personId": 27,
+            "organisationId": 700,
+            "rolleId": 1
+        },
+        {
+            "personId": 28,
+            "organisationId": 700,
+            "rolleId": 1
+        },
+        {
+            "personId": 29,
+            "organisationId": 700,
+            "rolleId": 1
+        },
+        {
+            "personId": 30,
+            "organisationId": 700,
+            "rolleId": 1
+        },
+        {
+            "personId": 31,
+            "organisationId": 700,
+            "rolleId": 1
+        },
+        {
+            "personId": 32,
+            "organisationId": 700,
+            "rolleId": 1
+        },
+        {
+            "personId": 33,
+            "organisationId": 700,
+            "rolleId": 1
+        },
+        {
+            "personId": 34,
+            "organisationId": 700,
+            "rolleId": 1
+        },
+        {
+            "personId": 35,
+            "organisationId": 700,
+            "rolleId": 1
+        },
+        {
+            "personId": 36,
+            "organisationId": 700,
+            "rolleId": 1
+        },
+        {
+            "personId": 37,
+            "organisationId": 700,
+            "rolleId": 1
+        },
+        {
+            "personId": 38,
+            "organisationId": 700,
+            "rolleId": 1
+        },
+        {
+            "personId": 39,
+            "organisationId": 700,
+            "rolleId": 1
+        },
+        {
+            "personId": 40,
+            "organisationId": 700,
+            "rolleId": 1
+        },
+        {
+            "personId": 41,
+            "organisationId": 700,
+            "rolleId": 1
+        },
+        {
+            "personId": 42,
+            "organisationId": 700,
+            "rolleId": 1
+        },
+        {
+            "personId": 43,
+            "organisationId": 700,
+            "rolleId": 1
+        },
+        {
+            "personId": 44,
+            "organisationId": 700,
+            "rolleId": 1
+        },
+        {
+            "personId": 45,
+            "organisationId": 700,
+            "rolleId": 1
+        },
+        {
+            "personId": 46,
+            "organisationId": 700,
+            "rolleId": 1
+        },
+        {
+            "personId": 47,
+            "organisationId": 700,
+            "rolleId": 1
+        },
+        {
+            "personId": 48,
+            "organisationId": 700,
+            "rolleId": 1
+        },
+        {
+            "personId": 49,
+            "organisationId": 700,
+            "rolleId": 1
+        },
+        {
+            "personId": 50,
+            "organisationId": 700,
+            "rolleId": 1
+        },
+        {
+            "personId": 51,
+            "organisationId": 700,
+            "rolleId": 1
+        },
+        {
+            "personId": 52,
+            "organisationId": 702,
+            "rolleId": 1
+        },
+        {
+            "personId": 53,
+            "organisationId": 702,
+            "rolleId": 1
+        },
+        {
+            "personId": 54,
+            "organisationId": 702,
+            "rolleId": 1
+        },
+        {
+            "personId": 55,
+            "organisationId": 702,
+            "rolleId": 1
+        },
+        {
+            "personId": 56,
+            "organisationId": 702,
+            "rolleId": 1
+        },
+        {
+            "personId": 57,
+            "organisationId": 702,
+            "rolleId": 1
+        },
+        {
+            "personId": 58,
+            "organisationId": 702,
+            "rolleId": 1
+        },
+        {
+            "personId": 59,
+            "organisationId": 702,
+            "rolleId": 1
+        },
+        {
+            "personId": 60,
+            "organisationId": 702,
+            "rolleId": 1
+        }
+    ]
+}

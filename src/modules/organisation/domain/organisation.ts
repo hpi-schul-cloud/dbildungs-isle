@@ -14,6 +14,7 @@ export class Organisation<WasPersisted extends boolean> {
         public id: Persisted<string, WasPersisted>,
         public createdAt: Persisted<Date, WasPersisted>,
         public updatedAt: Persisted<Date, WasPersisted>,
+        public version: Persisted<number, WasPersisted>,
         public administriertVon?: string,
         public zugehoerigZu?: string,
         public kennung?: string,
@@ -30,6 +31,7 @@ export class Organisation<WasPersisted extends boolean> {
         id: Persisted<string, WasPersisted>,
         createdAt: Persisted<Date, WasPersisted>,
         updatedAt: Persisted<Date, WasPersisted>,
+        version: number,
         administriertVon?: string,
         zugehoerigZu?: string,
         kennung?: string,
@@ -45,6 +47,7 @@ export class Organisation<WasPersisted extends boolean> {
             id,
             createdAt,
             updatedAt,
+            version,
             administriertVon,
             zugehoerigZu,
             kennung,
@@ -71,6 +74,7 @@ export class Organisation<WasPersisted extends boolean> {
         emailAdress?: string,
     ): Organisation<false> | DomainError {
         const organisation: Organisation<false> = new Organisation(
+            undefined,
             undefined,
             undefined,
             undefined,
@@ -138,5 +142,9 @@ export class Organisation<WasPersisted extends boolean> {
         }
 
         return undefined;
+    }
+
+    public setVersionForUpdate(version: number): void {
+        this.version = version;
     }
 }

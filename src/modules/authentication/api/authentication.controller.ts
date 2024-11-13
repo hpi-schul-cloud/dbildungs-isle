@@ -30,6 +30,8 @@ import { RollenSystemRechtServiceProviderIDResponse } from './rolle-systemrechte
 import { AuthenticationExceptionFilter } from './authentication-exception-filter.js';
 import { KeycloakUserService } from '../../keycloak-administration/index.js';
 import { DomainError } from '../../../shared/error/domain.error.js';
+import { extractStepUpLevelFromJWT } from '../passport/oidc.strategy.js';
+
 @UseFilters(new AuthenticationExceptionFilter())
 @ApiTags('auth')
 @Controller({ path: 'auth' })
@@ -60,7 +62,7 @@ export class AuthenticationController {
     @ApiResponse({ status: 302, description: 'Redirection to orchestrate OIDC flow.' })
     @ApiQuery({ type: RedirectQueryParams })
     public login(@Res() res: Response, @Session() session: SessionData): void {
-        const target: string = session.redirectUrl ?? this.defaultLoginRedirect;
+        const target: string = session.passport?.user.redirect_uri ?? this.defaultLoginRedirect;
         res.redirect(target);
     }
 
@@ -107,7 +109,7 @@ export class AuthenticationController {
     @ApiOperation({ summary: 'Info about logged in user.' })
     @ApiUnauthorizedResponse({ description: 'User is not logged in.' })
     @ApiOkResponse({ description: 'Returns info about the logged in user.', type: UserinfoResponse })
-    public async info(@Permissions() permissions: PersonPermissions): Promise<UserinfoResponse> {
+    public async info(@Permissions() permissions: PersonPermissions, @Req() req: Request): Promise<UserinfoResponse> {
         const roleIds: RolleID[] = await permissions.getRoleIds();
         this.logger.info('Roles: ' + roleIds.toString());
         this.logger.info('User: ' + JSON.stringify(permissions.personFields));
@@ -130,7 +132,12 @@ export class AuthenticationController {
             if (lastPasswordChange.ok) userinfoExtension.password_updated_at = lastPasswordChange.value;
         }
 
-        return new UserinfoResponse(permissions, rolleFieldsResponse, userinfoExtension);
+        return new UserinfoResponse(
+            permissions,
+            rolleFieldsResponse,
+            extractStepUpLevelFromJWT(req.passportUser?.id_token),
+            userinfoExtension,
+        );
     }
 
     @Get('reset-password')

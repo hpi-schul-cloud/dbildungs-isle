@@ -34,6 +34,7 @@ at the moment of writing those are:
 |DB_CLIENT_URL|Everything for the DB connection which is neither Name nor Password|No|
 |KC_ADMIN_SECRET|Admin Secret for Keycloak|Yes|
 |KC_CLIENT_SECRET|Client Secret for Keycloak|Yes|
+|KC_SERVICE_CLIENT_PRIVATE_JWKS|Service Client private JWKS|Yes|
 |FRONTEND_SESSION_SECRET|Encryption secret for session handling in the frontend|Yes|
 
 #### Data Model

@@ -13,7 +13,7 @@ import { PersonenkontextFactory } from '../domain/personenkontext.factory.js';
 import { OrganisationRepository } from '../../organisation/persistence/organisation.repository.js';
 import { PersonRepository } from '../../person/persistence/person.repository.js';
 import { Organisation } from '../../organisation/domain/organisation.js';
-import { CheckRollenartLernSpecification } from './nur-rolle-lern.js';
+import { CheckRollenartSpecification } from './nur-gleiche-rolle.js';
 import { RollenArt } from '../../rolle/domain/rolle.enums.js';
 
 function createPersonenkontext<WasPersisted extends boolean>(
@@ -211,29 +211,25 @@ describe('PersonenkontextSpecificationsMockedReposTest', () => {
         });
     });
     describe('Nur Lern kontext when person has LERN kontexte already', () => {
-        it('should pass the check when there are no existing LERN roles', async () => {
-            const specification: CheckRollenartLernSpecification = new CheckRollenartLernSpecification(
+        it('should pass the check when there are no existing roles', async () => {
+            const specification: CheckRollenartSpecification = new CheckRollenartSpecification(
                 personenkontextRepoMock,
                 rolleRepoMock,
             );
             const personenkontext: Personenkontext<false> = createMock<Personenkontext<false>>();
-            const existingPersonenkontexte: Personenkontext<true>[] = [];
-
-            personenkontextRepoMock.findByPerson.mockResolvedValueOnce(existingPersonenkontexte);
+            personenkontextRepoMock.findByPerson.mockResolvedValueOnce([]);
 
             const mapRollen: Map<string, Rolle<true>> = new Map();
             mapRollen.set(faker.string.uuid(), DoFactory.createRolle(true, { rollenart: RollenArt.LEHR }));
-            mapRollen.set(faker.string.uuid(), DoFactory.createRolle(true, { rollenart: RollenArt.LEHR }));
-            rolleRepoMock.findByIds.mockResolvedValueOnce(mapRollen);
             rolleRepoMock.findByIds.mockResolvedValueOnce(mapRollen);
 
-            const result: boolean = await specification.checkRollenartLern([personenkontext]);
+            const result: boolean = await specification.checkRollenart([personenkontext]);
 
             expect(result).toBe(true);
         });
 
-        it('should pass the check when there are existing LERN roles and the new role is also LERN', async () => {
-            const specification: CheckRollenartLernSpecification = new CheckRollenartLernSpecification(
+        it('should pass the check when new roles match existing role type', async () => {
+            const specification: CheckRollenartSpecification = new CheckRollenartSpecification(
                 personenkontextRepoMock,
                 rolleRepoMock,
             );
@@ -242,18 +238,21 @@ describe('PersonenkontextSpecificationsMockedReposTest', () => {
 
             personenkontextRepoMock.findByPerson.mockResolvedValueOnce([existingPersonenkontext]);
 
-            const mapRollen: Map<string, Rolle<true>> = new Map();
-            mapRollen.set(faker.string.uuid(), DoFactory.createRolle(true, { rollenart: RollenArt.LERN }));
-            rolleRepoMock.findByIds.mockResolvedValueOnce(mapRollen);
-            rolleRepoMock.findByIds.mockResolvedValueOnce(mapRollen);
+            const existingRollen: Map<string, Rolle<true>> = new Map();
+            existingRollen.set(faker.string.uuid(), DoFactory.createRolle(true, { rollenart: RollenArt.LEHR }));
+            rolleRepoMock.findByIds.mockResolvedValueOnce(existingRollen);
 
-            const result: boolean = await specification.checkRollenartLern([personenkontext]);
+            const newRollen: Map<string, Rolle<true>> = new Map();
+            newRollen.set(faker.string.uuid(), DoFactory.createRolle(true, { rollenart: RollenArt.LEHR }));
+            rolleRepoMock.findByIds.mockResolvedValueOnce(newRollen);
+
+            const result: boolean = await specification.checkRollenart([personenkontext]);
 
             expect(result).toBe(true);
         });
 
-        it('should fail the check when there are existing LERN roles and the new role is not LERN', async () => {
-            const specification: CheckRollenartLernSpecification = new CheckRollenartLernSpecification(
+        it('should fail the check when new roles do not match existing role type', async () => {
+            const specification: CheckRollenartSpecification = new CheckRollenartSpecification(
                 personenkontextRepoMock,
                 rolleRepoMock,
             );
@@ -262,37 +261,122 @@ describe('PersonenkontextSpecificationsMockedReposTest', () => {
 
             personenkontextRepoMock.findByPerson.mockResolvedValueOnce([existingPersonenkontext]);
 
-            const mapRollen: Map<string, Rolle<true>> = new Map();
-            mapRollen.set(faker.string.uuid(), DoFactory.createRolle(true, { rollenart: RollenArt.LEHR }));
-            rolleRepoMock.findByIds.mockResolvedValueOnce(mapRollen);
+            const existingRollen: Map<string, Rolle<true>> = new Map();
+            existingRollen.set(faker.string.uuid(), DoFactory.createRolle(true, { rollenart: RollenArt.LEHR }));
+            rolleRepoMock.findByIds.mockResolvedValueOnce(existingRollen);
 
-            const mapExistingRollen: Map<string, Rolle<true>> = new Map();
-            mapExistingRollen.set(faker.string.uuid(), DoFactory.createRolle(true, { rollenart: RollenArt.LERN }));
-            rolleRepoMock.findByIds.mockResolvedValueOnce(mapExistingRollen);
+            const newRollen: Map<string, Rolle<true>> = new Map();
+            newRollen.set(faker.string.uuid(), DoFactory.createRolle(true, { rollenart: RollenArt.LERN }));
+            rolleRepoMock.findByIds.mockResolvedValueOnce(newRollen);
 
-            const result: boolean = await specification.checkRollenartLern([personenkontext]);
+            const result: boolean = await specification.checkRollenart([personenkontext]);
 
             expect(result).toBe(false);
         });
 
-        it('should pass the check when there are existing roles, but none are of type LERN', async () => {
-            const specification: CheckRollenartLernSpecification = new CheckRollenartLernSpecification(
+        it('should pass the check when multiple new roles all match existing role type', async () => {
+            const specification: CheckRollenartSpecification = new CheckRollenartSpecification(
                 personenkontextRepoMock,
                 rolleRepoMock,
             );
-            const personenkontext: Personenkontext<false> = createMock<Personenkontext<false>>();
+            const personenkontext1: Personenkontext<false> = createMock<Personenkontext<false>>();
+            const personenkontext2: Personenkontext<false> = createMock<Personenkontext<false>>();
             const existingPersonenkontext: Personenkontext<true> = createMock<Personenkontext<true>>();
 
             personenkontextRepoMock.findByPerson.mockResolvedValueOnce([existingPersonenkontext]);
 
-            const mapRollen: Map<string, Rolle<true>> = new Map();
-            mapRollen.set(faker.string.uuid(), DoFactory.createRolle(true, { rollenart: RollenArt.LEHR }));
-            rolleRepoMock.findByIds.mockResolvedValueOnce(mapRollen);
-            rolleRepoMock.findByIds.mockResolvedValueOnce(mapRollen);
+            const existingRollen: Map<string, Rolle<true>> = new Map();
+            existingRollen.set(faker.string.uuid(), DoFactory.createRolle(true, { rollenart: RollenArt.LEHR }));
+            rolleRepoMock.findByIds.mockResolvedValueOnce(existingRollen);
 
-            const result: boolean = await specification.checkRollenartLern([personenkontext]);
+            const newRollen: Map<string, Rolle<true>> = new Map();
+            newRollen.set(faker.string.uuid(), DoFactory.createRolle(true, { rollenart: RollenArt.LEHR }));
+            newRollen.set(faker.string.uuid(), DoFactory.createRolle(true, { rollenart: RollenArt.LEHR }));
+            rolleRepoMock.findByIds.mockResolvedValueOnce(newRollen);
+
+            const result: boolean = await specification.checkRollenart([personenkontext1, personenkontext2]);
 
             expect(result).toBe(true);
+        });
+
+        it('should pass the check when multiple new roles all match existing role type and no existing roles', async () => {
+            const specification: CheckRollenartSpecification = new CheckRollenartSpecification(
+                personenkontextRepoMock,
+                rolleRepoMock,
+            );
+
+            const personenkontext1: Personenkontext<false> = createMock<Personenkontext<false>>();
+            const personenkontext2: Personenkontext<false> = createMock<Personenkontext<false>>();
+            const existingPersonenkontext: Personenkontext<true> = createMock<Personenkontext<true>>();
+
+            personenkontextRepoMock.findByPerson.mockResolvedValueOnce([existingPersonenkontext]);
+
+            const existingRollen: Map<string, Rolle<true>> = new Map();
+            rolleRepoMock.findByIds.mockResolvedValueOnce(existingRollen);
+
+            const newRollen: Map<string, Rolle<true>> = new Map();
+            newRollen.set(faker.string.uuid(), DoFactory.createRolle(true, { rollenart: RollenArt.LEHR }));
+            newRollen.set(faker.string.uuid(), DoFactory.createRolle(true, { rollenart: RollenArt.LEHR }));
+            rolleRepoMock.findByIds.mockResolvedValueOnce(newRollen);
+
+            const result: boolean = await specification.checkRollenart([personenkontext1, personenkontext2]);
+
+            expect(result).toBe(true);
+        });
+
+        it('should fail the check when new roles have different role types and no existing roles', async () => {
+            const specification: CheckRollenartSpecification = new CheckRollenartSpecification(
+                personenkontextRepoMock,
+                rolleRepoMock,
+            );
+
+            const personenkontext1: Personenkontext<false> = createMock<Personenkontext<false>>();
+            const personenkontext2: Personenkontext<false> = createMock<Personenkontext<false>>();
+
+            // Mock to return an empty array for existing person contexts
+            personenkontextRepoMock.findByPerson.mockResolvedValueOnce([]);
+
+            // Mock for existing roles, which will be empty
+            const existingRollen: Map<string, Rolle<true>> = new Map();
+            rolleRepoMock.findByIds.mockResolvedValueOnce(existingRollen);
+
+            // Mock new roles with different role types
+            const newRollen: Map<string, Rolle<true>> = new Map();
+            newRollen.set(faker.string.uuid(), DoFactory.createRolle(true, { rollenart: RollenArt.LEHR }));
+            newRollen.set(faker.string.uuid(), DoFactory.createRolle(true, { rollenart: RollenArt.LERN })); // Different role type
+            rolleRepoMock.findByIds.mockResolvedValueOnce(newRollen);
+
+            const result: boolean = await specification.checkRollenart([personenkontext1, personenkontext2]);
+
+            expect(result).toBe(false); // Expecting false because of different role types
+        });
+
+        it('should throw an error when existingRollen has undefined values', async () => {
+            const specification: CheckRollenartSpecification = new CheckRollenartSpecification(
+                personenkontextRepoMock,
+                rolleRepoMock,
+            );
+
+            const personenkontext1: Personenkontext<false> = createMock<Personenkontext<false>>();
+            const personenkontext2: Personenkontext<false> = createMock<Personenkontext<false>>();
+
+            // Mock to return an empty array for existing person contexts
+            personenkontextRepoMock.findByPerson.mockResolvedValueOnce([]);
+
+            // Instead of mocking the map with 'undefined', we simulate the function returning an invalid array (empty or undefined)
+            const existingRollen: Rolle<true>[] = [undefined as unknown as Rolle<true>]; // Simulating undefined role
+            rolleRepoMock.findByIds.mockResolvedValueOnce(new Map(Object.entries(existingRollen)));
+
+            // Mock new roles with valid role types
+            const newRollen: Map<string, Rolle<true>> = new Map();
+            newRollen.set(faker.string.uuid(), DoFactory.createRolle(true, { rollenart: RollenArt.LEHR }));
+            newRollen.set(faker.string.uuid(), DoFactory.createRolle(true, { rollenart: RollenArt.LEHR }));
+            rolleRepoMock.findByIds.mockResolvedValueOnce(newRollen);
+
+            // Expect the function to throw an error due to the undefined value in existingRollen
+            await expect(specification.checkRollenart([personenkontext1, personenkontext2])).rejects.toThrow(
+                'Expected existingRollen to contain valid roles, but found undefined.',
+            );
         });
     });
 });

@@ -66,7 +66,7 @@ jobs:
 
   release_helm:
     needs: scan_helm
-    uses: dBildungsplattform/dbp-github-workflows/.github/workflows/chart-release.yaml@5
+    uses: dBildungsplattform/dbp-github-workflows/.github/workflows/chart-release.yaml@7
     secrets: inherit
     with:
       chart_name: "dbildungs-iam-server"
@@ -74,3 +74,4 @@ jobs:
       image_tag_generation: specified 
       helm_chart_version: "${{ github.ref_name }}"
       image_tag: "${{ github.ref_name }}"
+      helm_repo_list: "bitnami,https://charts.bitnami.com/bitnami"
