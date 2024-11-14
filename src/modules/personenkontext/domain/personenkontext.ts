@@ -193,4 +193,8 @@ export class Personenkontext<WasPersisted extends boolean> {
     public async getRolle(): Promise<Option<Rolle<true>>> {
         return this.rolleRepo.findById(this.rolleId);
     }
+
+    public async getOrganisation(): Promise<Option<Organisation<true>>> {
+        return this.organisationRepository.findById(this.organisationId);
+    }
 }

@@ -127,15 +127,13 @@ export class RolleRepo {
         return RolleEntity;
     }
 
-    public async findById(id: RolleID): Promise<Option<Rolle<true>>> {
-        const rolle: Option<RolleEntity> = await this.em.findOne(
-            this.entityName,
-            { id },
-            {
-                populate: ['merkmale', 'systemrechte', 'serviceProvider.serviceProvider'] as const,
-                exclude: ['serviceProvider.serviceProvider.logo'] as const,
-            },
-        );
+    public async findById(id: RolleID, includeTechnical: boolean = false): Promise<Option<Rolle<true>>> {
+        const query: { id: RolleID; istTechnisch?: boolean } = includeTechnical ? { id } : { id, istTechnisch: false };
+
+        const rolle: Option<RolleEntity> = await this.em.findOne(this.entityName, query, {
+            populate: ['merkmale', 'systemrechte', 'serviceProvider.serviceProvider'] as const,
+            exclude: ['serviceProvider.serviceProvider.logo'] as const,
+        });
 
         return rolle && mapEntityToAggregate(rolle, this.rolleFactory);
     }
@@ -151,6 +149,7 @@ export class RolleRepo {
                 error: new EntityNotFoundError(),
             };
         }
+
         const rolleAdministeringOrganisationId: OrganisationID = rolle.administeredBySchulstrukturknoten;
 
         const relevantSystemRechte: RollenSystemRecht[] = [RollenSystemRecht.ROLLEN_VERWALTEN];

@@ -12,6 +12,7 @@ import { PersonenkontextCreatedMigrationEvent } from '../../../shared/events/per
 import { OrganisationRepository } from '../../../modules/organisation/persistence/organisation.repository.js';
 import { PersonenkontextMigrationRuntype } from '../../../modules/personenkontext/domain/personenkontext.enums.js';
 import { LdapEmailDomainError } from '../error/ldap-email-domain.error.js';
+import { PersonRenamedEvent } from '../../../shared/events/person-renamed-event.js';
 
 @Injectable()
 export class LdapEventHandler {
@@ -35,7 +36,7 @@ export class LdapEventHandler {
     @EventHandler(PersonDeletedEvent)
     public async handlePersonDeletedEvent(event: PersonDeletedEvent): Promise<void> {
         this.logger.info(`Received PersonenkontextDeletedEvent, personId:${event.personId}`);
-        const deletionResult: Result<PersonID> = await this.ldapClientService.deleteLehrerByPersonId(event.personId);
+        const deletionResult: Result<PersonID> = await this.ldapClientService.deleteLehrerByReferrer(event.referrer);
         if (!deletionResult.ok) {
             this.logger.error(deletionResult.error.message);
         }
@@ -126,6 +127,22 @@ export class LdapEventHandler {
                 );
             }
         }
+    }
+
+    @EventHandler(PersonRenamedEvent)
+    public async personRenamedEventHandler(event: PersonRenamedEvent): Promise<void> {
+        this.logger.info(`Received PersonRenamedEvent, personId:${event.personId}`);
+        const modifyResult: Result<PersonID> = await this.ldapClientService.modifyPersonAttributes(
+            event.oldReferrer,
+            event.vorname,
+            event.familienname,
+            event.referrer,
+        );
+        if (!modifyResult.ok) {
+            this.logger.error(modifyResult.error.message);
+            return;
+        }
+        this.logger.info(`Successfully modfied person attributes for personId:${event.personId}`);
     }
 
     @EventHandler(PersonenkontextUpdatedEvent)

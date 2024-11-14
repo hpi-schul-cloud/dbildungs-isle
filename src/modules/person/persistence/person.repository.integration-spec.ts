@@ -65,6 +65,7 @@ import { FamiliennameForPersonWithTrailingSpaceError } from '../domain/familienn
 import { PersonalNummerForPersonWithTrailingSpaceError } from '../domain/personalnummer-with-trailing-space.error.js';
 import { Personenkontext } from '../../personenkontext/domain/personenkontext.js';
 import { PersonID } from '../../../shared/types/aggregate-ids.types.js';
+import { UserLock } from '../../keycloak-administration/domain/user-lock.js';
 
 describe('PersonRepository Integration', () => {
     let module: TestingModule;
@@ -79,6 +80,7 @@ describe('PersonRepository Integration', () => {
     let rolleRepo: RolleRepo;
     let dbiamPersonenkontextRepoInternal: DBiamPersonenkontextRepoInternal;
     let personenkontextFactory: PersonenkontextFactory;
+    let userLockRepository: UserLockRepository;
 
     beforeAll(async () => {
         module = await Test.createTestingModule({
@@ -105,10 +107,6 @@ describe('PersonRepository Integration', () => {
                     provide: KeycloakUserService,
                     useValue: createMock<KeycloakUserService>(),
                 },
-                {
-                    provide: UserLockRepository,
-                    useValue: createMock<UserLockRepository>(),
-                },
                 // the following are required to prepare the test for findByIds()
                 OrganisationRepository,
                 ServiceProviderRepo,
@@ -116,6 +114,7 @@ describe('PersonRepository Integration', () => {
                 RolleRepo,
                 DBiamPersonenkontextRepoInternal,
                 PersonenkontextFactory,
+                UserLockRepository,
             ],
         }).compile();
         sut = module.get(PersonRepository);
@@ -130,6 +129,7 @@ describe('PersonRepository Integration', () => {
         rolleRepo = module.get(RolleRepo);
         dbiamPersonenkontextRepoInternal = module.get(DBiamPersonenkontextRepoInternal);
         personenkontextFactory = module.get(PersonenkontextFactory);
+        userLockRepository = module.get(UserLockRepository);
 
         await DatabaseTestModule.setupDatabase(orm);
     }, DEFAULT_TIMEOUT_FOR_TESTCONTAINERS);
@@ -1272,6 +1272,62 @@ describe('PersonRepository Integration', () => {
                 expect(result.ok).toBeTruthy();
             });
         });
+
+        it('should return DomainError when user is technical', async () => {
+            const person1: Person<true> = DoFactory.createPerson(true);
+            const personEntity: PersonEntity = new PersonEntity();
+            await em.persistAndFlush(personEntity.assign(mapAggregateToData(person1)));
+            person1.id = personEntity.id;
+
+            const organisation: OrganisationEntity = await createAndPersistOrganisation(
+                em,
+                undefined,
+                OrganisationsTyp.SCHULE,
+            );
+
+            const rolleData: RequiredEntityData<RolleEntity> = {
+                name: 'Testrolle',
+                administeredBySchulstrukturknoten: organisation.id,
+                rollenart: RollenArt.ORGADMIN,
+                istTechnisch: true,
+            };
+            const rolleEntity: RolleEntity = em.create(RolleEntity, rolleData);
+            await em.persistAndFlush(rolleEntity);
+
+            const personenkontextData: RequiredEntityData<PersonenkontextEntity> = {
+                organisationId: organisation.id,
+                personId: person1.id,
+                rolleId: rolleEntity.id,
+            };
+            const personenkontextEntity: PersonenkontextEntity = em.create(PersonenkontextEntity, personenkontextData);
+            await em.persistAndFlush(personenkontextEntity);
+
+            personPermissionsMock.getOrgIdsWithSystemrecht.mockResolvedValue({
+                all: false,
+                orgaIds: [organisation.id],
+            });
+
+            kcUserServiceMock.findById.mockResolvedValue({
+                ok: true,
+                value: {
+                    id: person1.keycloakUserId!,
+                    username: person1.username ?? '',
+                    enabled: true,
+                    email: faker.internet.email(),
+                    createdDate: new Date(),
+                    externalSystemIDs: {},
+                    attributes: {},
+                },
+            });
+
+            const result: Result<Person<true>> = await sut.getPersonIfAllowed(person1.id, personPermissionsMock);
+
+            // check that the result is a DomainError
+            expect(result.ok).toBeFalsy();
+            if (result.ok === false) {
+                expect(result.error).toBeInstanceOf(DomainError);
+            }
+        });
     });
     describe('deletePerson', () => {
         describe('Delete the person and all kontexte', () => {
@@ -1760,13 +1816,20 @@ describe('PersonRepository Integration', () => {
             expect(persons[0]?.id).toEqual(person1.id);
         });
     });
-
     describe('updatePersonMetadata', () => {
         it('should return the updated person', async () => {
             const person: Person<true> = await savePerson(true);
             const newFamilienname: string = faker.name.lastName();
             const newVorname: string = faker.name.firstName();
             const newPersonalnummer: string = faker.finance.pin(7);
+            const kopersLock: UserLock = {
+                person: person.id,
+                created_at: new Date(),
+                locked_by: 'cron',
+                locked_until: new Date(),
+                locked_occasion: PersonLockOccasion.KOPERS_GESPERRT,
+            };
+            await userLockRepository.createUserLock(kopersLock);
             personPermissionsMock.canModifyPerson.mockResolvedValueOnce(true);
             usernameGeneratorService.generateUsername.mockResolvedValueOnce({ ok: true, value: 'testusername1' });
             kcUserServiceMock.updateUsername.mockResolvedValueOnce({

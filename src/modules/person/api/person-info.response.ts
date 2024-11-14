@@ -40,6 +40,9 @@ class Person {
     @ApiProperty({ nullable: true })
     public readonly personalnummer?: string;
 
+    @ApiProperty({ nullable: true })
+    public readonly dienststellen?: string[];
+
     public constructor(props: Readonly<Person>) {
         this.id = props.id;
         this.referrer = props.referrer;
@@ -52,6 +55,7 @@ class Person {
         this.vertrauensstufe = props.vertrauensstufe;
         this.revision = props.revision;
         this.personalnummer = props.personalnummer;
+        this.dienststellen = props.dienststellen;
     }
 }
 

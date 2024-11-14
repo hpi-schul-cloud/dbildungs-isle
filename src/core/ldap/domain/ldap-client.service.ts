@@ -14,13 +14,15 @@ import { LdapEmailAddressError } from '../error/ldap-email-address.error.js';
 import { LdapEmailDomainError } from '../error/ldap-email-domain.error.js';
 import { LdapCreateLehrerError } from '../error/ldap-create-lehrer.error.js';
 import { LdapModifyEmailError } from '../error/ldap-modify-email.error.js';
+import { PersonRepository } from '../../../modules/person/persistence/person.repository.js';
+import { Person } from '../../../modules/person/domain/person.js';
 
 export type PersonData = {
     vorname: string;
     familienname: string;
     id: string;
     referrer?: string;
-    ldapEntryUUID?: string;
+    ldapEntryUUID?: string; // When this field is set, it will use the relax operator. Only use during migration.
 };
 
 @Injectable()
@@ -45,6 +47,8 @@ export class LdapClientService {
 
     public static readonly HOME_DIRECTORY: string = 'none'; //highlight it's a dummy value
 
+    private static readonly RELAX_OID: string = '1.3.6.1.4.1.4203.666.5.12'; // Relax Control
+
     private mutex: Mutex;
 
     public constructor(
@@ -52,6 +56,7 @@ export class LdapClientService {
         private readonly ldapInstanceConfig: LdapInstanceConfig,
         private readonly logger: ClassLogger,
         private readonly eventService: EventService,
+        private readonly personRepo: PersonRepository,
     ) {
         this.mutex = new Mutex();
     }
@@ -104,12 +109,19 @@ export class LdapClientService {
         return rootName;
     }
 
+    private async getPersonReferrerOrUndefined(personId: PersonID): Promise<string | undefined> {
+        const person: Option<Person<true>> = await this.personRepo.findById(personId);
+
+        return person?.referrer;
+    }
+
     public async createLehrer(
         person: PersonData,
         domain: string,
         mail?: string, //Wird hier erstmal seperat mit reingegeben bis die Umstellung auf primary/alternative erfolgt
     ): Promise<Result<PersonData>> {
-        if (!person.referrer) {
+        const referrer: string | undefined = person.referrer;
+        if (!referrer) {
             return {
                 ok: false,
                 error: new UsernameRequiredError(
@@ -120,7 +132,7 @@ export class LdapClientService {
         const rootName: Result<string> = this.getRootNameOrError(domain);
         if (!rootName.ok) return rootName;
 
-        const lehrerUid: string = this.getLehrerUid(person.referrer, rootName.value);
+        const lehrerUid: string = this.getLehrerUid(referrer, rootName.value);
         return this.mutex.runExclusive(async () => {
             this.logger.info('LDAP: createLehrer');
             const client: Client = this.ldapClient.getClient();
@@ -139,11 +151,12 @@ export class LdapClientService {
                 return { ok: true, value: person };
             }
             const entry: LdapPersonEntry = {
-                uid: lehrerUid,
+                uid: referrer,
                 uidNumber: LdapClientService.UID_NUMBER,
                 gidNumber: LdapClientService.GID_NUMBER,
                 homeDirectory: LdapClientService.HOME_DIRECTORY,
-                cn: person.vorname,
+                cn: referrer,
+                givenName: person.vorname,
                 sn: person.familienname,
                 objectclass: ['inetOrgPerson', 'univentionMail', 'posixAccount'],
                 mailPrimaryAddress: mail ?? ``,
@@ -151,9 +164,10 @@ export class LdapClientService {
             };
 
             const controls: Control[] = [];
-            const relaxRulesControlOID: string = '1.3.6.1.4.1.4203.666.5.12';
-            entry.entryUUID = person.ldapEntryUUID ?? person.id;
-            controls.push(new Control(relaxRulesControlOID));
+            if (person.ldapEntryUUID) {
+                entry.entryUUID = person.ldapEntryUUID;
+                controls.push(new Control(LdapClientService.RELAX_OID));
+            }
 
             try {
                 await client.add(lehrerUid, entry, controls);
@@ -192,7 +206,86 @@ export class LdapClientService {
         });
     }
 
-    public async deleteLehrerByPersonId(personId: PersonID): Promise<Result<PersonID>> {
+    public async modifyPersonAttributes(
+        oldReferrer: string,
+        newGivenName?: string,
+        newSn?: string,
+        newUid?: string,
+    ): Promise<Result<string>> {
+        return this.mutex.runExclusive(async () => {
+            this.logger.info('LDAP: modifyPersonAttributes');
+            const client: Client = this.ldapClient.getClient();
+            const bindResult: Result<boolean> = await this.bind();
+            if (!bindResult.ok) return bindResult;
+
+            const searchResult: SearchResult = await client.search(`${LdapClientService.DC_SCHULE_SH_DC_DE}`, {
+                scope: 'sub',
+                filter: `(uid=${oldReferrer})`,
+                attributes: ['givenName', 'sn', 'uid'],
+                returnAttributeValues: true,
+            });
+            if (!searchResult.searchEntries[0]) {
+                this.logger.error(`Modification FAILED, no entry for person:${oldReferrer}`);
+                return {
+                    ok: false,
+                    error: new LdapSearchError(LdapEntityType.LEHRER),
+                };
+            }
+
+            const entryDn: string = searchResult.searchEntries[0].dn;
+            const modifications: Change[] = [];
+
+            if (newUid) {
+                modifications.push(
+                    new Change({
+                        operation: 'replace',
+                        modification: new Attribute({
+                            type: 'cn',
+                            values: [newUid],
+                        }),
+                    }),
+                );
+            }
+            if (newGivenName) {
+                modifications.push(
+                    new Change({
+                        operation: 'replace',
+                        modification: new Attribute({
+                            type: 'givenName',
+                            values: [newGivenName],
+                        }),
+                    }),
+                );
+            }
+            if (newSn) {
+                modifications.push(
+                    new Change({
+                        operation: 'replace',
+                        modification: new Attribute({
+                            type: 'sn',
+                            values: [newSn],
+                        }),
+                    }),
+                );
+            }
+            if (modifications.length > 0) {
+                await client.modify(entryDn, modifications);
+                this.logger.info(`LDAP: Successfully modified givenName/sn attributes for person:${oldReferrer}`);
+            } else {
+                this.logger.info(`No givenName/sn attributes provided to modify for person:${oldReferrer}`);
+            }
+
+            if (newUid && searchResult.searchEntries[0]['uid'] !== newUid) {
+                const newDn: string = `uid=${newUid}`;
+                await client.modifyDN(entryDn, newDn);
+                this.logger.info(`LDAP: Successfully updated uid for person:${oldReferrer} to ${newUid}`);
+            }
+
+            return { ok: true, value: oldReferrer };
+        });
+    }
+
+    public async deleteLehrerByReferrer(referrer: string): Promise<Result<string>> {
         return this.mutex.runExclusive(async () => {
             this.logger.info('LDAP: deleteLehrer');
             const client: Client = this.ldapClient.getClient();
@@ -201,7 +294,7 @@ export class LdapClientService {
 
             const searchResultLehrer: SearchResult = await client.search(`${LdapClientService.DC_SCHULE_SH_DC_DE}`, {
                 scope: 'sub',
-                filter: `(entryUUID=${personId})`,
+                filter: `(uid=${referrer})`,
             });
             if (!searchResultLehrer.searchEntries[0]) {
                 return {
@@ -210,9 +303,9 @@ export class LdapClientService {
                 };
             }
             await client.del(searchResultLehrer.searchEntries[0].dn);
-            this.logger.info(`LDAP: Successfully deleted lehrer by personId:${personId}`);
+            this.logger.info(`LDAP: Successfully deleted lehrer by person:${referrer}`);
 
-            return { ok: true, value: personId };
+            return { ok: true, value: referrer };
         });
     }
 
@@ -242,6 +335,17 @@ export class LdapClientService {
     }
 
     public async changeEmailAddressByPersonId(personId: PersonID, newEmailAddress: string): Promise<Result<PersonID>> {
+        const referrer: string | undefined = await this.getPersonReferrerOrUndefined(personId);
+        if (!referrer) {
+            this.logger.error(
+                `Changing email-address in LDAP FAILED, no person/referrer found for personId:${personId}`,
+            );
+            return {
+                ok: false,
+                error: new LdapSearchError(LdapEntityType.LEHRER),
+            };
+        }
+
         return this.mutex.runExclusive(async () => {
             this.logger.info('LDAP: changeEmailAddress');
             const splitted: string[] = newEmailAddress.split('@');
@@ -263,7 +367,7 @@ export class LdapClientService {
                 `ou=${rootName.value},${LdapClientService.DC_SCHULE_SH_DC_DE}`,
                 {
                     scope: 'sub',
-                    filter: `(entryUUID=${personId})`,
+                    filter: `(uid=${referrer})`,
                     attributes: [LdapClientService.MAIL_PRIMARY_ADDRESS, LdapClientService.MAIL_ALTERNATIVE_ADDRESS],
                     returnAttributeValues: true,
                 },

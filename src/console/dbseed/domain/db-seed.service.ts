@@ -427,7 +427,7 @@ export class DbSeedService {
             ReferencedEntityType.ROLLE,
         );
         if (!rolleUUID) throw new EntityNotFoundError('Rolle', seedingId.toString());
-        const rolle: Option<Rolle<true>> = await this.rolleRepo.findById(rolleUUID);
+        const rolle: Option<Rolle<true>> = await this.rolleRepo.findById(rolleUUID, true);
         if (!rolle) throw new EntityNotFoundError('Rolle', seedingId.toString());
 
         return rolle;

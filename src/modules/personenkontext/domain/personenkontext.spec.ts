@@ -229,4 +229,21 @@ describe('Personenkontext aggregate', () => {
             await expect(personenkontext.checkPermissions(permissions)).resolves.toBeUndefined();
         });
     });
+
+    describe('getOrganisation', () => {
+        it('should return the Organisation', async () => {
+            const orgaMock: DeepMocked<Organisation<true>> = createMock<Organisation<true>>();
+            organisationRepoMock.findById.mockResolvedValueOnce(orgaMock);
+
+            const personenkontext: Personenkontext<false> = personenkontextFactory.createNew(
+                faker.string.uuid(),
+                faker.string.uuid(),
+                faker.string.uuid(),
+            );
+
+            const result: Option<Organisation<true>> = await personenkontext.getOrganisation();
+
+            expect(result).toBe(orgaMock);
+        });
+    });
 });

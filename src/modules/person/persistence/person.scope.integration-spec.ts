@@ -288,5 +288,23 @@ describe('PersonScope', () => {
                 expect(persons).toHaveLength(1);
             });
         });
+
+        it('should not return technical users', async () => {
+            const orgnisationID: string = faker.string.uuid();
+            const person1: PersonEntity = createPersonEntity();
+            const person2: PersonEntity = createPersonEntity();
+            const rolle: Rolle<true> = await rolleRepo.save(DoFactory.createRolle(false, { istTechnisch: true }));
+            await em.persistAndFlush([person1, person2]);
+            await createPersonenkontext(person1.id, orgnisationID, rolle.id);
+
+            const scope: PersonScope = new PersonScope()
+                .findBy({ ids: [person1.id, person2.id] })
+                .sortBy('vorname', ScopeOrder.ASC)
+                .paged(0, 10);
+            const [persons, total]: Counted<PersonEntity> = await scope.executeQuery(em);
+
+            expect(total).toBe(1);
+            expect(persons).toHaveLength(1);
+        });
     });
 });

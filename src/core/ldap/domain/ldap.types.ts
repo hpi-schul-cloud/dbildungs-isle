@@ -4,6 +4,7 @@ export type LdapPersonEntry = {
     gidNumber: string; //required for posixAccount objectClass
     homeDirectory: string; //required for posixAccount objectClass
     cn: string;
+    givenName: string;
     sn: string;
     mailPrimaryAddress?: string;
     mailAlternativeAddress?: string;

@@ -24,6 +24,7 @@ import { DomainError } from '../../../shared/error/domain.error.js';
 import { RollenMerkmal, RollenSystemRecht } from '../domain/rolle.enums.js';
 import { UpdateMerkmaleError } from '../domain/update-merkmale.error.js';
 import { RolleUpdateOutdatedError } from '../domain/update-outdated.error.js';
+import { EntityNotFoundError } from '../../../shared/error/entity-not-found.error.js';
 
 describe('RolleRepo', () => {
     let module: TestingModule;
@@ -154,6 +155,14 @@ describe('RolleRepo', () => {
             const rolle: Option<Rolle<true>> = await sut.findById(faker.string.uuid());
 
             expect(rolle).toBeNull();
+        });
+
+        it('should return undefined if the entity is technisch', async () => {
+            const rolle: Rolle<true> = await sut.save(DoFactory.createRolle(false, { istTechnisch: true }));
+
+            const rolleResult: Option<Rolle<true>> = await sut.findById(rolle.id);
+
+            expect(rolleResult).toBeNull();
         });
     });
 
@@ -533,6 +542,31 @@ describe('RolleRepo', () => {
 
             expect(rolleResult).toBeInstanceOf(UpdateMerkmaleError);
         });
+
+        it('should return error when rolle is technisch', async () => {
+            const organisationId: OrganisationID = faker.string.uuid();
+            const rolle: Rolle<true> = await sut.save(
+                DoFactory.createRolle(false, {
+                    administeredBySchulstrukturknoten: organisationId,
+                    istTechnisch: true,
+                }),
+            );
+            const permissions: DeepMocked<PersonPermissions> = createMock<PersonPermissions>();
+            permissions.getOrgIdsWithSystemrecht.mockResolvedValueOnce({ all: false, orgaIds: [organisationId] });
+
+            const rolleResult: Rolle<true> | DomainError = await sut.updateRolleAuthorized(
+                rolle.id,
+                faker.company.name(),
+                [],
+                [],
+                [],
+                1,
+                false,
+                permissions,
+            );
+
+            expect(rolleResult).toBeInstanceOf(EntityNotFoundError);
+        });
     });
 
     describe('deleteAuthorized', () => {
@@ -568,6 +602,23 @@ describe('RolleRepo', () => {
 
                 const rolleResult: Option<DomainError> = await sut.deleteAuthorized(rolle.id, permissions);
                 expect(rolleResult).toBeInstanceOf(DomainError);
+            });
+
+            it('when rolle is technisch', async () => {
+                const rolle: Rolle<true> = await sut.save(
+                    DoFactory.createRolle(false, {
+                        administeredBySchulstrukturknoten: faker.string.uuid(),
+                        istTechnisch: true,
+                    }),
+                );
+                const permissions: DeepMocked<PersonPermissions> = createMock<PersonPermissions>();
+                permissions.getOrgIdsWithSystemrecht.mockResolvedValueOnce({
+                    all: false,
+                    orgaIds: [faker.string.uuid()],
+                });
+
+                const rolleResult: Option<DomainError> = await sut.deleteAuthorized(rolle.id, permissions);
+                expect(rolleResult).toBeInstanceOf(EntityNotFoundError);
             });
         });
     });

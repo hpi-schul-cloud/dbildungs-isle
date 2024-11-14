@@ -2,6 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Jahrgangsstufe, Personenstatus, SichtfreigabeType } from '../../domain/personenkontext.enums.js';
 import { CreatedPersonenkontextOrganisation } from '../created-personenkontext-organisation.js';
 import { LoeschungResponse } from '../../../person/api/loeschung.response.js';
+import { RollenArt } from '../../../rolle/domain/rolle.enums.js';
 
 export class PersonenkontextResponse {
     @ApiProperty()
@@ -17,7 +18,10 @@ export class PersonenkontextResponse {
     public organisation!: CreatedPersonenkontextOrganisation;
 
     @ApiProperty({ nullable: true })
-    public roleName?: string;
+    public rollenart?: RollenArt;
+
+    @ApiProperty({ nullable: true })
+    public rollenname?: string;
 
     @ApiProperty({ enum: Personenstatus, nullable: true })
     public personenstatus?: Personenstatus;
@@ -44,5 +48,7 @@ export class PersonenkontextResponse {
         this.sichtfreigabe = props.sichtfreigabe;
         this.loeschung = props.loeschung;
         this.revision = props.revision;
+        this.rollenart = props.rollenart;
+        this.rollenname = props.rollenname;
     }
 }

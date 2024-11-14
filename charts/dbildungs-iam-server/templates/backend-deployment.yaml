@@ -7,7 +7,9 @@ metadata:
     {{- include "common.labels" . | nindent 4 }}
     app.kubernetes.io/component: server-backend
 spec:
+  {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.backend.replicaCount }}
+  {{- end }}
   selector:
     matchLabels:
       app.kubernetes.io/name: {{ template "common.names.name" . }}

@@ -167,12 +167,9 @@ redis-cluster:
       memory: 128Mi
   metrics:
     enabled: true
-    resources:
-      limits:
-        cpu: 200m
-        memory: 256Mi
-      requests:
-        cpu: 50m
-        memory: 64Mi
-    serviceMonitor: 
-        enabled: true
+   
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 5
+  targetCPUUtilizationPercentage: 60

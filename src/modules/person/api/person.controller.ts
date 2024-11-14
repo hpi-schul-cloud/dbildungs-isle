@@ -525,7 +525,6 @@ export class PersonController {
                 SchulConnexErrorMapper.mapDomainErrorToSchulConnexError(result),
             );
         }
-
         return new PersonendatensatzResponse(result, false);
     }
 }

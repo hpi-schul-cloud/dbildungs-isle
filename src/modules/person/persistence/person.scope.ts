@@ -29,6 +29,9 @@ export class PersonScope extends ScopeBase<PersonEntity> {
                 findProps.organisationen !== undefined && {
                     personenKontexte: { $some: { organisationId: { $in: findProps.organisationen } } },
                 },
+                {
+                    personenKontexte: { $none: { rolleId: { istTechnisch: true } } },
+                },
             ].filter(Boolean),
         };
 
