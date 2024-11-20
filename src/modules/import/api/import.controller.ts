@@ -67,7 +67,7 @@ export class ImportController {
         @UploadedFile(
             new ParseFilePipeBuilder()
                 .addFileTypeValidator({
-                    fileType: 'text/csv',
+                    fileType: 'text/csv|application/vnd.ms-excel', //added application/vnd.ms-excel for firefox compatibility with csv files
                 })
                 .build({
                     errorHttpStatusCode: HttpStatus.BAD_REQUEST,

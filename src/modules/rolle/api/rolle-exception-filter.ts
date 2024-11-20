@@ -8,6 +8,7 @@ import { RolleHatPersonenkontexteError } from '../domain/rolle-hat-personenkonte
 import { UpdateMerkmaleError } from '../domain/update-merkmale.error.js';
 import { NameForRolleWithTrailingSpaceError } from '../domain/name-with-trailing-space.error.js';
 import { RolleUpdateOutdatedError } from '../domain/update-outdated.error.js';
+import { RolleNameNotUniqueOnSskError } from '../specification/error/rolle-name-not-unique-on-ssk.error.js';
 
 @Catch(RolleDomainError)
 export class RolleExceptionFilter implements ExceptionFilter<RolleDomainError> {
@@ -45,6 +46,13 @@ export class RolleExceptionFilter implements ExceptionFilter<RolleDomainError> {
             new DbiamRolleError({
                 code: 400,
                 i18nKey: RolleErrorI18nTypes.NEWER_VERSION_OF_ROLLE_AVAILABLE,
+            }),
+        ],
+        [
+            RolleNameNotUniqueOnSskError.name,
+            new DbiamRolleError({
+                code: 400,
+                i18nKey: RolleErrorI18nTypes.ROLLE_NAME_UNIQUE_ON_SSK,
             }),
         ],
     ]);

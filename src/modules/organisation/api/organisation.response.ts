@@ -32,6 +32,9 @@ export class OrganisationResponse {
     @ApiProperty({ enum: Traegerschaft, enumName: TraegerschaftTypName })
     public traegerschaft?: Traegerschaft;
 
+    @ApiProperty({ required: true })
+    public itslearningEnabled!: boolean;
+
     @ApiProperty()
     public version: number;
 
@@ -44,6 +47,7 @@ export class OrganisationResponse {
         this.kuerzel = organisation.kuerzel;
         this.typ = organisation.typ!;
         this.traegerschaft = organisation.traegerschaft;
+        this.itslearningEnabled = organisation.itslearningEnabled;
         this.version = organisation.version;
     }
 }

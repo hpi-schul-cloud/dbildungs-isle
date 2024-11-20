@@ -49,6 +49,9 @@ export class OrganisationEntity extends TimestampedEntity {
     @Property({ nullable: true })
     public emailAddress?: string;
 
+    @Property({ default: false })
+    public itslearningEnabled!: boolean;
+
     @Property({ type: new BigIntType('number'), defaultRaw: '1', concurrencyCheck: true })
     public version!: number & Opt;
 }

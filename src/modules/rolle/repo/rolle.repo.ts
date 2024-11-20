@@ -26,6 +26,8 @@ import { RolleHatPersonenkontexteError } from '../domain/rolle-hat-personenkonte
 import { ServiceProvider } from '../../service-provider/domain/service-provider.js';
 import { ServiceProviderEntity } from '../../service-provider/repo/service-provider.entity.js';
 import { RolleUpdateOutdatedError } from '../domain/update-outdated.error.js';
+import { RolleNameUniqueOnSsk } from '../specification/rolle-name-unique-on-ssk.js';
+import { RolleNameNotUniqueOnSskError } from '../specification/error/rolle-name-not-unique-on-ssk.error.js';
 
 /**
  * @deprecated Not for use outside of rolle-repo, export will be removed at a later date
@@ -271,7 +273,10 @@ export class RolleRepo {
         return !!rolle;
     }
 
-    public async save(rolle: Rolle<boolean>): Promise<Rolle<true>> {
+    public async save(rolle: Rolle<boolean>): Promise<Rolle<true> | DomainError> {
+        const rolleNameUniqueOnSSK: RolleNameUniqueOnSsk = new RolleNameUniqueOnSsk(this, rolle.name);
+        if (!(await rolleNameUniqueOnSSK.isSatisfiedBy(rolle))) return new RolleNameNotUniqueOnSskError();
+
         if (rolle.id) {
             return this.update(rolle);
         } else {
@@ -321,7 +326,10 @@ export class RolleRepo {
         if (updatedRolle instanceof DomainError) {
             return updatedRolle;
         }
-        const result: Rolle<true> = await this.save(updatedRolle);
+        const result: Rolle<true> | DomainError = await this.save(updatedRolle);
+        if (result instanceof DomainError) {
+            return result;
+        }
         this.eventService.publish(
             new RolleUpdatedEvent(id, authorizedRole.rollenart, merkmale, systemrechte, serviceProviderIds),
         );

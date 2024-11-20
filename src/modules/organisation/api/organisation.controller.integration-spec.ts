@@ -182,12 +182,13 @@ describe('Organisation API', () => {
                 await em.persistAndFlush(organisation);
                 await em.findOneOrFail(OrganisationEntity, { id: organisation.id });
 
-                const rolle: Rolle<true> = await rolleRepo.save(
+                const rolle: Rolle<true> | DomainError = await rolleRepo.save(
                     DoFactory.createRolle(false, {
                         administeredBySchulstrukturknoten: organisation.id,
                         rollenart: RollenArt.LERN,
                     }),
                 );
+                if (rolle instanceof DomainError) throw Error();
 
                 await dBiamPersonenkontextRepoInternal.save(
                     createPersonenkontext(false, {

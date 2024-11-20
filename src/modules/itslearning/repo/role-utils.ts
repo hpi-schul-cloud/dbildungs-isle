@@ -36,11 +36,21 @@ export function higherRollenart(a: RollenArt, b: RollenArt): RollenArt {
     return ROLLENART_VALUES[a] > ROLLENART_VALUES[b] ? a : b;
 }
 
-export function determineHighestRollenart(rollen: RollenArt[]): RollenArt {
-    return rollen.reduce(
+export function lowerRollenart(a: RollenArt, b: RollenArt): RollenArt {
+    return ROLLENART_VALUES[a] < ROLLENART_VALUES[b] ? a : b;
+}
+
+export function determineHighestRollenart(
+    rollen: RollenArt[],
+    limitRollenart: RollenArt = RollenArt.SYSADMIN,
+): RollenArt {
+    const highestRolle: RollenArt = rollen.reduce(
         (highestRole: RollenArt, role: RollenArt) => higherRollenart(role, highestRole),
         RollenArt.EXTERN,
     );
+
+    // Limit rollenart
+    return lowerRollenart(highestRolle, limitRollenart);
 }
 
 export function rollenartToIMSESInstitutionRole(role: RollenArt): IMSESInstitutionRoleType {

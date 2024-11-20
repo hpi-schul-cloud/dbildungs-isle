@@ -1,4 +1,4 @@
-import { EntityManager, Loaded, RequiredEntityData } from '@mikro-orm/core';
+import { EntityManager, Loaded, RequiredEntityData, QBFilterQuery } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
 import { UserLock } from '../domain/user-lock.js';
 import { UserLockEntity } from '../entity/user-lock.entity.js';
@@ -61,5 +61,16 @@ export class UserLockRepository {
 
     public async deleteUserLock(personId: string, lockOccasion: PersonLockOccasion): Promise<void> {
         await this.em.nativeDelete(UserLockEntity, { person: personId, locked_occasion: lockOccasion });
+    }
+
+    public async getLocksToUnlock(): Promise<UserLock[]> {
+        const today: Date = new Date();
+
+        const filters: QBFilterQuery<UserLockEntity> = {
+            locked_until: { $lte: today },
+        };
+
+        const userLockEntities: UserLockEntity[] = await this.em.find(UserLockEntity, filters);
+        return userLockEntities.map((userlock: UserLockEntity) => mapEntityToAggregate(userlock));
     }
 }

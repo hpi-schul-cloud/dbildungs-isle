@@ -9,6 +9,8 @@ export class LdapInstanceConfig implements LdapConfig {
         public URL: string,
         public BIND_DN: string,
         public ADMIN_PASSWORD: string,
+        public OEFFENTLICHE_SCHULEN_DOMAIN?: string,
+        public ERSATZSCHULEN_DOMAIN?: string,
     ) {}
 
     public static fromConfigService(): Provider {
@@ -17,7 +19,13 @@ export class LdapInstanceConfig implements LdapConfig {
             useFactory: (configService: ConfigService<ServerConfig>): LdapInstanceConfig => {
                 const ldapConfig: LdapConfig = configService.getOrThrow<LdapConfig>('LDAP');
 
-                return new LdapInstanceConfig(ldapConfig.URL, ldapConfig.BIND_DN, ldapConfig.ADMIN_PASSWORD);
+                return new LdapInstanceConfig(
+                    ldapConfig.URL,
+                    ldapConfig.BIND_DN,
+                    ldapConfig.ADMIN_PASSWORD,
+                    ldapConfig.OEFFENTLICHE_SCHULEN_DOMAIN,
+                    ldapConfig.ERSATZSCHULEN_DOMAIN,
+                );
             },
             inject: [ConfigService],
         };

@@ -27,9 +27,9 @@ export type PersonData = {
 
 @Injectable()
 export class LdapClientService {
-    public static readonly OEFFENTLICHE_SCHULEN_DOMAIN: string = 'schule-sh.de';
+    public static readonly OEFFENTLICHE_SCHULEN_DOMAIN_DEFAULT: string = 'schule-sh.de';
 
-    public static readonly ERSATZ_SCHULEN_DOMAIN: string = 'ersatzschule-sh.de';
+    public static readonly ERSATZ_SCHULEN_DOMAIN_DEFAULT: string = 'ersatzschule-sh.de';
 
     public static readonly OEFFENTLICHE_SCHULEN_OU: string = 'oeffentlicheSchulen';
 
@@ -80,12 +80,18 @@ export class LdapClientService {
     }
 
     private getRootName(emailDomain: string): Result<string, LdapEmailDomainError> {
-        if (emailDomain === LdapClientService.ERSATZ_SCHULEN_DOMAIN)
+        if (
+            emailDomain === this.ldapInstanceConfig.ERSATZSCHULEN_DOMAIN ||
+            emailDomain === LdapClientService.ERSATZ_SCHULEN_DOMAIN_DEFAULT
+        )
             return {
                 ok: true,
                 value: LdapClientService.ERSATZ_SCHULEN_OU,
             };
-        if (emailDomain === LdapClientService.OEFFENTLICHE_SCHULEN_DOMAIN)
+        if (
+            emailDomain === this.ldapInstanceConfig.OEFFENTLICHE_SCHULEN_DOMAIN ||
+            emailDomain === LdapClientService.OEFFENTLICHE_SCHULEN_DOMAIN_DEFAULT
+        )
             return {
                 ok: true,
                 value: LdapClientService.OEFFENTLICHE_SCHULEN_OU,

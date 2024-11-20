@@ -12,6 +12,7 @@ export async function createAndPersistRootOrganisation(
     const organisationData: RequiredEntityData<OrganisationEntity> = {
         id: organisationRepository.ROOT_ORGANISATION_ID,
         typ: OrganisationsTyp.ROOT,
+        itslearningEnabled: false,
     };
 
     const organisationEntity: OrganisationEntity = em.create(OrganisationEntity, organisationData);
@@ -34,6 +35,7 @@ export async function createAndPersistOrganisation(
         name: fakeNames ? faker.company.name() : undefined,
         namensergaenzung: fakeNames ? faker.company.name() : undefined,
         kuerzel: fakeNames ? faker.lorem.word() : undefined,
+        itslearningEnabled: false,
     };
     const organisationEntity: OrganisationEntity = em.create(OrganisationEntity, organisationData);
     await em.persistAndFlush(organisationEntity);

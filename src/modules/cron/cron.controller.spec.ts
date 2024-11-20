@@ -16,6 +16,10 @@ import { Personenkontext } from '../personenkontext/domain/personenkontext.js';
 import { Person } from '../person/domain/person.js';
 import { PersonenkontextWorkflowAggregate } from '../personenkontext/domain/personenkontext-workflow.js';
 import { PersonenkontexteUpdateError } from '../personenkontext/domain/error/personenkontexte-update.error.js';
+import { UserLock } from '../keycloak-administration/domain/user-lock.js';
+import { UserLockRepository } from '../keycloak-administration/repository/user-lock.repository.js';
+import { PersonLockOccasion } from '../person/domain/person.enums.js';
+import { EntityNotFoundError } from '../../shared/error/entity-not-found.error.js';
 
 describe('CronController', () => {
     let cronController: CronController;
@@ -26,6 +30,7 @@ describe('CronController', () => {
     let personenkontextWorkflowFactoryMock: DeepMocked<PersonenkontextWorkflowFactory>;
     let permissionsMock: DeepMocked<PersonPermissions>;
     let personenkontextWorkflowMock: DeepMocked<PersonenkontextWorkflowAggregate>;
+    let userLockRepositoryMock: DeepMocked<UserLockRepository>;
 
     beforeAll(async () => {
         const module: TestingModule = await Test.createTestingModule({
@@ -54,6 +59,10 @@ describe('CronController', () => {
                     provide: PersonenkontextWorkflowAggregate,
                     useValue: createMock<PersonenkontextWorkflowAggregate>(),
                 },
+                {
+                    provide: UserLockRepository,
+                    useValue: createMock<UserLockRepository>(),
+                },
             ],
             controllers: [CronController],
         }).compile();
@@ -65,6 +74,7 @@ describe('CronController', () => {
         personDeleteServiceMock = module.get(PersonDeleteService);
         personenkontextWorkflowFactoryMock = module.get(PersonenkontextWorkflowFactory);
         personenkontextWorkflowMock = module.get(PersonenkontextWorkflowAggregate);
+        userLockRepositoryMock = module.get(UserLockRepository);
         permissionsMock = createMock<PersonPermissions>();
     });
 
@@ -332,6 +342,183 @@ describe('CronController', () => {
                 await expect(cronController.personWithoutOrgDelete(personPermissionsMock)).rejects.toThrow(
                     'Failed to remove users due to an internal server error.',
                 );
+            });
+        });
+    });
+    describe('/PUT cron/unlock', () => {
+        describe('when there are users to unlock', () => {
+            it('should return true when all users are successfully locked', async () => {
+                const mockPerson1: Person<true> = createMock<Person<true>>();
+                const mockPerson2: Person<true> = createMock<Person<true>>();
+                const mockPerson3: Person<true> = createMock<Person<true>>();
+                const mockUserLock1: UserLock = {
+                    person: mockPerson1.id,
+                    created_at: new Date(),
+                    locked_until: new Date(),
+                    locked_occasion: PersonLockOccasion.MANUELL_GESPERRT,
+                    locked_by: 'CRON',
+                };
+                const mockUserLock2: UserLock = {
+                    person: mockPerson2.id,
+                    created_at: new Date(),
+                    locked_until: new Date(),
+                    locked_occasion: PersonLockOccasion.MANUELL_GESPERRT,
+                    locked_by: 'CRON',
+                };
+                const mockUserLock3: UserLock = {
+                    person: mockPerson3.id,
+                    created_at: new Date(),
+                    locked_until: new Date(),
+                    locked_occasion: PersonLockOccasion.MANUELL_GESPERRT,
+                    locked_by: 'CRON',
+                };
+                const mockUserLocks: UserLock[] = [mockUserLock1, mockUserLock2, mockUserLock3];
+
+                userLockRepositoryMock.getLocksToUnlock.mockResolvedValueOnce(mockUserLocks);
+                keycloakUserServiceMock.updateKeycloakUserStatus.mockResolvedValueOnce({ ok: true, value: undefined });
+                keycloakUserServiceMock.updateKeycloakUserStatus.mockResolvedValueOnce({ ok: true, value: undefined });
+                keycloakUserServiceMock.updateKeycloakUserStatus.mockResolvedValueOnce({ ok: true, value: undefined });
+                personRepositoryMock.getPersonIfAllowed.mockResolvedValueOnce({
+                    ok: true,
+                    value: mockPerson1,
+                });
+                personRepositoryMock.getPersonIfAllowed.mockResolvedValueOnce({
+                    ok: true,
+                    value: mockPerson2,
+                });
+                personRepositoryMock.getPersonIfAllowed.mockResolvedValueOnce({
+                    ok: true,
+                    value: mockPerson3,
+                });
+
+                const result: boolean = await cronController.unlockUsersWithExpiredLocks(permissionsMock);
+
+                expect(result).toBe(true);
+                expect(userLockRepositoryMock.getLocksToUnlock).toHaveBeenCalled();
+                expect(keycloakUserServiceMock.updateKeycloakUserStatus).toHaveBeenCalledTimes(mockUserLocks.length);
+            });
+        });
+
+        describe('when there are no users to unlock', () => {
+            it('should return false', async () => {
+                userLockRepositoryMock.getLocksToUnlock.mockResolvedValueOnce([]);
+                const personPermissionsMock: PersonPermissions = createMock<PersonPermissions>();
+
+                const result: boolean = await cronController.unlockUsersWithExpiredLocks(personPermissionsMock);
+
+                expect(result).toBe(true);
+                expect(userLockRepositoryMock.getLocksToUnlock).toHaveBeenCalled();
+            });
+        });
+
+        describe('when unlocking users fails', () => {
+            it('should return false when at least one user fails to unlock', async () => {
+                const mockPerson1: Person<true> = createMock<Person<true>>();
+                const mockPerson2: Person<true> = createMock<Person<true>>();
+                const mockPerson3: Person<true> = createMock<Person<true>>();
+                const mockUserLock1: UserLock = {
+                    person: mockPerson1.id,
+                    created_at: new Date(),
+                    locked_until: new Date(),
+                    locked_occasion: PersonLockOccasion.MANUELL_GESPERRT,
+                    locked_by: 'CRON',
+                };
+                const mockUserLock2: UserLock = {
+                    person: mockPerson2.id,
+                    created_at: new Date(),
+                    locked_until: new Date(),
+                    locked_occasion: PersonLockOccasion.MANUELL_GESPERRT,
+                    locked_by: 'CRON',
+                };
+                const mockUserLock3: UserLock = {
+                    person: mockPerson3.id,
+                    created_at: new Date(),
+                    locked_until: new Date(),
+                    locked_occasion: PersonLockOccasion.MANUELL_GESPERRT,
+                    locked_by: 'CRON',
+                };
+                const mockUserLocks: UserLock[] = [mockUserLock1, mockUserLock2, mockUserLock3];
+
+                personRepositoryMock.getPersonIfAllowed.mockResolvedValueOnce({
+                    ok: true,
+                    value: mockPerson1,
+                });
+                personRepositoryMock.getPersonIfAllowed.mockResolvedValueOnce({
+                    ok: true,
+                    value: mockPerson2,
+                });
+                personRepositoryMock.getPersonIfAllowed.mockResolvedValueOnce({
+                    ok: true,
+                    value: mockPerson3,
+                });
+
+                userLockRepositoryMock.getLocksToUnlock.mockResolvedValueOnce(mockUserLocks);
+                keycloakUserServiceMock.updateKeycloakUserStatus.mockResolvedValueOnce({ ok: true, value: undefined });
+                keycloakUserServiceMock.updateKeycloakUserStatus.mockResolvedValueOnce({ ok: true, value: undefined });
+                keycloakUserServiceMock.updateKeycloakUserStatus.mockResolvedValueOnce({
+                    ok: false,
+                    error: new KeycloakClientError('Could not update user status or custom attributes'),
+                });
+
+                const result: boolean = await cronController.unlockUsersWithExpiredLocks(permissionsMock);
+
+                expect(result).toBe(false);
+                expect(userLockRepositoryMock.getLocksToUnlock).toHaveBeenCalled();
+                expect(keycloakUserServiceMock.updateKeycloakUserStatus).toHaveBeenCalledTimes(mockUserLocks.length);
+            });
+        });
+
+        describe('when an exception is thrown', () => {
+            it('should throw an error when there is an internal error', async () => {
+                userLockRepositoryMock.getLocksToUnlock.mockImplementationOnce(() => {
+                    throw new Error('Some internal error');
+                });
+
+                await expect(cronController.unlockUsersWithExpiredLocks(permissionsMock)).rejects.toThrow(
+                    'Failed to unlock users due to an internal server error.',
+                );
+            });
+        });
+        describe('when the person permission check fails', () => {
+            it('should return false if permission check for a user fails', async () => {
+                const mockPerson1: Person<true> = createMock<Person<true>>();
+                const mockPerson2: Person<true> = createMock<Person<true>>();
+                const mockUserLock1: UserLock = {
+                    person: mockPerson1.id,
+                    created_at: new Date(),
+                    locked_until: new Date(),
+                    locked_occasion: PersonLockOccasion.MANUELL_GESPERRT,
+                    locked_by: 'CRON',
+                };
+                const mockUserLock2: UserLock = {
+                    person: mockPerson2.id,
+                    created_at: new Date(),
+                    locked_until: new Date(),
+                    locked_occasion: PersonLockOccasion.MANUELL_GESPERRT,
+                    locked_by: 'CRON',
+                };
+                const mockUserLocks: UserLock[] = [mockUserLock1, mockUserLock2];
+
+                userLockRepositoryMock.getLocksToUnlock.mockResolvedValueOnce(mockUserLocks);
+
+                personRepositoryMock.getPersonIfAllowed.mockResolvedValueOnce({
+                    ok: false,
+                    error: new EntityNotFoundError('User does not have permission'),
+                });
+
+                personRepositoryMock.getPersonIfAllowed.mockResolvedValueOnce({
+                    ok: true,
+                    value: mockPerson2,
+                });
+
+                keycloakUserServiceMock.updateKeycloakUserStatus.mockResolvedValueOnce({ ok: true, value: undefined });
+
+                const result: boolean = await cronController.unlockUsersWithExpiredLocks(permissionsMock);
+
+                expect(result).toBe(false);
+                expect(userLockRepositoryMock.getLocksToUnlock).toHaveBeenCalled();
+                expect(personRepositoryMock.getPersonIfAllowed).toHaveBeenCalledTimes(mockUserLocks.length);
+                expect(keycloakUserServiceMock.updateKeycloakUserStatus).toHaveBeenCalledTimes(1); // Only for the allowed user
             });
         });
     });

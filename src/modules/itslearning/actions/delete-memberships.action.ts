@@ -14,16 +14,14 @@ export class DeleteMembershipsAction extends IMSESMassAction<DeleteMembershipsRe
     }
 
     public override buildRequest(): object {
-        const memberships: object[] = this.membershipIDs.map((id: string) => ({
-            'ims1:identifier': id,
-        }));
-
         return {
             'ims:deleteMembershipsRequest': {
                 '@_xmlns:ims': IMS_MEMBER_MAN_MESS_SCHEMA,
                 '@_xmlns:ims1': IMS_COMMON_SCHEMA,
 
-                'ims:sourcedIdSet': memberships,
+                'ims:sourcedIdSet': {
+                    'ims1:identifier': this.membershipIDs,
+                },
             },
         };
     }

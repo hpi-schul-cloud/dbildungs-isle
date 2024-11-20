@@ -3,14 +3,43 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { AxiosResponse } from 'axios';
 import { Hash, createHash } from 'crypto';
-import { XMLBuilder } from 'fast-xml-parser';
+import { XMLBuilder, XMLParser } from 'fast-xml-parser';
 import { lastValueFrom } from 'rxjs';
 
 import { OxConfig } from '../../../shared/config/ox.config.js';
-import { OxBaseAction } from '../actions/ox-base-action.js';
+import { isOxErrorResponse, OxBaseAction } from '../actions/ox-base-action.js';
 import { OxError } from '../../../shared/error/ox.error.js';
 import { ServerConfig } from '../../../shared/config/server.config.js';
 import { DomainError } from '../../../shared/error/domain.error.js';
+import { OxErrorMapper } from './ox-error.mapper.js';
+import { ClassLogger } from '../../../core/logging/class-logger.js';
+
+export type OxErrorType = {
+    message: string;
+    code: string;
+    response: {
+        status: number;
+        statusText: string;
+        data: string;
+    };
+};
+
+function isOxErrorType(err: unknown): err is OxErrorType {
+    if (
+        err &&
+        typeof err === 'object' &&
+        'response' in err &&
+        typeof err.response === 'object' &&
+        err.response &&
+        'data' in err.response &&
+        typeof err.response.data === 'string' &&
+        err.response.data
+    ) {
+        return true;
+    }
+
+    return false;
+}
 
 @Injectable()
 export class OxService {
@@ -22,8 +51,14 @@ export class OxService {
 
     private readonly xmlBuilder: XMLBuilder = new XMLBuilder({ ignoreAttributes: false });
 
+    private readonly xmlParser: XMLParser = new XMLParser({
+        ignoreAttributes: false,
+        removeNSPrefix: true,
+    });
+
     public constructor(
         private readonly httpService: HttpService,
+        private readonly logger: ClassLogger,
         configService: ConfigService<ServerConfig>,
     ) {
         const oxConfig: OxConfig = configService.getOrThrow<OxConfig>('OX');
@@ -51,9 +86,29 @@ export class OxService {
 
             return action.parseResponse(response.data);
         } catch (err: unknown) {
+            if (isOxErrorType(err)) {
+                const oxResponse: unknown = this.xmlParser.parse(err.response.data);
+
+                if (!isOxErrorResponse(oxResponse)) {
+                    this.logger.error(`OX-response could not be parsed, after error occurred`);
+
+                    return {
+                        ok: false,
+                        error: new OxError('OX-Response Could Not Be Parsed'),
+                    };
+                }
+                const mappedOxError: OxError = OxErrorMapper.mapOxErrorResponseToOxError(oxResponse);
+
+                this.logger.error(mappedOxError.code);
+
+                return {
+                    ok: false,
+                    error: mappedOxError,
+                };
+            }
             return {
                 ok: false,
-                error: new OxError('Request failed', [err]),
+                error: new OxError('Request failed'),
             };
         }
     }

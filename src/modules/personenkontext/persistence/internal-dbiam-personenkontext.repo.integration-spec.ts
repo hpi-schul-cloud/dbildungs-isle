@@ -146,7 +146,9 @@ describe('dbiam Personenkontext Repo', () => {
     describe('save', () => {
         it('should save a new personenkontext', async () => {
             const person: Person<true> = await createPerson();
-            const rolle: Rolle<true> = await rolleRepo.save(DoFactory.createRolle(false));
+            const rolle: Rolle<true> | DomainError = await rolleRepo.save(DoFactory.createRolle(false));
+            if (rolle instanceof DomainError) throw Error();
+
             const personenkontext: Personenkontext<false> = createPersonenkontext(false, {
                 personId: person.id,
                 rolleId: rolle.id,
@@ -159,7 +161,9 @@ describe('dbiam Personenkontext Repo', () => {
 
         it('should create a new personenkontext with a id set to overrideId', async () => {
             const person: Person<true> = await createPerson();
-            const rolle: Rolle<true> = await rolleRepo.save(DoFactory.createRolle(false));
+            const rolle: Rolle<true> | DomainError = await rolleRepo.save(DoFactory.createRolle(false));
+            if (rolle instanceof DomainError) throw Error();
+
             const personenkontext: Personenkontext<false> = createPersonenkontext(false, {
                 personId: person.id,
                 rolleId: rolle.id,
@@ -174,7 +178,9 @@ describe('dbiam Personenkontext Repo', () => {
 
         it('should update an existing rolle', async () => {
             const person: Person<true> = await createPerson();
-            const rolle: Rolle<true> = await rolleRepo.save(DoFactory.createRolle(false));
+            const rolle: Rolle<true> | DomainError = await rolleRepo.save(DoFactory.createRolle(false));
+            if (rolle instanceof DomainError) throw Error();
+
             const existingPersonenkontext: Personenkontext<true> = await sut.save(
                 createPersonenkontext(false, { personId: person.id, rolleId: rolle.id }),
             );
@@ -188,7 +194,9 @@ describe('dbiam Personenkontext Repo', () => {
 
         it('should throw UniqueConstraintViolationException when triplet already exists', async () => {
             const person: Person<true> = await createPerson();
-            const rolle: Rolle<true> = await rolleRepo.save(DoFactory.createRolle(false));
+            const rolle: Rolle<true> | DomainError = await rolleRepo.save(DoFactory.createRolle(false));
+            if (rolle instanceof DomainError) throw Error();
+
             const personenkontext: Personenkontext<false> = createPersonenkontext(false, {
                 personId: person.id,
                 rolleId: rolle.id,
@@ -203,7 +211,8 @@ describe('dbiam Personenkontext Repo', () => {
         describe('when personenkontext is found', () => {
             it('should delete personenkontext', async () => {
                 const person: Person<true> = await createPerson();
-                const rolle: Rolle<true> = await rolleRepo.save(DoFactory.createRolle(false));
+                const rolle: Rolle<true> | DomainError = await rolleRepo.save(DoFactory.createRolle(false));
+                if (rolle instanceof DomainError) throw Error();
 
                 const personenkontext: Personenkontext<false> = createPersonenkontext(false, {
                     personId: person.id,
@@ -219,7 +228,8 @@ describe('dbiam Personenkontext Repo', () => {
         describe('when deleting personenkontext by id', () => {
             it('should return number of deleted rows', async () => {
                 const person: Person<true> = await createPerson();
-                const rolle: Rolle<true> = await rolleRepo.save(DoFactory.createRolle(false));
+                const rolle: Rolle<true> | DomainError = await rolleRepo.save(DoFactory.createRolle(false));
+                if (rolle instanceof DomainError) throw Error();
 
                 const personenKontext: Personenkontext<true> = await sut.save(
                     createPersonenkontext(false, { rolleId: rolle.id, personId: person.id }),

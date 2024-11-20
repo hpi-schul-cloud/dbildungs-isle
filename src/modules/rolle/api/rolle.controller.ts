@@ -174,7 +174,7 @@ export class RolleController {
     @HttpCode(HttpStatus.CREATED)
     @ApiOperation({ description: 'Create a new rolle.' })
     @ApiCreatedResponse({ description: 'The rolle was successfully created.', type: RolleResponse })
-    @ApiBadRequestResponse({ description: 'The input was not valid.' })
+    @ApiBadRequestResponse({ description: 'The input was not valid.', type: DbiamRolleError })
     @ApiUnauthorizedResponse({ description: 'Not authorized to create the rolle.' })
     @ApiForbiddenResponse({ description: 'Insufficient permissions to create the rolle.' })
     @ApiInternalServerErrorResponse({ description: 'Internal server error while creating the rolle.' })
@@ -182,13 +182,11 @@ export class RolleController {
         const orgResult: Result<OrganisationDo<true>, DomainError> = await this.orgService.findOrganisationById(
             params.administeredBySchulstrukturknoten,
         );
-
         if (!orgResult.ok) {
             throw SchulConnexErrorMapper.mapSchulConnexErrorToHttpException(
                 SchulConnexErrorMapper.mapDomainErrorToSchulConnexError(orgResult.error),
             );
         }
-
         const rolle: DomainError | Rolle<false> = this.rolleFactory.createNew(
             params.name,
             params.administeredBySchulstrukturknoten,
@@ -203,8 +201,10 @@ export class RolleController {
         if (rolle instanceof DomainError) {
             throw rolle;
         }
-
-        const result: Rolle<true> = await this.rolleRepo.save(rolle);
+        const result: Rolle<true> | DomainError = await this.rolleRepo.save(rolle);
+        if (result instanceof DomainError) {
+            throw result;
+        }
 
         return new RolleResponse(result);
     }

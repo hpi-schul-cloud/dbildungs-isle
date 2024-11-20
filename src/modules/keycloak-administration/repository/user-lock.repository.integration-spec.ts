@@ -14,6 +14,7 @@ import { PersonEntity } from '../../person/persistence/person.entity.js';
 import { mapAggregateToData } from '../../person/persistence/person.repository.js';
 import { EntityManager } from '@mikro-orm/postgresql';
 import { PersonLockOccasion } from '../../person/domain/person.enums.js';
+import { PersonID } from '../../../shared/types/aggregate-ids.types.js';
 
 describe('UserLockRepository', () => {
     let sut: UserLockRepository;
@@ -179,6 +180,54 @@ describe('UserLockRepository', () => {
             const foundUserLocks: Option<UserLock[]> = await sut.findByPersonId(newPerson.id);
             // Expect to find an empty array after deletion
             expect(foundUserLocks).toEqual([]);
+        });
+    });
+    describe('getLocksToUnlock', () => {
+        it('should return a list of userLocks for persons without a exceeded lock limitation', async () => {
+            const mockPerson1: PersonEntity = createPersonEntity();
+            const mockPerson2: PersonEntity = createPersonEntity();
+            const mockPerson3: PersonEntity = createPersonEntity();
+            await em.persistAndFlush(mockPerson1);
+            await em.persistAndFlush(mockPerson2);
+            await em.persistAndFlush(mockPerson3);
+
+            //created userLocks with exceeding lock limitation
+            const yesterday: Date = new Date();
+            yesterday.setDate(yesterday.getDate() - 1);
+            const userLock1: UserLock = UserLock.construct(
+                mockPerson1.id,
+                faker.string.uuid(),
+                yesterday,
+                PersonLockOccasion.MANUELL_GESPERRT,
+                new Date(),
+            );
+            const userLock2: UserLock = UserLock.construct(
+                mockPerson2.id,
+                faker.string.uuid(),
+                new Date(),
+                PersonLockOccasion.MANUELL_GESPERRT,
+                new Date(),
+            );
+            await sut.createUserLock(userLock1);
+            await sut.createUserLock(userLock2);
+            //create userLock within limitation
+            const tomorrow: Date = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            const userLock3: UserLock = UserLock.construct(
+                mockPerson3.id,
+                faker.string.uuid(),
+                tomorrow,
+                PersonLockOccasion.MANUELL_GESPERRT,
+                new Date(),
+            );
+            await sut.createUserLock(userLock3);
+
+            // get userLocks with exceeding lock limitation
+            const foundUserLocks: Option<UserLock[]> = await sut.getLocksToUnlock();
+            const userLockIds: PersonID[] = foundUserLocks.map((lock: UserLock) => lock.person);
+            expect(userLockIds).toContain(userLock1.person);
+            expect(userLockIds).toContain(userLock2.person);
+            expect(userLockIds).not.toContain(userLock3.person);
         });
     });
 });

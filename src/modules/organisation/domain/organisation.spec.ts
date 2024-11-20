@@ -54,6 +54,9 @@ describe('Organisation', () => {
                 faker.string.uuid(),
                 undefined,
                 undefined,
+                undefined,
+                undefined,
+                false,
             );
 
             expect(organisation).toBeDefined();
@@ -62,7 +65,7 @@ describe('Organisation', () => {
     });
 
     describe('createNew', () => {
-        it('should return non pesisted organisation', () => {
+        it('should return non persisted organisation', () => {
             const organisation: Organisation<false> | DomainError = Organisation.createNew(
                 faker.string.uuid(),
                 faker.string.uuid(),

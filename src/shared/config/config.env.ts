@@ -35,6 +35,8 @@ export default (): {
         URL: process.env['LDAP_URL'],
         BIND_DN: process.env['LDAP_BIND_DN'],
         ADMIN_PASSWORD: process.env['LDAP_ADMIN_PASSWORD'],
+        OEFFENTLICHE_SCHULEN_DOMAIN: process.env['LDAP_OEFFENTLICHE_SCHULEN_DOMAIN'],
+        ERSATZSCHULEN_DOMAIN: process.env['LDAP_ERSATZSCHULEN_DOMAIN'],
     },
     FRONTEND: {
         SESSION_SECRET: process.env['FRONTEND_SESSION_SECRET'],

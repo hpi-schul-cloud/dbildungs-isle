@@ -34,6 +34,7 @@ import path from 'path';
 import { ImportDataRepository } from '../persistence/import-data.repository.js';
 import { ImportvorgangByIdBodyParams } from './importvorgang-by-id.body.params.js';
 import { ImportDataItem } from '../domain/import-data-item.js';
+import { DomainError } from '../../../shared/error/domain.error.js';
 
 describe('Rolle API', () => {
     let app: INestApplication;
@@ -134,7 +135,7 @@ describe('Rolle API', () => {
 
             const klasse1A: OrganisationEntity = new OrganisationEntity();
             klasse1A.typ = OrganisationsTyp.KLASSE;
-            klasse1A.name = '1A';
+            klasse1A.name = '1a';
             klasse1A.administriertVon = schule.id;
             klasse1A.zugehoerigZu = schule.id;
             await em.persistAndFlush(klasse1A);
@@ -142,18 +143,19 @@ describe('Rolle API', () => {
 
             const klasse2B: OrganisationEntity = new OrganisationEntity();
             klasse2B.typ = OrganisationsTyp.KLASSE;
-            klasse2B.name = '2B';
+            klasse2B.name = '2b';
             klasse2B.administriertVon = schule.id;
             klasse2B.zugehoerigZu = schule.id;
             await em.persistAndFlush(klasse2B);
             await em.findOneOrFail(OrganisationEntity, { id: klasse2B.id });
 
-            const sus: Rolle<true> = await rolleRepo.save(
+            const sus: Rolle<true> | DomainError = await rolleRepo.save(
                 DoFactory.createRolle(false, {
                     rollenart: RollenArt.LERN,
                     administeredBySchulstrukturknoten: schule.id,
                 }),
             );
+            if (sus instanceof DomainError) throw sus;
 
             const response: Response = await request(app.getHttpServer() as App)
                 .post('/import/upload')
@@ -192,20 +194,13 @@ describe('Rolle API', () => {
             await em.persistAndFlush(klasse1A);
             await em.findOneOrFail(OrganisationEntity, { id: klasse1A.id });
 
-            const klasse2B: OrganisationEntity = new OrganisationEntity();
-            klasse2B.typ = OrganisationsTyp.KLASSE;
-            klasse2B.name = '2B';
-            klasse2B.administriertVon = schule.id;
-            klasse2B.zugehoerigZu = schule.id;
-            await em.persistAndFlush(klasse2B);
-            await em.findOneOrFail(OrganisationEntity, { id: klasse2B.id });
-
-            const sus: Rolle<true> = await rolleRepo.save(
+            const sus: Rolle<true> | DomainError = await rolleRepo.save(
                 DoFactory.createRolle(false, {
                     rollenart: RollenArt.LERN,
                     administeredBySchulstrukturknoten: schule.id,
                 }),
             );
+            if (sus instanceof DomainError) throw sus;
 
             const response: Response = await request(app.getHttpServer() as App)
                 .post('/import/upload')
@@ -224,7 +219,7 @@ describe('Rolle API', () => {
                     {
                         vorname: '',
                         nachname: 'Mustermann',
-                        klasse: '1a-fake',
+                        klasse: '1a',
                         validationErrors: [
                             'IMPORT_DATA_ITEM_VORNAME_IS_TOO_SHORT',
                             'IMPORT_DATA_ITEM_KLASSE_NOT_FOUND',
@@ -276,12 +271,13 @@ describe('Rolle API', () => {
             await em.persistAndFlush(schule);
             await em.findOneOrFail(OrganisationEntity, { id: schule.id });
 
-            const sus: Rolle<true> = await rolleRepo.save(
+            const sus: Rolle<true> | DomainError = await rolleRepo.save(
                 DoFactory.createRolle(false, {
                     rollenart: RollenArt.LERN,
                     administeredBySchulstrukturknoten: schule.id,
                 }),
             );
+            if (sus instanceof DomainError) throw sus;
 
             const response: Response = await request(app.getHttpServer() as App)
                 .post('/import/upload')
@@ -308,12 +304,13 @@ describe('Rolle API', () => {
             await em.persistAndFlush(schule);
             await em.findOneOrFail(OrganisationEntity, { id: schule.id });
 
-            const sus: Rolle<true> = await rolleRepo.save(
+            const sus: Rolle<true> | DomainError = await rolleRepo.save(
                 DoFactory.createRolle(false, {
                     rollenart: RollenArt.LERN,
                     administeredBySchulstrukturknoten: schule.id,
                 }),
             );
+            if (sus instanceof DomainError) throw sus;
 
             const response: Response = await request(app.getHttpServer() as App)
                 .post('/import/upload')
@@ -344,6 +341,104 @@ describe('Rolle API', () => {
 
             expect(response.status).toBe(400);
         });
+
+        it('should return 400 with CSV_FILE_INVALID_HEADER_ERROR if the csv file has an invalid header', async () => {
+            const filePath: string = path.resolve('./', `test/imports/invalid_klasse_header_import_SuS.csv`);
+
+            const fileExists: boolean = fs.existsSync(filePath);
+            if (!fileExists) throw new Error('file does not exist');
+
+            const schule: OrganisationEntity = new OrganisationEntity();
+            schule.typ = OrganisationsTyp.SCHULE;
+            await em.persistAndFlush(schule);
+            await em.findOneOrFail(OrganisationEntity, { id: schule.id });
+
+            const sus: Rolle<true> | DomainError = await rolleRepo.save(
+                DoFactory.createRolle(false, {
+                    rollenart: RollenArt.LERN,
+                    administeredBySchulstrukturknoten: schule.id,
+                }),
+            );
+            if (sus instanceof DomainError) throw sus;
+
+            const response: Response = await request(app.getHttpServer() as App)
+                .post('/import/upload')
+                .set('content-type', 'multipart/form-data')
+                .field('organisationId', schule.id)
+                .field('rolleId', sus.id)
+                .attach('file', filePath);
+
+            expect(response.status).toBe(400);
+            expect(response.body).toEqual({
+                code: 400,
+                i18nKey: 'CSV_FILE_INVALID_HEADER_ERROR',
+            });
+        });
+
+        it('should return 400 if the file mime type is excel and the file content is correct', async () => {
+            const filePath: string = path.resolve('./', `test/imports/invalid_filetype_excel.xlsx`);
+
+            const fileExists: boolean = fs.existsSync(filePath);
+            if (!fileExists) throw new Error('file does not exist');
+
+            const response: Response = await request(app.getHttpServer() as App)
+                .post('/import/upload')
+                .set('content-type', 'multipart/form-data')
+                .field('organisationId', faker.string.uuid())
+                .field('rolleId', faker.string.uuid())
+                .attach('file', filePath);
+
+            expect(response.status).toBe(400);
+            expect((response.body as { message: string }).message).toEqual(
+                'Validation failed (expected type is text/csv|application/vnd.ms-excel)',
+            );
+        });
+
+        it('should return 201 OK with ImportUploadResponse if the CSV file has the mime type application/vnd.ms-excel due to firefox', async () => {
+            const filePath: string = path.resolve('./', `test/imports/valid_test_import_SuS_type_MsExcel.csv`);
+
+            const fileExists: boolean = fs.existsSync(filePath);
+            if (!fileExists) throw new Error('file does not exist');
+
+            const schule: OrganisationEntity = new OrganisationEntity();
+            schule.typ = OrganisationsTyp.SCHULE;
+            schule.name = 'Import Schule';
+            await em.persistAndFlush(schule);
+            await em.findOneOrFail(OrganisationEntity, { id: schule.id });
+
+            const klasse1A: OrganisationEntity = new OrganisationEntity();
+            klasse1A.typ = OrganisationsTyp.KLASSE;
+            klasse1A.name = '1a';
+            klasse1A.administriertVon = schule.id;
+            klasse1A.zugehoerigZu = schule.id;
+            await em.persistAndFlush(klasse1A);
+            await em.findOneOrFail(OrganisationEntity, { id: klasse1A.id });
+
+            const sus: Rolle<true> | DomainError = await rolleRepo.save(
+                DoFactory.createRolle(false, {
+                    rollenart: RollenArt.LERN,
+                    administeredBySchulstrukturknoten: schule.id,
+                }),
+            );
+
+            if (sus instanceof DomainError) throw sus;
+
+            const response: Response = await request(app.getHttpServer() as App)
+                .post('/import/upload')
+                .set('content-type', 'multipart/form-data')
+                .field('organisationId', schule.id)
+                .field('rolleId', sus.id)
+                .attach('file', filePath, { contentType: 'application/vnd.ms-excel' });
+
+            expect(response.status).toBe(201);
+            expect(response.body).toMatchObject({
+                importvorgangId: expect.any(String) as unknown as string,
+                isValid: true,
+                totalImportDataItems: 1,
+                totalInvalidImportDataItems: 0,
+                invalidImportDataItems: [],
+            });
+        });
     });
 
     describe('/POST execute', () => {
@@ -356,19 +451,28 @@ describe('Rolle API', () => {
 
             const klasse: OrganisationEntity = new OrganisationEntity();
             klasse.typ = OrganisationsTyp.KLASSE;
-            klasse.name = '1A';
+            klasse.name = '1a';
             klasse.administriertVon = schule.id;
             klasse.zugehoerigZu = schule.id;
             await em.persistAndFlush(klasse);
             await em.findOneOrFail(OrganisationEntity, { id: klasse.id });
 
-            const sus: Rolle<true> = await rolleRepo.save(
+            const klasse1A: OrganisationEntity = new OrganisationEntity();
+            klasse1A.typ = OrganisationsTyp.KLASSE;
+            klasse1A.name = '1A';
+            klasse1A.administriertVon = schule.id;
+            klasse1A.zugehoerigZu = schule.id;
+            await em.persistAndFlush(klasse1A);
+            await em.findOneOrFail(OrganisationEntity, { id: klasse1A.id });
+
+            const sus: Rolle<true> | DomainError = await rolleRepo.save(
                 DoFactory.createRolle(false, {
                     rollenart: RollenArt.LERN,
                     administeredBySchulstrukturknoten: schule.id,
                     merkmale: [],
                 }),
             );
+            if (sus instanceof DomainError) throw sus;
 
             const importvorgangId: string = faker.string.uuid();
             const importDataItem: ImportDataItem<true> = await importDataRepository.save(

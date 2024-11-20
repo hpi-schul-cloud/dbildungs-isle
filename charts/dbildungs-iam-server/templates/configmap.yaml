@@ -18,3 +18,5 @@ data:
   BACKEND_HOSTNAME: "{{ .Values.backendHostname }}"
   LDAP_URL: '{{ .Values.ldap.url | replace "spsh-xxx" .Release.Namespace }}'
   LDAP_BIND_DN: "{{ .Values.ldap.bindDN }}"
+  LDAP_OEFFENTLICHE_SCHULEN_DOMAIN: "{{ .Values.ldap.oeffentlicheSchulenDomain }}"
+  LDAP_ERSATZSCHULEN_DOMAIN: "{{ .Values.ldap.ersatzschulenDomain }}"

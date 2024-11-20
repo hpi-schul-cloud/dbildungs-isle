@@ -6,14 +6,15 @@ import {
     DatabaseTestModule,
     DEFAULT_TIMEOUT_FOR_TESTCONTAINERS,
     DoFactory,
+    LoggingTestModule,
     MapperTestModule,
 } from '../../../../test/utils/index.js';
-import { OrganisationRepository, mapAggregateToData, mapEntityToAggregate } from './organisation.repository.js';
+import { mapAggregateToData, mapEntityToAggregate, OrganisationRepository } from './organisation.repository.js';
 import { OrganisationPersistenceMapperProfile } from './organisation-persistence.mapper.profile.js';
 import { OrganisationEntity } from './organisation.entity.js';
 import { Organisation } from '../domain/organisation.js';
 import { OrganisationScope } from './organisation.scope.js';
-import { RootDirectChildrenType, OrganisationsTyp } from '../domain/organisation.enums.js';
+import { OrganisationsTyp, RootDirectChildrenType } from '../domain/organisation.enums.js';
 import { ScopeOperator } from '../../../shared/persistence/index.js';
 import { ConfigService } from '@nestjs/config';
 import { ServerConfig } from '../../../shared/config/server.config.js';
@@ -39,7 +40,12 @@ describe('OrganisationRepository', () => {
 
     beforeAll(async () => {
         module = await Test.createTestingModule({
-            imports: [ConfigTestModule, DatabaseTestModule.forRoot({ isDatabaseRequired: true }), MapperTestModule],
+            imports: [
+                LoggingTestModule,
+                ConfigTestModule,
+                DatabaseTestModule.forRoot({ isDatabaseRequired: true }),
+                MapperTestModule,
+            ],
             providers: [
                 OrganisationPersistenceMapperProfile,
                 OrganisationRepository,
@@ -984,6 +990,93 @@ describe('OrganisationRepository', () => {
             });
         });
     });
+
+    describe('setEnabledForitslearning', () => {
+        it('should enable organisation for itslearning', async () => {
+            const orga: Organisation<false> | DomainError = Organisation.createNew(
+                sut.ROOT_ORGANISATION_ID,
+                sut.ROOT_ORGANISATION_ID,
+                faker.string.numeric(6),
+                faker.company.name(),
+                undefined,
+                undefined,
+                OrganisationsTyp.SCHULE,
+            );
+            if (orga instanceof DomainError) throw orga;
+
+            const mappedOrga: OrganisationEntity = em.create(OrganisationEntity, mapAggregateToData(orga));
+            await em.persistAndFlush(mappedOrga);
+
+            const personPermissions: DeepMocked<PersonPermissions> = createMock<PersonPermissions>();
+            personPermissions.getOrgIdsWithSystemrecht.mockResolvedValue({ all: true });
+
+            const result: Organisation<true> | DomainError = await sut.setEnabledForitslearning(
+                personPermissions,
+                mappedOrga.id,
+            );
+            if (result instanceof DomainError) throw Error();
+
+            expect(result.itslearningEnabled).toBeTruthy();
+        });
+
+        it('should return error if permissions are not sufficient to edit organisation', async () => {
+            const personPermissions: DeepMocked<PersonPermissions> = createMock<PersonPermissions>();
+            personPermissions.hasSystemrechteAtRootOrganisation.mockResolvedValue(false);
+
+            const fakeId: string = faker.string.uuid();
+            const result: Organisation<true> | DomainError = await sut.setEnabledForitslearning(
+                personPermissions,
+                fakeId,
+            );
+
+            expect(result).toStrictEqual(new EntityNotFoundError('Organisation', fakeId));
+        });
+
+        it('should throw error if organisation CANNOT be found by id', async () => {
+            const personPermissions: DeepMocked<PersonPermissions> = createMock<PersonPermissions>();
+            personPermissions.hasSystemrechteAtRootOrganisation.mockResolvedValue(true);
+
+            const fakeId: string = faker.string.uuid();
+            const result: Organisation<true> | DomainError = await sut.setEnabledForitslearning(
+                personPermissions,
+                fakeId,
+            );
+
+            expect(result).toStrictEqual(new EntityNotFoundError('Organisation', fakeId));
+        });
+
+        it('should return error if organisation-typ is NOT Schule', async () => {
+            const orga: Organisation<false> | DomainError = Organisation.createNew(
+                sut.ROOT_ORGANISATION_ID,
+                sut.ROOT_ORGANISATION_ID,
+                faker.string.numeric(6),
+                faker.company.name(),
+                undefined,
+                undefined,
+                OrganisationsTyp.KLASSE,
+            );
+            if (orga instanceof DomainError) {
+                return;
+            }
+            const mappedOrga: OrganisationEntity = em.create(OrganisationEntity, mapAggregateToData(orga));
+            await em.persistAndFlush(mappedOrga);
+
+            const personPermissions: DeepMocked<PersonPermissions> = createMock<PersonPermissions>();
+            personPermissions.getOrgIdsWithSystemrecht.mockResolvedValue({ all: true });
+
+            const result: Organisation<true> | DomainError = await sut.setEnabledForitslearning(
+                personPermissions,
+                mappedOrga.id,
+            );
+
+            expect(result).toStrictEqual(
+                new EntityCouldNotBeUpdated('Organisation', mappedOrga.id, [
+                    'Only organisations of typ SCHULE can be enabled for ITSLearning.',
+                ]),
+            );
+        });
+    });
+
     describe('findByNameOrKennung', () => {
         let organisations: Organisation<false>[];
 

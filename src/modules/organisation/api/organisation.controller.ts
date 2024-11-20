@@ -460,4 +460,36 @@ export class OrganisationController {
 
         return new OrganisationResponse(result);
     }
+
+    @Put(':organisationId/enable-for-its-learning')
+    @ApiOkResponse({
+        description: 'The organization was successfully enabled for itslearning.',
+        type: OrganisationResponseLegacy,
+        headers: PagingHeadersObject,
+    })
+    @ApiBadRequestResponse({ description: 'The organisation could not be modified.', type: DbiamOrganisationError })
+    @ApiUnauthorizedResponse({ description: 'Not authorized to modify the organisation.' })
+    @ApiForbiddenResponse({ description: 'Not permitted to modify the organisation.' })
+    @ApiInternalServerErrorResponse({ description: 'Internal server error while modifying the organisation.' })
+    public async enableForitslearning(
+        @Param() params: OrganisationByIdParams,
+        @Permissions() permissions: PersonPermissions,
+    ): Promise<OrganisationResponse | DomainError> {
+        const result: DomainError | Organisation<true> = await this.organisationRepository.setEnabledForitslearning(
+            permissions,
+            params.organisationId,
+        );
+
+        if (result instanceof DomainError) {
+            if (result instanceof OrganisationSpecificationError) {
+                throw result;
+            }
+
+            throw SchulConnexErrorMapper.mapSchulConnexErrorToHttpException(
+                SchulConnexErrorMapper.mapDomainErrorToSchulConnexError(result),
+            );
+        }
+
+        return new OrganisationResponse(result);
+    }
 }

@@ -171,7 +171,9 @@ describe('dbiam Personenkontext Repo', () => {
         if (rolle instanceof DomainError) {
             throw rolle;
         }
-        const result: Rolle<true> = await rolleRepo.save(rolle);
+        const result: Rolle<true> | DomainError = await rolleRepo.save(rolle);
+        if (result instanceof DomainError) throw Error();
+
         return result;
     }
 
@@ -196,7 +198,9 @@ describe('dbiam Personenkontext Repo', () => {
     describe('findByID', () => {
         it('should return personenkontext by ID', async () => {
             const person: Person<true> = await createPerson();
-            const rolle: Rolle<true> = await rolleRepo.save(DoFactory.createRolle(false));
+            const rolle: Rolle<true> | DomainError = await rolleRepo.save(DoFactory.createRolle(false));
+            if (rolle instanceof DomainError) throw Error();
+
             const personenkontext: Personenkontext<true> = await personenkontextRepoInternal.save(
                 createPersonenkontext(false, { personId: person.id, rolleId: rolle.id }),
             );
@@ -218,8 +222,11 @@ describe('dbiam Personenkontext Repo', () => {
         describe('When personenkontext for person exists', () => {
             it('should find all personenkontexte for this person', async () => {
                 const person: Person<true> = await createPerson();
-                const rolleA: Rolle<true> = await rolleRepo.save(DoFactory.createRolle(false));
-                const rolleB: Rolle<true> = await rolleRepo.save(DoFactory.createRolle(false));
+                const rolleA: Rolle<true> | DomainError = await rolleRepo.save(DoFactory.createRolle(false));
+                const rolleB: Rolle<true> | DomainError = await rolleRepo.save(DoFactory.createRolle(false));
+                if (rolleA instanceof DomainError) throw Error();
+                if (rolleB instanceof DomainError) throw Error();
+
                 const personenkontextA: Personenkontext<true> = await personenkontextRepoInternal.save(
                     createPersonenkontext(false, { personId: person.id, rolleId: rolleA.id }),
                 );
@@ -257,7 +264,8 @@ describe('dbiam Personenkontext Repo', () => {
         it('should return all personenkontexte for a person', async () => {
             const personA: Person<true> = await createPerson();
             const personB: Person<true> = await createPerson();
-            const rolle: Rolle<true> = await rolleRepo.save(DoFactory.createRolle(false));
+            const rolle: Rolle<true> | DomainError = await rolleRepo.save(DoFactory.createRolle(false));
+            if (rolle instanceof DomainError) throw Error();
 
             await Promise.all([
                 personenkontextRepoInternal.save(
@@ -277,7 +285,8 @@ describe('dbiam Personenkontext Repo', () => {
     describe('findByRolle', () => {
         it('should return all personenkontexte for a rolle', async () => {
             const person: Person<true> = await createPerson();
-            const rolle: Rolle<true> = await rolleRepo.save(DoFactory.createRolle(false));
+            const rolle: Rolle<true> | DomainError = await rolleRepo.save(DoFactory.createRolle(false));
+            if (rolle instanceof DomainError) throw Error();
 
             await personenkontextRepoInternal.save(
                 createPersonenkontext(false, { rolleId: rolle.id, personId: person.id }),
@@ -293,7 +302,8 @@ describe('dbiam Personenkontext Repo', () => {
             it('should return a personenkontext by personId, organisationId, rolleId', async () => {
                 const person: Person<true> = await createPerson();
                 const organisationUUID: string = faker.string.uuid();
-                const rolle: Rolle<true> = await rolleRepo.save(DoFactory.createRolle(false));
+                const rolle: Rolle<true> | DomainError = await rolleRepo.save(DoFactory.createRolle(false));
+                if (rolle instanceof DomainError) throw Error();
 
                 await personenkontextRepoInternal.save(
                     createPersonenkontext(false, {
@@ -316,7 +326,9 @@ describe('dbiam Personenkontext Repo', () => {
             it('should return null', async () => {
                 const personUUID: string = faker.string.uuid();
                 const organisationUUID: string = faker.string.uuid();
-                const rolle: Rolle<true> = await rolleRepo.save(DoFactory.createRolle(false));
+                const rolle: Rolle<true> | DomainError = await rolleRepo.save(DoFactory.createRolle(false));
+                if (rolle instanceof DomainError) throw Error();
+
                 const personenkontext: Option<Personenkontext<true>> = await sut.find(
                     personUUID,
                     organisationUUID,
@@ -331,7 +343,9 @@ describe('dbiam Personenkontext Repo', () => {
     describe('exists', () => {
         it('should return true, if the triplet exists', async () => {
             const person: Person<true> = await createPerson();
-            const rolle: Rolle<true> = await rolleRepo.save(DoFactory.createRolle(false));
+            const rolle: Rolle<true> | DomainError = await rolleRepo.save(DoFactory.createRolle(false));
+            if (rolle instanceof DomainError) throw Error();
+
             const { personId, organisationId, rolleId }: Personenkontext<true> = await personenkontextRepoInternal.save(
                 createPersonenkontext(false, { personId: person.id, rolleId: rolle.id }),
             );
@@ -525,7 +539,9 @@ describe('dbiam Personenkontext Repo', () => {
     describe('isOrganisationAlreadyAssigned', () => {
         it('should return true if there is any personenkontext for an organisation', async () => {
             const person: Person<true> = await createPerson();
-            const rolle: Rolle<true> = await rolleRepo.save(DoFactory.createRolle(false));
+            const rolle: Rolle<true> | DomainError = await rolleRepo.save(DoFactory.createRolle(false));
+            if (rolle instanceof DomainError) throw Error();
+
             const organisation: Organisation<true> = DoFactory.createOrganisationAggregate(true, {
                 typ: OrganisationsTyp.KLASSE,
             });
@@ -545,7 +561,8 @@ describe('dbiam Personenkontext Repo', () => {
     describe('isRolleAlreadyAssigned', () => {
         it('should return true if there is any personenkontext for a rolle', async () => {
             const person: Person<true> = await createPerson();
-            const rolle: Rolle<true> = await rolleRepo.save(DoFactory.createRolle(false));
+            const rolle: Rolle<true> | DomainError = await rolleRepo.save(DoFactory.createRolle(false));
+            if (rolle instanceof DomainError) throw Error();
 
             await personenkontextRepoInternal.save(
                 createPersonenkontext(false, { rolleId: rolle.id, personId: person.id }),
@@ -585,7 +602,8 @@ describe('dbiam Personenkontext Repo', () => {
                 rollenart: RollenArt.EXTERN,
             });
 
-            const rolle1Result: Rolle<true> = await rolleRepo.save(rolle1);
+            const rolle1Result: Rolle<true> | DomainError = await rolleRepo.save(rolle1);
+            if (rolle1Result instanceof DomainError) throw Error();
 
             //Kontexte with exceeding Befristung
             const personenKontext1: Personenkontext<false> = DoFactory.createPersonenkontext(false, {

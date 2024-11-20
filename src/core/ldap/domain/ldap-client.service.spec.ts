@@ -28,6 +28,7 @@ import { LdapEmailAddressError } from '../error/ldap-email-address.error.js';
 import { LdapCreateLehrerError } from '../error/ldap-create-lehrer.error.js';
 import { LdapModifyEmailError } from '../error/ldap-modify-email.error.js';
 import { PersonRepository } from '../../../modules/person/persistence/person.repository.js';
+import { LdapInstanceConfig } from '../ldap-instance-config.js';
 
 describe('LDAP Client Service', () => {
     let app: INestApplication;
@@ -40,6 +41,7 @@ describe('LDAP Client Service', () => {
     let eventServiceMock: DeepMocked<EventService>;
     let clientMock: DeepMocked<Client>;
     let personRepoMock: DeepMocked<PersonRepository>;
+    let instanceConfig: LdapInstanceConfig;
 
     let person: Person<true>;
     let personWithoutReferrer: Person<true>;
@@ -79,6 +81,7 @@ describe('LDAP Client Service', () => {
         eventServiceMock = module.get(EventService);
         clientMock = createMock<Client>();
         personRepoMock = module.get(PersonRepository);
+        instanceConfig = module.get(LdapInstanceConfig);
 
         person = Person.construct(
             faker.string.uuid(),
@@ -139,6 +142,41 @@ describe('LDAP Client Service', () => {
             if (result.ok) throw Error();
 
             expect(result.error).toBeInstanceOf(LdapEmailDomainError);
+        });
+
+        it('when emailDomain is one that is explicitly set in config but neither schule-sh.de nor ersatzschule-sh.de it should go through', async () => {
+            ldapClientMock.getClient.mockImplementation(() => {
+                clientMock.bind.mockResolvedValue();
+                clientMock.add.mockResolvedValueOnce();
+                clientMock.search.mockResolvedValueOnce(
+                    createMock<SearchResult>({ searchEntries: [createMock<Entry>()] }),
+                );
+                return clientMock;
+            });
+
+            instanceConfig.OEFFENTLICHE_SCHULEN_DOMAIN = 'weird-domain.ina.foreign.country.co.uk';
+            instanceConfig.ERSATZSCHULEN_DOMAIN = 'normaldomain.co.jp';
+
+            const resultOeffentlich: Result<boolean> = await ldapClientService.isLehrerExisting(
+                'user123',
+                'weird-domain.ina.foreign.country.co.uk',
+            );
+
+            const resultErsatz: Result<boolean> = await ldapClientService.isLehrerExisting(
+                'user123',
+                'normaldomain.co.jp',
+            );
+            const resultOldDefault: Result<boolean> = await ldapClientService.isLehrerExisting(
+                'user123',
+                'schule-sh.de',
+            );
+
+            instanceConfig.OEFFENTLICHE_SCHULEN_DOMAIN = undefined;
+            instanceConfig.ERSATZSCHULEN_DOMAIN = undefined;
+
+            expect(resultOeffentlich.ok).toBeTruthy();
+            expect(resultErsatz.ok).toBeTruthy();
+            expect(resultOldDefault.ok).toBeTruthy();
         });
     });
 

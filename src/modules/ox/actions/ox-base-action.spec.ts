@@ -1,6 +1,6 @@
 import { DomainError } from '../../../shared/error/domain.error.js';
 import { faker } from '@faker-js/faker';
-import { OxBaseAction } from './ox-base-action.js';
+import { isOxErrorResponse, OxBaseAction } from './ox-base-action.js';
 import { OxError } from '../../../shared/error/ox.error.js';
 
 function buildSuccessXMLResponse(): string {
@@ -379,6 +379,16 @@ class TestAction extends OxBaseAction<DummyResponse, string> {
 }
 
 describe('OxBaseAction', () => {
+    describe('isOxErrorResponse', () => {
+        describe('when passed object unknown object does not have properties of OxErrorResponse ', () => {
+            it('should return IS NOT OxErrorResponse', () => {
+                const result: boolean = isOxErrorResponse('A string does NOT have the properties of OxErrorResponse');
+
+                expect(result).toBeFalsy();
+            });
+        });
+    });
+
     describe('parseResponse', () => {
         it('should parse XML', () => {
             const xmlTest: string = buildSuccessXMLResponse();
@@ -400,7 +410,7 @@ describe('OxBaseAction', () => {
 
             expect(result).toEqual({
                 ok: false,
-                error: new OxError('Request failed', expect.anything() as Record<string, unknown>),
+                error: new OxError('Request failed'),
             });
         });
     });

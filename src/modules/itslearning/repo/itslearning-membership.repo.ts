@@ -91,8 +91,11 @@ export class ItslearningMembershipRepo {
             membershipsByOrga.set(membership.organisationId, higherRollenart(currentRole, membership.role));
         }
 
-        // Determine highest rollenart and add memberships for the root nodes
-        const highestRollenart: RollenArt = determineHighestRollenart(Array.from(membershipsByOrga.values()));
+        // Determine highest rollenart and add memberships for the root nodes. Limit the role to "LEHR" (So admins are not admins at root level)
+        const highestRollenart: RollenArt = determineHighestRollenart(
+            Array.from(membershipsByOrga.values()),
+            RollenArt.LEHR,
+        );
         for (const m of currentMemberships.value) {
             if (this.ROOT_NAMES.includes(m.groupId)) {
                 membershipsByOrga.set(m.groupId, highestRollenart);

@@ -7,6 +7,7 @@ import { ImportCSVFileParsingError } from '../domain/import-csv-file-parsing.err
 import { ImportTextFileCreationError } from '../domain/import-text-file-creation.error.js';
 import { ImportCSVFileEmptyError } from '../domain/import-csv-file-empty.error.js';
 import { ImportNurLernAnSchuleUndKlasseError } from '../domain/import-nur-lern-an-schule-und-klasse.error.js';
+import { ImportCSVFileInvalidHeaderError } from '../domain/import-csv-file-invalid-header.error.js';
 
 @Catch(ImportDomainError)
 export class ImportExceptionFilter implements ExceptionFilter<ImportDomainError> {
@@ -37,6 +38,13 @@ export class ImportExceptionFilter implements ExceptionFilter<ImportDomainError>
             new DbiamImportError({
                 code: 400,
                 i18nKey: ImportErrorI18nTypes.IMPORT_NUR_LERN_AN_SCHULE_ERROR,
+            }),
+        ],
+        [
+            ImportCSVFileInvalidHeaderError.name,
+            new DbiamImportError({
+                code: 400,
+                i18nKey: ImportErrorI18nTypes.CSV_FILE_INVALID_HEADER_ERROR,
             }),
         ],
     ]);

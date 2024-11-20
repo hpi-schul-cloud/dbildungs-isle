@@ -28,6 +28,7 @@ import { Person } from '../../person/domain/person.js';
 import { ImportCSVFileEmptyError } from './import-csv-file-empty.error.js';
 import { ImportNurLernAnSchuleUndKlasseError } from './import-nur-lern-an-schule-und-klasse.error.js';
 import { ImportCSVFileParsingError } from './import-csv-file-parsing.error.js';
+import { ImportCSVFileInvalidHeaderError } from './import-csv-file-invalid-header.error.js';
 
 describe('ImportWorkflow', () => {
     let module: TestingModule;
@@ -239,6 +240,34 @@ describe('ImportWorkflow', () => {
                 personpermissionsMock,
             );
             expect(result).toBeInstanceOf(ImportCSVFileParsingError);
+            expect(spyParse).toHaveBeenCalled();
+        });
+
+        it('should return ImportCSVFileInvalidHeaderError if the parser cannot parse headers', async () => {
+            sut.initialize(SELECTED_ORGANISATION_ID, SELECTED_ROLLE_ID);
+            const rolleMock: DeepMocked<Rolle<true>> = createMock<Rolle<true>>();
+            rolleMock.rollenart = RollenArt.LERN;
+            rolleMock.canBeAssignedToOrga.mockResolvedValueOnce(true);
+            organisationRepoMock.findById.mockResolvedValueOnce(
+                DoFactory.createOrganisation(true, { typ: OrganisationsTyp.SCHULE }),
+            );
+            rolleRepoMock.findById.mockResolvedValueOnce(rolleMock);
+
+            personpermissionsMock.hasSystemrechteAtRootOrganisation.mockResolvedValue(true);
+            const spyParse: jest.SpyInstance<
+                internal.Duplex,
+                [stream: typeof Papa.NODE_STREAM_INPUT, config?: Papa.ParseConfig<unknown, undefined> | undefined],
+                unknown
+            > = jest.spyOn(Papa, 'parse');
+            spyParse.mockImplementationOnce(() => {
+                throw new ImportCSVFileInvalidHeaderError([`Invalid header: klaße`]);
+            });
+
+            const result: DomainError | ImportUploadResultFields = await sut.validateImport(
+                FILE_MOCK,
+                personpermissionsMock,
+            );
+            expect(result).toBeInstanceOf(ImportCSVFileInvalidHeaderError);
             expect(spyParse).toHaveBeenCalled();
         });
     });

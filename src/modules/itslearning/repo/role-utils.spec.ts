@@ -1,6 +1,7 @@
 import {
     determineHighestRollenart,
     higherRollenart,
+    lowerRollenart,
     rollenartToIMSESInstitutionRole,
     rollenartToIMSESRole,
 } from './role-utils.js';
@@ -34,6 +35,22 @@ describe('itslearning role utils', () => {
         );
     });
 
+    describe('lowerRollenart', () => {
+        it.each(
+            ROLLENARTEN.map((rollenart: RollenArt, idx: number, array: RollenArt[]) => ({
+                input: array.slice(idx),
+                expected: rollenart,
+            })),
+        )(
+            '$expected should be ranked lower or equal than $input',
+            ({ input, expected }: { input: RollenArt[]; expected: RollenArt }) => {
+                for (const inputRole of input) {
+                    expect(lowerRollenart(inputRole, expected)).toBe(expected);
+                }
+            },
+        );
+    });
+
     describe('determineHighestRollenart', () => {
         it.each(
             ROLLENARTEN.map((rollenart: RollenArt, idx: number, array: RollenArt[]) => ({
@@ -44,6 +61,19 @@ describe('itslearning role utils', () => {
             'Given $input should return $expected',
             ({ input, expected }: { input: RollenArt[]; expected: RollenArt }) => {
                 expect(determineHighestRollenart(input)).toBe(expected);
+            },
+        );
+
+        it.each(
+            ROLLENARTEN.map((rollenart: RollenArt, _: number, array: RollenArt[]) => ({
+                input: array,
+                limit: rollenart,
+                expected: rollenart,
+            })),
+        )(
+            'Given $input and a limit of $limit should return $expected',
+            ({ input, limit, expected }: { input: RollenArt[]; limit: RollenArt; expected: RollenArt }) => {
+                expect(determineHighestRollenart(input, limit)).toBe(expected);
             },
         );
     });

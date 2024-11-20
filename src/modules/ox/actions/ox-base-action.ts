@@ -32,6 +32,29 @@ export type OxErrorResponse = {
     };
 };
 
+export function isOxErrorResponse(err: unknown): err is OxErrorResponse {
+    if (
+        err &&
+        typeof err === 'object' &&
+        'Envelope' in err &&
+        typeof err.Envelope === 'object' &&
+        err.Envelope &&
+        'Body' in err.Envelope &&
+        typeof err.Envelope.Body === 'object' &&
+        err.Envelope.Body &&
+        'Fault' in err.Envelope.Body &&
+        typeof err.Envelope.Body.Fault === 'object' &&
+        err.Envelope.Body.Fault &&
+        'faultstring' in err.Envelope.Body.Fault &&
+        typeof err.Envelope.Body.Fault.faultstring === 'string' &&
+        err.Envelope.Body.Fault.faultstring
+    ) {
+        return true;
+    }
+
+    return false;
+}
+
 export abstract class OxBaseAction<ResponseBodyType, ResultType> {
     protected readonly xmlBuilder: XMLBuilder = new XMLBuilder({ ignoreAttributes: false });
 
@@ -68,7 +91,7 @@ export abstract class OxBaseAction<ResponseBodyType, ResultType> {
         if (errorResult.Envelope.Body.Fault) {
             return {
                 ok: false,
-                error: new OxError('Request failed', result),
+                error: new OxError('Request failed'),
             };
         } else {
             return this.parseBody(result.Envelope.Body);
