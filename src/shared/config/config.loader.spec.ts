@@ -24,6 +24,7 @@ describe('configloader', () => {
                     DEFAULT_LOGIN_REDIRECT: '/login?done',
                     LOGOUT_REDIRECT: '/logout',
                     ERROR_PAGE_REDIRECT: '/error',
+                    STATUS_REDIRECT_URL: '/',
                 },
                 DB: {
                     CLIENT_URL: 'postgres://localhost:5432',
@@ -127,6 +128,7 @@ describe('configloader', () => {
                     DEFAULT_LOGIN_REDIRECT: '/login?done',
                     LOGOUT_REDIRECT: '/logout',
                     ERROR_PAGE_REDIRECT: '/error',
+                    STATUS_REDIRECT_URL: '/',
                 },
                 DB: {
                     CLIENT_URL: 'postgres://localhost:5432',

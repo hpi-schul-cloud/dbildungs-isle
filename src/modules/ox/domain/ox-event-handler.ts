@@ -212,6 +212,9 @@ export class OxEventHandler {
         const params: ChangeUserParams = {
             contextId: this.contextID,
             username: getDataResult.value.username,
+            givenname: person.vorname,
+            surname: person.familienname,
+            displayname: person.referrer,
             defaultSenderAddress: requestedEmailAddressString,
             email1: requestedEmailAddressString,
             aliases: newAliasesArray,

@@ -29,6 +29,7 @@ function makeKontextEventData(props?: Partial<PersonenkontextUpdatedData> | unde
         rolle: props?.rolle ?? faker.helpers.enumValue(RollenArt),
         rolleId: props?.rolleId ?? faker.string.uuid(),
         serviceProviderExternalSystems: props?.serviceProviderExternalSystems ?? [ServiceProviderSystem.ITSLEARNING],
+        isItslearningOrga: props?.isItslearningOrga ?? true,
     };
 }
 
@@ -340,7 +341,12 @@ describe('ItsLearning Persons Event Handler', () => {
                 { id: faker.string.uuid(), vorname: faker.person.firstName(), familienname: faker.person.lastName() },
                 [],
                 [],
-                [makeKontextEventData({ serviceProviderExternalSystems: [ServiceProviderSystem.NONE] })],
+                [
+                    makeKontextEventData({
+                        serviceProviderExternalSystems: [ServiceProviderSystem.NONE],
+                        isItslearningOrga: false,
+                    }),
+                ],
             );
 
             const updatePersonSpy: jest.SpyInstance = jest.spyOn(sut, 'updatePerson').mockResolvedValueOnce(undefined);

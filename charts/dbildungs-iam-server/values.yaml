@@ -70,8 +70,8 @@ backend:
       memory: 200Mi
   startupProbe:
     enabled: true
-    initialDelaySeconds: 60
-    periodSeconds: 60
+    initialDelaySeconds: 10
+    periodSeconds: 10
     failureThreshold: 5
     httpGet:
       scheme: 'HTTP'
@@ -126,40 +126,28 @@ backend:
       name: secret-volume
   extraVolumeMounts: []
 
-
-# Reference: https://github.com/bitnami/charts/tree/main/bitnami/redis-cluster
-redis-cluster:
+redis:
   enabled: true
-  persistence: 
-    enabled: false
-    size: 4Gi
   image:
     registry: docker.io
-    repository: bitnami/redis-cluster
-    tag: 7.4
-  existingSecret: dbildungs-iam-server-redis
-  cluster:
-      ## This is total number of nodes including the replicas. Meaning there will be 3 master and 3 replica
-      ## nodes (as replica count is set to 1 by default, there will be 1 replica per master node).
-      ## Hence, nodes = numberOfMasterNodes + numberOfMasterNodes * replicas
-      ## The number of master nodes should always be >= 3, otherwise cluster creation will fail
-      nodes: 6
-      # for staging and prod this could get increased
-      ## @param cluster.replicas Number of replicas for every master in the cluster
-      replicas: 1
+    repository: bitnami/redis
+    tag: 7.4.1-debian-12-r2
+  replica:
+    replicaCount: 1
+  sentinel:
+    enabled: true
+  pdb: 
+    create: false
   networkPolicy:
     enabled: false
-  pdb:
-    create: false
   serviceAccount:
     create: false
-  usePassword: true
-  tls:
-    enabled: false
+  auth:  
+    existingSecret: '' 
   podLabels:
-      app.kubernetes.io/component: server-redis
+    app.kubernetes.io/component: server-redis
   commonLabels:
-    app.kubernetes.io/name: dbildungs-iam-server 
+    app.kubernetes.io/name: dbildungs-iam-server
   resources:
     limits:
       cpu: 300m
@@ -175,3 +163,6 @@ autoscaling:
   minReplicas: 1
   maxReplicas: 5
   targetCPUUtilizationPercentage: 60
+
+status:
+  url: 'https://status.dev.spsh.dbildungsplattform.de/'

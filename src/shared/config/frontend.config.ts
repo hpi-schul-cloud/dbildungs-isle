@@ -57,4 +57,8 @@ export class FrontendConfig {
     @IsString()
     @IsNotEmpty()
     public readonly ERROR_PAGE_REDIRECT!: string;
+
+    @IsString()
+    @IsNotEmpty()
+    public readonly STATUS_REDIRECT_URL!: string;
 }

@@ -9,6 +9,7 @@ import {
     type PersonenkontextEventKontextData,
     type PersonenkontextEventPersonData,
 } from './personenkontext-event.types.js';
+import { RollenArt } from '../../modules/rolle/domain/rolle.enums.js';
 
 export type PersonenkontextUpdatedPersonData = PersonenkontextEventPersonData;
 
@@ -38,6 +39,7 @@ function mapPersonenkontextAndRolleAggregateToData([pk, orga, rolle]: [
         orgaId: pk.organisationId,
         orgaTyp: orga.typ,
         orgaKennung: orga.kennung,
+        isItslearningOrga: orga.itslearningEnabled,
         serviceProviderExternalSystems: rolle.serviceProviderData.map((sp: ServiceProvider<true>) => sp.externalSystem),
     };
 }
@@ -47,6 +49,11 @@ export class PersonenkontextUpdatedEvent extends BaseEvent {
         public readonly person: PersonenkontextEventPersonData,
         public readonly newKontexte: PersonenkontextEventKontextData[],
         public readonly removedKontexte: PersonenkontextEventKontextData[],
+        /**
+         * Property @currentKontexte contains all Personenkontexte for a person at the time of event-creation,
+         * inclusive the Personenkontexte which shall be created, exclusive the Personenkontexte which shall be removed.
+         * Therefore, instances of this event-type can be interpreted as the most recent versions of Personenkontexte for a person.
+         */
         public readonly currentKontexte: PersonenkontextEventKontextData[],
     ) {
         super();
@@ -64,6 +71,16 @@ export class PersonenkontextUpdatedEvent extends BaseEvent {
             newKontexte.map(mapPersonenkontextAndRolleAggregateToData),
             removedKontexte.map(mapPersonenkontextAndRolleAggregateToData),
             currentKontexte.map(mapPersonenkontextAndRolleAggregateToData),
+        );
+    }
+
+    /**
+     * Check if @currentKontexte contains at least one PersonenkontextEventKontextData which satisfies the condition
+     * 'rolle is LEHR'.
+     */
+    public containsAnyCurrentPKWithRollenartLehr(): boolean {
+        return this.currentKontexte.some(
+            (pkEventKontextData: PersonenkontextEventKontextData) => pkEventKontextData.rolle === RollenArt.LEHR,
         );
     }
 }

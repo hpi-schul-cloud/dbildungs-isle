@@ -41,7 +41,7 @@ jobs:
     with:
       node_version: '18'
       deploy_stage: 'dev'
-      timeout_minutes: 15
+      timeout_minutes: 20
     permissions:
       contents: read
     secrets: inherit

@@ -20,3 +20,4 @@ data:
   LDAP_BIND_DN: "{{ .Values.ldap.bindDN }}"
   LDAP_OEFFENTLICHE_SCHULEN_DOMAIN: "{{ .Values.ldap.oeffentlicheSchulenDomain }}"
   LDAP_ERSATZSCHULEN_DOMAIN: "{{ .Values.ldap.ersatzschulenDomain }}"
+  STATUS_REDIRECT_URL: "{{ .Values.status.url }}"

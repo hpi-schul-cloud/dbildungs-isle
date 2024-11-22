@@ -7,6 +7,10 @@ export type ChangeUserParams = AuthParams & {
     contextId: string;
 
     username: string;
+    givenname: string;
+    surname: string;
+    displayname: string;
+
     email1: string;
     primaryEmail: string;
     defaultSenderAddress: string;
@@ -40,6 +44,9 @@ export class ChangeUserAction extends OxBaseAction<ChangeUserResponseBody, void>
                 'tns:usrdata': {
                     'ns6:email1': this.params.email1,
                     'ns6:name': this.params.username,
+                    'ns6:given_name': this.params.givenname,
+                    'ns6:sur_name': this.params.surname,
+                    'ns6:display_name': this.params.displayname,
                     'ns6:primaryEmail': this.params.primaryEmail,
                     'ns6:defaultSenderAddress': this.params.defaultSenderAddress,
                     'ns6:aliases': this.params.aliases,

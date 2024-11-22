@@ -157,6 +157,7 @@ export class KeycloakUserService {
                             value: passwordValue,
                         }),
                         type: 'password',
+                        temporary: true,
                     },
                 ],
                 attributes: user.externalSystemIDs,

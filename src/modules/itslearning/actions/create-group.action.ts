@@ -1,20 +1,7 @@
 import { DomainError } from '../../../shared/error/domain.error.js';
 import { IMS_COMMON_SCHEMA, IMS_GROUP_MAN_DATA_SCHEMA, IMS_GROUP_MAN_MESS_SCHEMA } from '../schemas.js';
 import { IMSESAction } from './base-action.js';
-
-// Partial, actual structure contains more data
-export type CreateGroupParams = {
-    id: string;
-
-    name: string;
-    type: 'Unspecified' | 'Site' | 'School' | 'Course' | 'CourseGroup';
-
-    parentId: string;
-    relationLabel?: string;
-
-    longDescription?: string;
-    fullDescription?: string;
-};
+import { CreateGroupParams } from './create-group.params.js';
 
 type CreateGroupResponseBody = {
     createGroupResponse: undefined;

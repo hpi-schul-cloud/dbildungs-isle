@@ -7,6 +7,9 @@ import { ClassLogger } from '../../../core/logging/class-logger.js';
 import { DomainError } from '../../../shared/error/domain.error.js';
 import { ItsLearningError } from '../../../shared/error/its-learning.error.js';
 import { PersonExternalSystemsSyncEvent } from '../../../shared/events/person-external-systems-sync.event.js';
+import { OrganisationsTyp } from '../../organisation/domain/organisation.enums.js';
+import { Organisation } from '../../organisation/domain/organisation.js';
+import { OrganisationRepository } from '../../organisation/persistence/organisation.repository.js';
 import { Person } from '../../person/domain/person.js';
 import { PersonRepository } from '../../person/persistence/person.repository.js';
 import { Personenkontext } from '../../personenkontext/domain/personenkontext.js';
@@ -29,6 +32,7 @@ describe('ItsLearning Persons Event Handler', () => {
     let personRepoMock: DeepMocked<PersonRepository>;
     let personenkontextRepoMock: DeepMocked<DBiamPersonenkontextRepo>;
     let rolleRepoMock: DeepMocked<RolleRepo>;
+    let orgaRepoMock: DeepMocked<OrganisationRepository>;
     let loggerMock: DeepMocked<ClassLogger>;
 
     beforeAll(async () => {
@@ -56,6 +60,10 @@ describe('ItsLearning Persons Event Handler', () => {
                     provide: RolleRepo,
                     useValue: createMock<RolleRepo>(),
                 },
+                {
+                    provide: OrganisationRepository,
+                    useValue: createMock<OrganisationRepository>(),
+                },
             ],
         }).compile();
 
@@ -65,6 +73,7 @@ describe('ItsLearning Persons Event Handler', () => {
         personRepoMock = module.get(PersonRepository);
         personenkontextRepoMock = module.get(DBiamPersonenkontextRepo);
         rolleRepoMock = module.get(RolleRepo);
+        orgaRepoMock = module.get(OrganisationRepository);
         loggerMock = module.get(ClassLogger);
     });
 
@@ -83,6 +92,26 @@ describe('ItsLearning Persons Event Handler', () => {
     describe('personExternalSystemSyncEventHandler', () => {
         const person: Person<true> = DoFactory.createPerson(true, { referrer: faker.internet.userName() });
 
+        const schuleWithItslearning: Organisation<true> = DoFactory.createOrganisation(true, {
+            typ: OrganisationsTyp.SCHULE,
+            itslearningEnabled: true,
+        });
+        const klasseWithItslearning: Organisation<true> = DoFactory.createOrganisation(true, {
+            typ: OrganisationsTyp.KLASSE,
+            administriertVon: schuleWithItslearning.id,
+        });
+        const schuleWithoutItslearning: Organisation<true> = DoFactory.createOrganisation(true, {
+            typ: OrganisationsTyp.SCHULE,
+            itslearningEnabled: false,
+        });
+        const klasseWithoutItslearning: Organisation<true> = DoFactory.createOrganisation(true, {
+            typ: OrganisationsTyp.KLASSE,
+            administriertVon: schuleWithoutItslearning.id,
+        });
+        const unknownOrgaType: Organisation<true> = DoFactory.createOrganisation(true, {
+            typ: OrganisationsTyp.UNBEST,
+        });
+
         const itslearningProvider: ServiceProvider<true> = DoFactory.createServiceProvider(true, {
             externalSystem: ServiceProviderSystem.ITSLEARNING,
         });
@@ -92,24 +121,45 @@ describe('ItsLearning Persons Event Handler', () => {
         });
         const rolleWithoutItslearning: Rolle<true> = DoFactory.createRolle(true);
 
-        const personenkontextWithItslearning: Personenkontext<true> = DoFactory.createPersonenkontext(true, {
+        const personenkontextAtSchuleWithItslearning: Personenkontext<true> = DoFactory.createPersonenkontext(true, {
             rolleId: rolleWithItslearning.id,
+            organisationId: schuleWithItslearning.id,
         });
-        const personenkontextWithoutItslearning: Personenkontext<true> = DoFactory.createPersonenkontext(true, {
+        const personenkontextAtSchuleWithoutItslearning: Personenkontext<true> = DoFactory.createPersonenkontext(true, {
             rolleId: rolleWithoutItslearning.id,
+            organisationId: schuleWithoutItslearning.id,
+        });
+        const personenkontextAtKlasseWithItslearning: Personenkontext<true> = DoFactory.createPersonenkontext(true, {
+            rolleId: rolleWithItslearning.id,
+            organisationId: klasseWithItslearning.id,
+        });
+        const personenkontextAtKlasseWithoutItslearning: Personenkontext<true> = DoFactory.createPersonenkontext(true, {
+            rolleId: rolleWithoutItslearning.id,
+            organisationId: klasseWithoutItslearning.id,
         });
 
         describe('when person has at least one relevant kontext', () => {
             beforeEach(() => {
                 personRepoMock.findById.mockResolvedValueOnce(person);
                 personenkontextRepoMock.findByPerson.mockResolvedValueOnce([
-                    personenkontextWithItslearning,
-                    personenkontextWithoutItslearning,
+                    personenkontextAtSchuleWithItslearning,
+                    personenkontextAtSchuleWithoutItslearning,
+                    personenkontextAtKlasseWithItslearning,
+                    personenkontextAtKlasseWithoutItslearning,
                 ]);
                 rolleRepoMock.findByIds.mockResolvedValueOnce(
                     new Map([
                         [rolleWithItslearning.id, rolleWithItslearning],
                         [rolleWithoutItslearning.id, rolleWithoutItslearning],
+                    ]),
+                );
+                orgaRepoMock.findByIds.mockResolvedValueOnce(
+                    new Map([
+                        [schuleWithItslearning.id, schuleWithItslearning],
+                        [klasseWithItslearning.id, klasseWithItslearning],
+                        [schuleWithoutItslearning.id, schuleWithoutItslearning],
+                        [klasseWithoutItslearning.id, klasseWithoutItslearning],
+                        [unknownOrgaType.id, unknownOrgaType],
                     ]),
                 );
             });
@@ -155,7 +205,11 @@ describe('ItsLearning Persons Event Handler', () => {
                     person.id,
                     expect.arrayContaining([
                         {
-                            organisationId: personenkontextWithItslearning.organisationId,
+                            organisationId: personenkontextAtSchuleWithItslearning.organisationId,
+                            role: rolleWithItslearning.rollenart,
+                        },
+                        {
+                            organisationId: personenkontextAtKlasseWithItslearning.organisationId,
                             role: rolleWithItslearning.rollenart,
                         },
                     ]),
@@ -183,9 +237,21 @@ describe('ItsLearning Persons Event Handler', () => {
         describe('when person has no relevant kontext', () => {
             beforeEach(() => {
                 personRepoMock.findById.mockResolvedValueOnce(person);
-                personenkontextRepoMock.findByPerson.mockResolvedValueOnce([personenkontextWithoutItslearning]);
+                personenkontextRepoMock.findByPerson.mockResolvedValueOnce([
+                    personenkontextAtSchuleWithoutItslearning,
+                    personenkontextAtKlasseWithoutItslearning,
+                ]);
                 rolleRepoMock.findByIds.mockResolvedValueOnce(
                     new Map([[rolleWithoutItslearning.id, rolleWithoutItslearning]]),
+                );
+                orgaRepoMock.findByIds.mockResolvedValueOnce(
+                    new Map([
+                        [schuleWithItslearning.id, schuleWithItslearning],
+                        [klasseWithItslearning.id, klasseWithItslearning],
+                        [schuleWithoutItslearning.id, schuleWithoutItslearning],
+                        [klasseWithoutItslearning.id, klasseWithoutItslearning],
+                        [unknownOrgaType.id, unknownOrgaType],
+                    ]),
                 );
             });
 

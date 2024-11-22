@@ -30,6 +30,7 @@ import { PermittedOrgas, PersonPermissions } from '../../authentication/domain/p
 import { RollenSystemRecht } from '../../rolle/domain/rolle.enums.js';
 import { OrganisationUpdateOutdatedError } from '../domain/orga-update-outdated.error.js';
 import { ClassLogger } from '../../../core/logging/class-logger.js';
+import { SchuleItslearningEnabledEvent } from '../../../shared/events/schule-itslearning-enabled.event.js';
 
 export function mapAggregateToData(organisation: Organisation<boolean>): RequiredEntityData<OrganisationEntity> {
     return {
@@ -492,6 +493,15 @@ export class OrganisationRepository {
 
         await this.em.persistAndFlush(organisationEntity);
 
+        this.eventService.publish(
+            new SchuleItslearningEnabledEvent(
+                organisationEntity.id,
+                organisationEntity.typ,
+                organisationEntity.kennung,
+                organisationEntity.name,
+            ),
+        );
+
         return mapEntityToAggregate(organisationEntity);
     }
 
@@ -550,7 +560,7 @@ export class OrganisationRepository {
         return mapEntityToAggregate(organisationEntity);
     }
 
-    private async findOrganisationZuordnungErsatzOderOeffentlich(
+    public async findOrganisationZuordnungErsatzOderOeffentlich(
         organisationId: OrganisationID | undefined,
     ): Promise<RootDirectChildrenType> {
         const [oeffentlich, ersatz]: [Organisation<true> | undefined, Organisation<true> | undefined] =

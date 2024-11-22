@@ -5,7 +5,7 @@ description: dBildungs-IAM-server
 type: application
 appVersion: ""
 dependencies:
-- name: redis-cluster
+- name: redis
   repository: https://charts.bitnami.com/bitnami
-  version: 11.0.6
-  condition: redis-cluster.enabled 
+  version: 20.3.0
+  condition: redis.enabled 

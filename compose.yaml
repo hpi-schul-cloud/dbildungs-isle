@@ -18,6 +18,7 @@ services:
       - PI_ADMIN_PASSWORD=admin
       - PI_REALM=defrealm
       - PI_BASE_URL=http://privacy-idea:8080
+      - STATUS_REDIRECT_URL=https://status.dev.spsh.dbildungsplattform.de/
     entrypoint: '/opt/keycloak/bin/kc.sh start-dev'
     command:
       # Internal DB but still persisted in container

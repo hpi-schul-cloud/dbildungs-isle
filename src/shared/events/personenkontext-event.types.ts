@@ -22,5 +22,7 @@ export type PersonenkontextEventKontextData = {
     orgaTyp?: OrganisationsTyp;
     orgaKennung?: string;
 
+    isItslearningOrga: boolean;
+
     serviceProviderExternalSystems: ServiceProviderSystem[];
 };
