@@ -150,8 +150,6 @@ export class ServerModule implements NestModule {
                     cert: redisConfig.CERTIFICATE_AUTHORITIES,
                 },
             });
-            const result: string = await redisClient.READWRITE();
-            this.logger.info(result);
         }
 
         /*
