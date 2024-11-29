@@ -150,8 +150,6 @@ export class ServerModule implements NestModule {
                     cert: redisConfig.CERTIFICATE_AUTHORITIES,
                 },
             });
-            const result: string = await redisClient.READWRITE();
-            this.logger.info(result);
         }
 
         /*
@@ -165,6 +163,8 @@ export class ServerModule implements NestModule {
         await redisClient
             .on('error', (error: Error) => this.logger.error(`Redis connection failed: ${error.message}`))
             .connect();
+        const result: string = await (redisClient as RedisClientType).READWRITE();
+        this.logger.info(result);
         this.logger.info('Redis-connection made');
 
         const redisStore: RedisStore = new RedisStore({
