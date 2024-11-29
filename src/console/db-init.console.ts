@@ -20,9 +20,6 @@ export class DbInitConsole extends CommandRunner {
         this.logger.info('Dropping Schema');
         await this.orm.getSchemaGenerator().dropSchema({ wrap: false });
 
-        this.logger.info('Creating pg_trgm Extension');
-        await this.orm.em.getConnection().execute('CREATE EXTENSION IF NOT EXISTS pg_trgm');
-
         this.logger.info('Creating Schema');
         await this.orm.getSchemaGenerator().createSchema({ wrap: false });
 
