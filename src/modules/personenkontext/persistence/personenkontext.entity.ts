@@ -23,7 +23,6 @@ export class PersonenkontextEntity extends TimestampedEntity {
     // TODO EW-636: get from access_token, see SchulConneX (Version 1.003.003.000) page 91
     @AutoMap()
     @Property({ columnType: 'uuid', nullable: true })
-    @Index({ name: 'personenkontext_organisation_id_index' })
     public organisationId!: string;
 
     @ManyToOne({

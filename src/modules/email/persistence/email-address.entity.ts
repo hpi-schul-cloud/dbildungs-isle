@@ -1,4 +1,4 @@
-import { Entity, Enum, Index, ManyToOne, Property, Ref } from '@mikro-orm/core';
+import { Entity, Enum, ManyToOne, Property, Ref } from '@mikro-orm/core';
 import { PersonEntity } from '../../person/persistence/person.entity.js';
 import { TimestampedEntity } from '../../../persistence/timestamped.entity.js';
 import { EmailAddressStatus } from '../domain/email-address.js';
@@ -12,9 +12,6 @@ export class EmailAddressEntity extends TimestampedEntity {
         nullable: true,
         deleteRule: 'set null',
         entity: () => PersonEntity,
-    })
-    @Index({
-        name: 'email_address_person_id_index',
     })
     public personId!: Ref<PersonEntity>;
 

@@ -38,10 +38,6 @@ export class PersonEntity extends TimestampedEntity {
     public keycloakUserId!: string;
 
     @AutoMap()
-    @Index({
-        name: 'person_referrer_trgm_index',
-        expression: 'create index "person_referrer_trgm_index" on "person" using gin ("referrer" gin_trgm_ops);',
-    })
     @Property({ nullable: true })
     public referrer?: string;
 
@@ -54,19 +50,10 @@ export class PersonEntity extends TimestampedEntity {
     public readonly stammorganisation?: string;
 
     @AutoMap()
-    @Index({
-        name: 'person_familienname_trgm_index',
-        expression:
-            'create index "person_familienname_trgm_index" on "person" using gin ("familienname" gin_trgm_ops);',
-    })
     @Property()
     public familienname!: string;
 
     @AutoMap()
-    @Index({
-        name: 'person_vorname_trgm_index',
-        expression: 'create index "person_vorname_trgm_index" on "person" using gin ("vorname" gin_trgm_ops);',
-    })
     @Property()
     public vorname!: string;
 
@@ -137,11 +124,6 @@ export class PersonEntity extends TimestampedEntity {
     @Index({
         name: 'person_personalnummer_unique',
         expression: 'create unique index "person_personalnummer_unique" on "person" ("personalnummer") nulls distinct;',
-    })
-    @Index({
-        name: 'person_personalnummer_trgm_index',
-        expression:
-            'create index "person_personalnummer_trgm_index" on "person" using gin ("personalnummer" gin_trgm_ops);',
     })
     @Property({ nullable: true })
     public personalnummer?: string;

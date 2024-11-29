@@ -2053,50 +2053,6 @@
           "expression": "create unique index \"person_keycloak_user_id_unique\" on \"person\" (\"keycloak_user_id\") nulls not distinct;"
         },
         {
-          "keyName": "person_referrer_trgm_index",
-          "columnNames": [
-            "referrer"
-          ],
-          "composite": false,
-          "constraint": false,
-          "primary": false,
-          "unique": false,
-          "expression": "create index \"person_referrer_trgm_index\" on \"person\" using gin (\"referrer\" gin_trgm_ops);"
-        },
-        {
-          "keyName": "person_familienname_trgm_index",
-          "columnNames": [
-            "familienname"
-          ],
-          "composite": false,
-          "constraint": false,
-          "primary": false,
-          "unique": false,
-          "expression": "create index \"person_familienname_trgm_index\" on \"person\" using gin (\"familienname\" gin_trgm_ops);"
-        },
-        {
-          "keyName": "person_vorname_trgm_index",
-          "columnNames": [
-            "vorname"
-          ],
-          "composite": false,
-          "constraint": false,
-          "primary": false,
-          "unique": false,
-          "expression": "create index \"person_vorname_trgm_index\" on \"person\" using gin (\"vorname\" gin_trgm_ops);"
-        },
-        {
-          "keyName": "person_personalnummer_trgm_index",
-          "columnNames": [
-            "personalnummer"
-          ],
-          "composite": false,
-          "constraint": false,
-          "primary": false,
-          "unique": false,
-          "expression": "create index \"person_personalnummer_trgm_index\" on \"person\" using gin (\"personalnummer\" gin_trgm_ops);"
-        },
-        {
           "keyName": "person_personalnummer_unique",
           "columnNames": [
             "personalnummer"
@@ -2388,16 +2344,6 @@
           "constraint": true,
           "primary": false,
           "unique": true
-        },
-        {
-          "columnNames": [
-            "person_id"
-          ],
-          "composite": false,
-          "keyName": "email_address_person_id_index",
-          "constraint": false,
-          "primary": false,
-          "unique": false
         },
         {
           "keyName": "email_address_pkey",
@@ -3031,16 +2977,6 @@
           "unique": false
         },
         {
-          "columnNames": [
-            "organisation_id"
-          ],
-          "composite": false,
-          "keyName": "personenkontext_organisation_id_index",
-          "constraint": false,
-          "primary": false,
-          "unique": false
-        },
-        {
           "keyName": "personenkontext_person_id_organisation_id_rolle_id_unique",
           "columnNames": [
             "person_id",
@@ -3287,16 +3223,6 @@
       "schema": "public",
       "indexes": [
         {
-          "columnNames": [
-            "rolle_id"
-          ],
-          "composite": false,
-          "keyName": "rolle_merkmal_rolle_id_index",
-          "constraint": false,
-          "primary": false,
-          "unique": false
-        },
-        {
           "keyName": "rolle_merkmal_pkey",
           "columnNames": [
             "rolle_id",
@@ -3528,16 +3454,6 @@
       "name": "rolle_systemrecht",
       "schema": "public",
       "indexes": [
-        {
-          "columnNames": [
-            "rolle_id"
-          ],
-          "composite": false,
-          "keyName": "rolle_systemrecht_rolle_id_index",
-          "constraint": false,
-          "primary": false,
-          "unique": false
-        },
         {
           "keyName": "rolle_systemrecht_pkey",
           "columnNames": [
