@@ -28,8 +28,7 @@
     "PORT": 6379,
     "USERNAME": "default",
     "PASSWORD": "",
-    "USE_TLS": false,
-    "CLUSTERED": true
+    "USE_TLS": false
   },
   "LDAP": {
     "URL": "ldap://spsh-xxx.svc.cluster.local",
