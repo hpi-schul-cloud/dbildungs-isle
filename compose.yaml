@@ -187,6 +187,22 @@ services:
     volumes:
       - krb5kdc-data:/var/lib/krb5kdc
 
+  firefox-browser:
+    image: lscr.io/linuxserver/firefox:latest
+    container_name: firefox-kerberos
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Etc/UTC
+      - FIREFOX_CLI=https://host.docker.internal:8099
+    ports:
+      - "3000:3000"
+      - "3001:3001"
+    security_opt:
+      - seccomp:unconfined
+    shm_size: "1gb"
+    restart: unless-stopped
+
 volumes:
   db-data:
   mariadb:
