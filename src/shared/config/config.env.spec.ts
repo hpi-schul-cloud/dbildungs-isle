@@ -32,8 +32,8 @@ describe('Config Loader', () => {
 
     describe('Import Config', () => {
         it('should load import configuration with parsed integer values', () => {
-            process.env['CSV_FILE_MAX_SIZE_IN_MB'] = '10';
-            process.env['CSV_MAX_NUMBER_OF_USERS'] = '2000';
+            process.env['IMPORT_CSV_FILE_MAX_SIZE_IN_MB'] = '10';
+            process.env['IMPORT_CSV_MAX_NUMBER_OF_USERS'] = '2000';
 
             const config: Config = configEnv();
             expect(config.IMPORT).toEqual({

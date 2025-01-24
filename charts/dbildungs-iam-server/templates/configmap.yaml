@@ -43,3 +43,6 @@ data:
   VIDIS_REGION_NAME: '{{ .Values.vidis.regionName }}'
   VIDIS_KEYCLOAK_GROUP: '{{ .Values.vidis.keycloakGroup }}'
   VIDIS_KEYCLOAK_ROLE: '{{ .Values.vidis.keycloakRole }}'
+  NODE_OPTIONS: "--max-old-space-size={{ .Values.backend.env.maxOldSpaceSize }}"
+  IMPORT_CSV_FILE_MAX_SIZE_IN_MB: '{{ .Values.import.csvFileMaxSizeInMB }}'
+  IMPORT_CSV_MAX_NUMBER_OF_USERS: '{{ .Values.import.csvMaxNumberOfUsers }}'

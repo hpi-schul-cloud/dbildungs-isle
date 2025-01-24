@@ -91,4 +91,14 @@
     secretKeyRef:
         name: {{ default .Values.auth.existingSecret .Values.auth.secretName }}
         key: auth
+- name: IMPORT_PASSPHRASE_SALT
+  valueFrom:
+    secretKeyRef:
+        name: {{ default .Values.auth.existingSecret .Values.auth.secretName }}
+        key: import-passphrase-salt
+- name: IMPORT_PASSPHRASE_SECRET
+  valueFrom:
+    secretKeyRef:
+        name: {{ default .Values.auth.existingSecret .Values.auth.secretName }}
+        key: import-passphrase-secret
 {{- end}}
