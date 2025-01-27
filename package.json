@@ -107,7 +107,7 @@
         "prettier": "^3.2.5",
         "source-map-support": "^0.5.20",
         "supertest": "^6.3.4",
-        "testcontainers": "^10.8.2",
+        "testcontainers": "^10.10.3",
         "ts-jest": "^29.1.2",
         "ts-loader": "^9.5.1",
         "ts-node": "^10.9.2",
