@@ -2,11 +2,16 @@ import { RolleRepo } from '../../rolle/repo/rolle.repo.js';
 import { RollenMerkmal } from '../../rolle/domain/rolle.enums.js';
 import { Personenkontext } from '../domain/personenkontext.js';
 import { Rolle } from '../../rolle/domain/rolle.js';
+import { Injectable } from '@nestjs/common';
+import { CompositeSpecification } from '../../specification/specifications.js';
 
-export class CheckBefristungSpecification {
-    public constructor(private readonly rolleRepo: RolleRepo) {}
+@Injectable()
+export class CheckBefristungSpecification extends CompositeSpecification<Personenkontext<boolean>[]> {
+    public constructor(private readonly rolleRepo: RolleRepo) {
+        super();
+    }
 
-    public async checkBefristung(sentPKs: Personenkontext<boolean>[]): Promise<boolean> {
+    public async isSatisfiedBy(sentPKs: Personenkontext<boolean>[]): Promise<boolean> {
         // Early return if all Personenkontext have befristung defined
         if (sentPKs.every((pk: Personenkontext<boolean>) => pk.befristung !== undefined)) {
             return true;

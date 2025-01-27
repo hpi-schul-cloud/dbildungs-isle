@@ -280,7 +280,7 @@ export class PersonenkontexteUpdate {
         const isSatisfied: boolean = await new CheckRollenartSpecification(
             this.dBiamPersonenkontextRepo,
             this.rolleRepo,
-        ).checkRollenart(sentPKs);
+        ).isSatisfiedBy(sentPKs);
 
         if (!isSatisfied) {
             return new UpdateInvalidRollenartForLernError();
@@ -292,7 +292,7 @@ export class PersonenkontexteUpdate {
     private async checkBefristungSpecification(
         sentPKs: Personenkontext<boolean>[],
     ): Promise<Option<PersonenkontexteUpdateError>> {
-        const isSatisfied: boolean = await new CheckBefristungSpecification(this.rolleRepo).checkBefristung(sentPKs);
+        const isSatisfied: boolean = await new CheckBefristungSpecification(this.rolleRepo).isSatisfiedBy(sentPKs);
 
         if (!isSatisfied) {
             return new PersonenkontextBefristungRequiredError();

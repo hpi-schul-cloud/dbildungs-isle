@@ -4,14 +4,17 @@ import { RollenArt } from '../../rolle/domain/rolle.enums.js';
 import { Personenkontext } from '../domain/personenkontext.js';
 import { Rolle } from '../../rolle/domain/rolle.js';
 import { ExistingRolleUndefined } from '../domain/error/existing-rolle-undefined.error.js';
+import { CompositeSpecification } from '../../specification/specifications.js';
 
-export class CheckRollenartSpecification {
+export class CheckRollenartSpecification extends CompositeSpecification<Personenkontext<boolean>[]> {
     public constructor(
         private readonly personenkontextRepo: DBiamPersonenkontextRepo,
         private readonly rolleRepo: RolleRepo,
-    ) {}
+    ) {
+        super();
+    }
 
-    public async checkRollenart(sentPKs: Personenkontext<boolean>[]): Promise<boolean> {
+    public async isSatisfiedBy(sentPKs: Personenkontext<boolean>[]): Promise<boolean> {
         // Fetch all personenkontexte for the person
         let existingPKs: Personenkontext<true>[] = [];
 

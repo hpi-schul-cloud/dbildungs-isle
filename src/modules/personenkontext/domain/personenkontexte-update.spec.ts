@@ -723,7 +723,7 @@ describe('PersonenkontexteUpdate', () => {
                 rolleRepoMock.findByIds.mockResolvedValueOnce(mapRollenExisting);
                 rolleRepoMock.findByIds.mockResolvedValueOnce(mapRollen);
 
-                jest.spyOn(CheckBefristungSpecification.prototype, 'checkBefristung').mockResolvedValue(true);
+                jest.spyOn(CheckBefristungSpecification.prototype, 'isSatisfiedBy').mockResolvedValue(true);
 
                 const updateError: Personenkontext<true>[] | PersonenkontexteUpdateError = await sut.update();
 

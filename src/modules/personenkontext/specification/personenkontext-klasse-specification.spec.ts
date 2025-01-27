@@ -91,10 +91,10 @@ describe('PersonenkontextKlasseSpecification Integration', () => {
         );
         const personenkontextMock: DeepMocked<Personenkontext<boolean>> = createMock<Personenkontext<boolean>>();
 
-        checkRollenartSpecificationMock.checkRollenart.mockResolvedValueOnce(false);
+        checkRollenartSpecificationMock.isSatisfiedBy.mockResolvedValueOnce(false);
         nurLehrUndLernAnKlasseMock.isSatisfiedBy.mockResolvedValueOnce(true);
         gleicheRolleAnKlasseWieSchuleMock.isSatisfiedBy.mockResolvedValueOnce(true);
-        befristungRequiredMock.checkBefristung.mockResolvedValue(true);
+        befristungRequiredMock.isSatisfiedBy.mockResolvedValue(true);
 
         const result: Option<DomainError> = await specification.returnsError(personenkontextMock);
 
@@ -110,10 +110,10 @@ describe('PersonenkontextKlasseSpecification Integration', () => {
         );
         const personenkontextMock: DeepMocked<Personenkontext<boolean>> = createMock<Personenkontext<boolean>>();
 
-        checkRollenartSpecificationMock.checkRollenart.mockResolvedValue(true);
+        checkRollenartSpecificationMock.isSatisfiedBy.mockResolvedValue(true);
         nurLehrUndLernAnKlasseMock.isSatisfiedBy.mockResolvedValue(false);
         gleicheRolleAnKlasseWieSchuleMock.isSatisfiedBy.mockResolvedValue(true);
-        befristungRequiredMock.checkBefristung.mockResolvedValue(true);
+        befristungRequiredMock.isSatisfiedBy.mockResolvedValue(true);
 
         const result: Option<DomainError> = await specification.returnsError(personenkontextMock);
 
@@ -129,9 +129,9 @@ describe('PersonenkontextKlasseSpecification Integration', () => {
         );
         const personenkontextMock: DeepMocked<Personenkontext<boolean>> = createMock<Personenkontext<boolean>>();
 
-        checkRollenartSpecificationMock.checkRollenart.mockResolvedValue(true);
+        checkRollenartSpecificationMock.isSatisfiedBy.mockResolvedValue(true);
         nurLehrUndLernAnKlasseMock.isSatisfiedBy.mockResolvedValue(true);
-        befristungRequiredMock.checkBefristung.mockResolvedValue(true);
+        befristungRequiredMock.isSatisfiedBy.mockResolvedValue(true);
         gleicheRolleAnKlasseWieSchuleMock.isSatisfiedBy.mockResolvedValue(false);
 
         const result: Option<DomainError> = await specification.returnsError(personenkontextMock);
@@ -148,10 +148,10 @@ describe('PersonenkontextKlasseSpecification Integration', () => {
         );
         const personenkontextMock: DeepMocked<Personenkontext<boolean>> = createMock<Personenkontext<boolean>>();
 
-        checkRollenartSpecificationMock.checkRollenart.mockResolvedValue(true);
+        checkRollenartSpecificationMock.isSatisfiedBy.mockResolvedValue(true);
         nurLehrUndLernAnKlasseMock.isSatisfiedBy.mockResolvedValue(true);
         gleicheRolleAnKlasseWieSchuleMock.isSatisfiedBy.mockResolvedValue(true);
-        befristungRequiredMock.checkBefristung.mockResolvedValue(true);
+        befristungRequiredMock.isSatisfiedBy.mockResolvedValue(true);
 
         const result: Option<DomainError> = await specification.returnsError(personenkontextMock);
 
@@ -166,10 +166,10 @@ describe('PersonenkontextKlasseSpecification Integration', () => {
         );
         const personenkontextMock: DeepMocked<Personenkontext<boolean>> = createMock<Personenkontext<boolean>>();
 
-        checkRollenartSpecificationMock.checkRollenart.mockResolvedValueOnce(true);
+        checkRollenartSpecificationMock.isSatisfiedBy.mockResolvedValueOnce(true);
         nurLehrUndLernAnKlasseMock.isSatisfiedBy.mockResolvedValueOnce(true);
         gleicheRolleAnKlasseWieSchuleMock.isSatisfiedBy.mockResolvedValueOnce(true);
-        befristungRequiredMock.checkBefristung.mockResolvedValue(false);
+        befristungRequiredMock.isSatisfiedBy.mockResolvedValue(false);
 
         const result: Option<DomainError> = await specification.returnsError(personenkontextMock);
 
