@@ -81,4 +81,40 @@ export class EmailFactory {
             value: newEmailAddress,
         };
     }
+
+    public async createNewFromPersonIdAndDomain(
+        personId: PersonID,
+        emailDomain: string,
+    ): Promise<Result<EmailAddress<false>>> {
+        const person: Option<Person<true>> = await this.personRepository.findById(personId);
+        if (!person) {
+            return {
+                ok: false,
+                error: new EntityNotFoundError('Person', personId),
+            };
+        }
+
+        const generatedAddressResult: Result<string> = await this.emailGenerator.generateAvailableAddress(
+            person.vorname,
+            person.familienname,
+            emailDomain,
+        );
+        if (!generatedAddressResult.ok) {
+            return {
+                ok: false,
+                error: generatedAddressResult.error,
+            };
+        }
+
+        const newEmailAddress: EmailAddress<false> = EmailAddress.createNew(
+            personId,
+            generatedAddressResult.value,
+            EmailAddressStatus.REQUESTED,
+        );
+
+        return {
+            ok: true,
+            value: newEmailAddress,
+        };
+    }
 }

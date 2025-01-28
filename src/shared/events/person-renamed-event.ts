@@ -9,12 +9,27 @@ export class PersonRenamedEvent extends BaseEvent {
         public readonly vorname: string,
         public readonly familienname: string,
         public readonly referrer: PersonReferrer | undefined,
+        public readonly oldVorname: string,
+        public readonly oldFamilienname: string,
         public readonly oldReferrer: PersonReferrer,
     ) {
         super();
     }
 
-    public static fromPerson(person: Person<true>, oldReferrer: string): PersonRenamedEvent {
-        return new PersonRenamedEvent(person.id, person.vorname, person.familienname, person.referrer, oldReferrer);
+    public static fromPerson(
+        person: Person<true>,
+        oldReferrer: PersonReferrer,
+        oldVorname: string,
+        oldFamilienname: string,
+    ): PersonRenamedEvent {
+        return new PersonRenamedEvent(
+            person.id,
+            person.vorname,
+            person.familienname,
+            person.referrer,
+            oldVorname,
+            oldFamilienname,
+            oldReferrer,
+        );
     }
 }

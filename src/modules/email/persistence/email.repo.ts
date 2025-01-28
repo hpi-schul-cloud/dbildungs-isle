@@ -77,6 +77,12 @@ export class EmailRepo {
         return emailAddresses[0];
     }
 
+    /**
+     * Filtering result-set by status is done after execution of DB-query,
+     * therefore if status is not defined, no filtering is applied.
+     * @param personId
+     * @param status
+     */
     public async findByPersonSortedByUpdatedAtDesc(
         personId: PersonID,
         status?: EmailAddressStatus,

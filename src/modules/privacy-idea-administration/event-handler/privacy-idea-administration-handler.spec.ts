@@ -41,6 +41,8 @@ describe('PrivacyIdeaAdministrationServiceHandler', () => {
                 'vorname',
                 'familienname',
                 'referrer',
+                'oldVorname',
+                'oldFamilienname',
                 'old-referrer',
             );
 
@@ -59,6 +61,8 @@ describe('PrivacyIdeaAdministrationServiceHandler', () => {
                 'vorname',
                 'familienname',
                 undefined,
+                'oldVorname',
+                'oldFamilienname',
                 'old-referrer',
             );
 

@@ -14,7 +14,14 @@ import { PersonRepository } from '../../person/persistence/person.repository.js'
 import { EmailAddressGeneratedEvent } from '../../../shared/events/email-address-generated.event.js';
 import { ExistsUserAction, ExistsUserResponse } from '../actions/user/exists-user.action.js';
 import { EventService } from '../../../core/eventbus/services/event.service.js';
-import { OXContextID, OXContextName, OXGroupID, OXGroupName, OXUserID } from '../../../shared/types/ox-ids.types.js';
+import {
+    OXContextID,
+    OXContextName,
+    OXGroupID,
+    OXGroupName,
+    OXUserID,
+    OXUserName,
+} from '../../../shared/types/ox-ids.types.js';
 import { EmailAddressChangedEvent } from '../../../shared/events/email-address-changed.event.js';
 import { ChangeUserAction, ChangeUserParams } from '../actions/user/change-user.action.js';
 import { OxUserChangedEvent } from '../../../shared/events/ox-user-changed.event.js';
@@ -47,6 +54,58 @@ import {
 import { PersonenkontextUpdatedEvent } from '../../../shared/events/personenkontext-updated.event.js';
 import { PersonenkontextEventKontextData } from '../../../shared/events/personenkontext-event.types.js';
 import { RollenArt } from '../../rolle/domain/rolle.enums.js';
+import { DisabledEmailAddressGeneratedEvent } from '../../../shared/events/disabled-email-address-generated.event.js';
+import { DisabledOxUserChangedEvent } from '../../../shared/events/disabled-ox-user-changed.event.js';
+
+type OxUserChangedEventCreator = (
+    personId: PersonID,
+    referrer: PersonReferrer,
+    oxUserId: OXUserID,
+    oxUserName: OXUserName,
+    oxContextId: OXContextID,
+    oxContextName: OXContextName,
+    emailAddress: string,
+) => OxUserChangedEvent;
+
+const generateOxUserChangedEvent: OxUserChangedEventCreator = (
+    personId: PersonID,
+    referrer: PersonReferrer,
+    oxUserId: OXUserID,
+    oxUserName: OXUserName,
+    oxContextId: OXContextID,
+    oxContextName: OXContextName,
+    emailAddress: string,
+) => {
+    return new OxUserChangedEvent(
+        personId,
+        referrer,
+        oxUserId,
+        oxUserName, //strictEquals the new OxUsername
+        oxContextId,
+        oxContextName,
+        emailAddress,
+    );
+};
+
+const generateDisabledOxUserChangedEvent: OxUserChangedEventCreator = (
+    personId: PersonID,
+    referrer: PersonReferrer,
+    oxUserId: OXUserID,
+    oxUserName: OXUserName,
+    oxContextId: OXContextID,
+    oxContextName: OXContextName,
+    emailAddress: string,
+) => {
+    return new DisabledOxUserChangedEvent(
+        personId,
+        referrer,
+        oxUserId,
+        oxUserName, //strictEquals the new OxUsername
+        oxContextId,
+        oxContextName,
+        emailAddress,
+    );
+};
 
 @Injectable()
 export class OxEventHandler {
@@ -90,7 +149,7 @@ export class OxEventHandler {
             return this.logger.info('Not enabled, ignoring event');
         }
 
-        await this.changeOxUser(event.personId, event.referrer);
+        await this.changeOxUser(event.personId, event.referrer, generateOxUserChangedEvent);
     }
 
     @EventHandler(EmailAddressGeneratedEvent)
@@ -104,6 +163,19 @@ export class OxEventHandler {
         }
 
         await this.createOxUser(event.personId, event.referrer, event.orgaKennung);
+    }
+
+    @EventHandler(DisabledEmailAddressGeneratedEvent)
+    public async handleDisabledEmailAddressGeneratedEvent(event: DisabledEmailAddressGeneratedEvent): Promise<void> {
+        this.logger.info(
+            `Received EmailAddressGeneratedAndDisabledEvent, personId:${event.personId}, referrer:${event.referrer}, address:${event.address}, domain:${event.domain}`,
+        );
+
+        if (!this.ENABLED) {
+            return this.logger.info('Not enabled, ignoring event');
+        }
+
+        await this.changeOxUser(event.personId, event.referrer, generateDisabledOxUserChangedEvent);
     }
 
     @EventHandler(EmailAddressAlreadyExistsEvent)
@@ -275,7 +347,7 @@ export class OxEventHandler {
 
         if (!result.ok) {
             return this.logger.error(
-                `Could Not Change OxUsername For oxUserId:${emailAddress.oxUserID} After PersonDeletedEvent, error: ${result.error.message}`,
+                `Could Not Change OxUsername For oxUserId:${emailAddress.oxUserID} After PersonDeletedEvent, error:${result.error.message}`,
             );
         }
 
@@ -512,7 +584,7 @@ export class OxEventHandler {
             await this.emailRepo.save(mostRecentRequestedEmailAddress);
 
             return this.logger.error(
-                `Could not create user in OX, personId:${personId}, referrer:${referrer}, error: ${createUserResult.error.message}`,
+                `Could not create user in OX, personId:${personId}, referrer:${referrer}, error:${createUserResult.error.message}`,
             );
         }
 
@@ -570,7 +642,7 @@ export class OxEventHandler {
         if (!changeByModuleAccessResult.ok) {
             //only log error, do not set email-address status = FAILED, the ChangeByModuleAccessAction won't work against OX-DEV
             this.logger.error(
-                `Could Not Adjust GlobalAddressBookDisabled For oxUserId:${createUserResult.value.id}, personId:${personId}, referrer:${referrer}, error: ${changeByModuleAccessResult.error.message}`,
+                `Could Not Adjust GlobalAddressBookDisabled For oxUserId:${createUserResult.value.id}, personId:${personId}, referrer:${referrer}, error:${changeByModuleAccessResult.error.message}`,
             );
         }
 
@@ -587,7 +659,11 @@ export class OxEventHandler {
         );
     }
 
-    private async changeOxUser(personId: PersonID, referrer: PersonReferrer): Promise<void> {
+    private async changeOxUser(
+        personId: PersonID,
+        referrer: PersonReferrer,
+        eventCreator: OxUserChangedEventCreator,
+    ): Promise<void> {
         const person: Option<Person<true>> = await this.personRepository.findById(personId);
 
         if (!person) {
@@ -604,7 +680,7 @@ export class OxEventHandler {
 
         const mostRecentRequestedEmailAddress: Option<EmailAddress<true>> =
             await this.getMostRecentRequestedEmailAddress(personId);
-        if (!mostRecentRequestedEmailAddress) return;
+        if (!mostRecentRequestedEmailAddress) return; //logging is done in getMostRecentRequestedEmailAddress
         const requestedEmailAddressString: string = mostRecentRequestedEmailAddress.address;
 
         const getDataParams: UserIdParams = {
@@ -622,7 +698,7 @@ export class OxEventHandler {
             mostRecentRequestedEmailAddress.failed();
             await this.emailRepo.save(mostRecentRequestedEmailAddress);
             return this.logger.error(
-                `Cannot get data for username:${person.referrer} from OX, Aborting Email-Address Change, personId:${personId}, referrer:${referrer}`,
+                `Cannot get data for oxUsername:${person.referrer} from OX, Aborting Email-Address Change, personId:${personId}, referrer:${referrer}`,
             );
         }
         const newAliasesArray: string[] = getDataResult.value.aliases;
@@ -657,24 +733,24 @@ export class OxEventHandler {
             await this.emailRepo.save(mostRecentRequestedEmailAddress);
 
             return this.logger.error(
-                `Could not change email-address for oxUserId:${person.oxUserId}, personId:${personId}, referrer:${referrer}, error: ${result.error.message}`,
+                `Could not change email-address for oxUserId:${person.oxUserId}, personId:${personId}, referrer:${referrer}, error:${result.error.message}`,
             );
         }
 
         this.logger.info(
-            `Changed primary email-address in OX for user, username:${person.referrer}, new email-address:${requestedEmailAddressString}, personId:${personId}, referrer:${referrer}`,
+            `Changed primary email-address in OX for user, personId:${personId}, referrer:${referrer}, oxUserId:${person.oxUserId}, oxUsername:${person.referrer}, new email-address:${requestedEmailAddressString}`,
         );
 
-        this.eventService.publish(
-            new OxUserChangedEvent(
-                personId,
-                person.referrer,
-                person.oxUserId,
-                person.referrer, //strictEquals the new OxUsername
-                this.contextID,
-                this.contextName,
-                requestedEmailAddressString,
-            ),
+        const event: OxUserChangedEvent = eventCreator(
+            personId,
+            person.referrer,
+            person.oxUserId,
+            person.referrer, //strictEquals the new OxUsername
+            this.contextID,
+            this.contextName,
+            requestedEmailAddressString,
         );
+
+        this.eventService.publish(event);
     }
 }
