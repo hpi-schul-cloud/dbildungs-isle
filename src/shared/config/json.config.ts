@@ -15,6 +15,7 @@ import { OxConfig } from './ox.config.js';
 import { ImportConfig } from './import.config.js';
 import { FeatureFlagConfig } from './featureflag.config.js';
 import { VidisConfig } from './vidis.config.js';
+import { HeaderApiKeyConfig } from './headerapikey.config.js';
 
 export class JsonConfig {
     @ValidateNested()
@@ -76,4 +77,8 @@ export class JsonConfig {
     @ValidateNested()
     @Type(() => VidisConfig)
     public readonly VIDIS!: VidisConfig;
+
+    @ValidateNested()
+    @Type(() => HeaderApiKeyConfig)
+    public readonly HEADER_API_KEY!: HeaderApiKeyConfig;
 }

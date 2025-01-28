@@ -101,6 +101,9 @@ describe('configloader', () => {
                     STEP_UP_TIMEOUT_ENABLED: 'true',
                     STEP_UP_TIMEOUT_IN_SECONDS: 10,
                 },
+                HEADER_API_KEY: {
+                    INTERNAL_COMMUNICATION_API_KEY: 'test123',
+                },
             };
 
             const secrets: DeepPartial<JsonConfig> = {
@@ -243,6 +246,9 @@ describe('configloader', () => {
                     RENAME_WAITING_TIME_IN_SECONDS: 2,
                     STEP_UP_TIMEOUT_ENABLED: 'true',
                     STEP_UP_TIMEOUT_IN_SECONDS: 10,
+                },
+                HEADER_API_KEY: {
+                    INTERNAL_COMMUNICATION_API_KEY: 'test123',
                 },
             };
 

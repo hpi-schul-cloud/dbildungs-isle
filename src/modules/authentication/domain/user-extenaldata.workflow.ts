@@ -10,7 +10,6 @@ import {
     ExternalPkData,
 } from '../../personenkontext/persistence/dbiam-personenkontext.repo.js';
 import { RequiredExternalPkData } from '../api/authentication.controller.js';
-import { PersonPermissions } from './person-permissions.js';
 import { DomainError } from '../../../shared/error/domain.error.js';
 
 export class UserExternaldataWorkflowAggregate {
@@ -37,14 +36,12 @@ export class UserExternaldataWorkflowAggregate {
         return new UserExternaldataWorkflowAggregate(personenkontextRepo, personRepo, configService);
     }
 
-    public async initialize(permissions: PersonPermissions): Promise<void | DomainError> {
-        const person: Option<Person<true>> = await this.personRepo.findById(permissions.personFields.id);
-        const externalPkData: ExternalPkData[] = await this.personenkontextRepo.findExternalPkData(
-            permissions.personFields.id,
-        );
+    public async initialize(personId: string): Promise<void | DomainError> {
+        const person: Option<Person<true>> = await this.personRepo.findById(personId);
+        const externalPkData: ExternalPkData[] = await this.personenkontextRepo.findExternalPkData(personId);
 
         if (!person) {
-            return new EntityNotFoundError('Person', permissions.personFields.id);
+            return new EntityNotFoundError('Person', personId);
         }
         this.person = person;
 

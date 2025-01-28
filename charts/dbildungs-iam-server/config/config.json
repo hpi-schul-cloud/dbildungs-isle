@@ -83,5 +83,8 @@
       "REGION_NAME": "test-region",
       "KEYCLOAK_GROUP": "VIDIS-service",
       "KEYCLOAK_ROLE": "VIDIS-user"
+  },
+  "HEADER_API_KEY": {
+    "INTERNAL_COMMUNICATION_API_KEY": "api-key"
   }
 }

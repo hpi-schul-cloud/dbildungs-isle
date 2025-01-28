@@ -34,12 +34,7 @@ import { getLowestStepUpLevel } from '../passport/oidc.strategy.js';
 import { PersonTimeLimitInfo } from '../../person/domain/person-time-limit-info.js';
 import { PersonTimeLimitInfoResponse } from './person-time-limit-info.reponse.js';
 import PersonTimeLimitService from '../../person/domain/person-time-limit-info.service.js';
-import { UserExeternalDataResponse } from './externaldata/user-externaldata.response.js';
 import { ExternalPkData } from '../../personenkontext/persistence/dbiam-personenkontext.repo.js';
-import { UserExternaldataWorkflowFactory } from '../domain/user-extenaldata.factory.js';
-import { UserExternaldataWorkflowAggregate } from '../domain/user-extenaldata.workflow.js';
-import { SchulConnexErrorMapper } from '../../../shared/error/schul-connex-error.mapper.js';
-import { UserExternalDataWorkflowError } from '../../../shared/error/user-externaldata-workflow.error.js';
 
 type WithoutOptional<T> = {
     [K in keyof T]-?: T[K];
@@ -63,7 +58,6 @@ export class AuthenticationController {
         private readonly logger: ClassLogger,
         private keycloakUserService: KeycloakUserService,
         private readonly personTimeLimitService: PersonTimeLimitService,
-        private readonly userExternaldataWorkflowFactory: UserExternaldataWorkflowFactory,
     ) {
         const frontendConfig: FrontendConfig = configService.getOrThrow<FrontendConfig>('FRONTEND');
         const keycloakConfig: KeycloakConfig = configService.getOrThrow<KeycloakConfig>('KEYCLOAK');
@@ -118,28 +112,6 @@ export class AuthenticationController {
                 }
             });
         });
-    }
-
-    @Get('externaldata')
-    @ApiBearerAuth()
-    @ApiOAuth2(['openid'])
-    @ApiOperation({ summary: 'External Data about logged in user.' })
-    @ApiUnauthorizedResponse({ description: 'User is not logged in.' })
-    @ApiOkResponse({ description: 'Returns external Data about the logged in user.', type: UserExeternalDataResponse })
-    public async getExternalData(@Permissions() permissions: PersonPermissions): Promise<UserExeternalDataResponse> {
-        const workflow: UserExternaldataWorkflowAggregate = this.userExternaldataWorkflowFactory.createNew();
-        await workflow.initialize(permissions);
-        if (!workflow.person || !workflow.checkedExternalPkData) {
-            throw SchulConnexErrorMapper.mapSchulConnexErrorToHttpException(
-                SchulConnexErrorMapper.mapDomainErrorToSchulConnexError(
-                    new UserExternalDataWorkflowError(
-                        'UserExternaldataWorkflowAggregate has not been successfull initialized',
-                    ),
-                ),
-            );
-        }
-
-        return UserExeternalDataResponse.createNew(workflow.person, workflow.checkedExternalPkData, workflow.contextID);
     }
 
     @Get('logininfo')

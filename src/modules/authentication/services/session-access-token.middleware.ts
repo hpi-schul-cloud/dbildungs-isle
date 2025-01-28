@@ -64,7 +64,6 @@ export class SessionAccessTokenMiddleware implements NestMiddleware {
                     });
                 }
         }
-
         next();
     }
 }

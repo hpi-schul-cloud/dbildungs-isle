@@ -76,7 +76,7 @@ import { VidisModule } from '../modules/vidis/vidis.module.js';
         }),
         PassportModule.register({
             session: true,
-            defaultStrategy: ['jwt', 'oidc'],
+            defaultStrategy: ['api-key', 'jwt', 'oidc'],
             keepSessionInfo: true,
             property: 'passportUser',
         }),

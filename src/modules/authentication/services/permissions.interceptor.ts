@@ -22,7 +22,6 @@ export class PermissionsInterceptor implements NestInterceptor {
                 };
             }
         }
-
         return next.handle();
     }
 }

@@ -19,10 +19,7 @@ import { PersonenKontextModule } from '../../personenkontext/personenkontext.mod
 import { PersonPermissionsRepo } from '../domain/person-permission.repo.js';
 import { MikroORM } from '@mikro-orm/core';
 import { PersonenkontextRolleFields, PersonPermissions } from '../domain/person-permissions.js';
-import {
-    DBiamPersonenkontextRepo,
-    ExternalPkData,
-} from '../../personenkontext/persistence/dbiam-personenkontext.repo.js';
+import { DBiamPersonenkontextRepo } from '../../personenkontext/persistence/dbiam-personenkontext.repo.js';
 import { Person } from '../../person/domain/person.js';
 import { ServiceProviderModule } from '../../service-provider/service-provider.module.js';
 import { RolleRepo } from '../../rolle/repo/rolle.repo.js';
@@ -32,10 +29,7 @@ import { KeycloakUserService } from '../../keycloak-administration/index.js';
 import { TimeLimitOccasion } from '../../person/domain/time-limit-occasion.enums.js';
 import PersonTimeLimitService from '../../person/domain/person-time-limit-info.service.js';
 import { UserExternaldataWorkflowFactory } from '../domain/user-extenaldata.factory.js';
-import { UserExeternalDataResponse } from './externaldata/user-externaldata.response.js';
 import { PersonRepository } from '../../person/persistence/person.repository.js';
-import { RollenArt } from '../../rolle/domain/rolle.enums.js';
-import { HttpException } from '@nestjs/common';
 
 describe('AuthenticationController', () => {
     let module: TestingModule;
@@ -46,7 +40,6 @@ describe('AuthenticationController', () => {
     let dbiamPersonenkontextRepoMock: DeepMocked<DBiamPersonenkontextRepo>;
     let organisationRepoMock: DeepMocked<OrganisationRepository>;
     let rolleRepoMock: DeepMocked<RolleRepo>;
-    let personRepoMock: DeepMocked<PersonRepository>;
     const keycloakUserServiceMock: DeepMocked<KeycloakUserService> = createMock<KeycloakUserService>();
     let keyCloakConfig: KeycloakConfig;
     const personTimeLimitServiceMock: DeepMocked<PersonTimeLimitService> = createMock<PersonTimeLimitService>();
@@ -106,7 +99,6 @@ describe('AuthenticationController', () => {
         dbiamPersonenkontextRepoMock = module.get(DBiamPersonenkontextRepo);
         organisationRepoMock = module.get(OrganisationRepository);
         rolleRepoMock = module.get(RolleRepo);
-        personRepoMock = module.get(PersonRepository);
     });
 
     afterEach(() => {
@@ -305,99 +297,6 @@ describe('AuthenticationController', () => {
 
             expect(result).toBeInstanceOf(UserinfoResponse);
             expect(result.birthdate!).toBe(permissions.personFields.geburtsdatum?.toISOString());
-        });
-    });
-
-    describe('externalData', () => {
-        it('should return user external data', async () => {
-            const person: Person<true> = Person.construct(
-                faker.string.uuid(),
-                faker.date.past(),
-                faker.date.recent(),
-                faker.person.lastName(),
-                faker.person.firstName(),
-                '1',
-                faker.lorem.word(),
-                undefined,
-                faker.string.uuid(),
-            );
-            person.geburtsdatum = faker.date.past();
-
-            const personPermissions: PersonPermissions = new PersonPermissions(
-                dbiamPersonenkontextRepoMock,
-                organisationRepoMock,
-                rolleRepoMock,
-                person,
-            );
-
-            const pkExternalData: ExternalPkData[] = [
-                {
-                    rollenart: RollenArt.LEHR,
-                    kennung: faker.lorem.word(),
-                },
-                {
-                    rollenart: RollenArt.LERN,
-                    kennung: faker.lorem.word(),
-                },
-                {
-                    rollenart: RollenArt.EXTERN,
-                    kennung: undefined, //To Be Filtered Out
-                },
-            ];
-
-            personPermissionsRepoMock.loadPersonPermissions.mockResolvedValueOnce(personPermissions);
-            personRepoMock.findById.mockResolvedValue(person);
-            dbiamPersonenkontextRepoMock.findExternalPkData.mockResolvedValue(pkExternalData);
-
-            const result: UserExeternalDataResponse = await authController.getExternalData(personPermissions);
-            expect(result).toBeInstanceOf(UserExeternalDataResponse);
-            expect(result.ox.id).toContain(`${person.referrer}@`);
-            expect(result.itslearning.personId).toEqual(person.id);
-            expect(result.vidis.dienststellenNummern.length).toEqual(2);
-            expect(result.opsh.vorname).toEqual(person.vorname);
-            expect(result.opsh.nachname).toEqual(person.familienname);
-            expect(result.opsh.emailAdresse).toEqual(person.email);
-            expect(result.opsh.personenkontexte.length).toEqual(2);
-            expect(result.onlineDateiablage.personId).toEqual(person.id);
-        });
-
-        it('should throw error if aggregate doesnt initialize fields field correctly', async () => {
-            const person: Person<true> = Person.construct(
-                faker.string.uuid(),
-                faker.date.past(),
-                faker.date.recent(),
-                faker.person.lastName(),
-                faker.person.firstName(),
-                '1',
-                faker.lorem.word(),
-                undefined,
-                faker.string.uuid(),
-            );
-            person.geburtsdatum = faker.date.past();
-
-            const personPermissions: PersonPermissions = new PersonPermissions(
-                dbiamPersonenkontextRepoMock,
-                organisationRepoMock,
-                rolleRepoMock,
-                person,
-            );
-
-            const pkExternalData: ExternalPkData[] = [
-                {
-                    rollenart: RollenArt.LEHR,
-                    kennung: faker.lorem.word(),
-                },
-                {
-                    rollenart: RollenArt.LERN,
-                    kennung: faker.lorem.word(),
-                },
-            ];
-
-            personPermissionsRepoMock.loadPersonPermissions.mockResolvedValueOnce(personPermissions);
-            personRepoMock.findById.mockResolvedValue(undefined);
-            dbiamPersonenkontextRepoMock.findExternalPkData.mockResolvedValue(pkExternalData);
-
-            await expect(authController.getExternalData(personPermissions)).rejects.toThrow(HttpException);
         });
     });
 

@@ -12,6 +12,7 @@ import { FeatureFlagConfig } from './featureflag.config.js';
 import { envToOptionalBoolean } from './utils.js';
 import { VidisConfig } from './vidis.config.js';
 import { ImportConfig } from './import.config.js';
+import { HeaderApiKeyConfig } from './headerapikey.config.js';
 
 export type Config = {
     DB: Partial<DbConfig>;
@@ -27,6 +28,7 @@ export type Config = {
     SYSTEM: Partial<SystemConfig>;
     VIDIS: Partial<VidisConfig>;
     IMPORT: Partial<ImportConfig>;
+    HEADER_API_KEY: Partial<HeaderApiKeyConfig>;
 };
 
 export default (): Config => ({
@@ -120,5 +122,8 @@ export default (): Config => ({
         CSV_MAX_NUMBER_OF_USERS: isNaN(Number(process.env['CSV_MAX_NUMBER_OF_USERS']))
             ? undefined
             : Number(process.env['CSV_MAX_NUMBER_OF_USERS']),
+    },
+    HEADER_API_KEY: {
+        INTERNAL_COMMUNICATION_API_KEY: process.env['INTERNAL_COMMUNICATION_API_KEY'],
     },
 });
