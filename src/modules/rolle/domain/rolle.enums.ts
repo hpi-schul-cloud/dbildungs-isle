@@ -29,4 +29,5 @@ export enum RollenSystemRecht {
     PERSONEN_ANLEGEN = 'PERSONEN_ANLEGEN',
     IMPORT_DURCHFUEHREN = 'IMPORT_DURCHFUEHREN', // Requires PERSONEN_VERWALTEN (later PERSONEN_ERSTELLEN !!!) to work
     PERSONEN_LESEN = 'PERSONEN_LESEN',
+    BULK_VERWALTEN = 'BULK_VERWALTEN', // For Admins that can do bulk operations like adding personenkontexte to 100 users at once.
 }

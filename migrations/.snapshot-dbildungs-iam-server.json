@@ -227,7 +227,8 @@
             "CRON_DURCHFUEHREN",
             "PERSONEN_ANLEGEN",
             "IMPORT_DURCHFUEHREN",
-            "PERSONEN_LESEN"
+            "PERSONEN_LESEN",
+            "BULK_VERWALTEN"
           ]
         },
         "service_provider_target_enum": {
@@ -466,7 +467,8 @@
             "CRON_DURCHFUEHREN",
             "PERSONEN_ANLEGEN",
             "IMPORT_DURCHFUEHREN",
-            "PERSONEN_LESEN"
+            "PERSONEN_LESEN",
+            "BULK_VERWALTEN"
           ]
         },
         "service_provider_target_enum": {
@@ -727,7 +729,8 @@
             "CRON_DURCHFUEHREN",
             "PERSONEN_ANLEGEN",
             "IMPORT_DURCHFUEHREN",
-            "PERSONEN_LESEN"
+            "PERSONEN_LESEN",
+            "BULK_VERWALTEN"
           ]
         },
         "service_provider_target_enum": {
@@ -980,7 +983,8 @@
             "CRON_DURCHFUEHREN",
             "PERSONEN_ANLEGEN",
             "IMPORT_DURCHFUEHREN",
-            "PERSONEN_LESEN"
+            "PERSONEN_LESEN",
+            "BULK_VERWALTEN"
           ]
         },
         "service_provider_target_enum": {
@@ -1225,7 +1229,8 @@
             "CRON_DURCHFUEHREN",
             "PERSONEN_ANLEGEN",
             "IMPORT_DURCHFUEHREN",
-            "PERSONEN_LESEN"
+            "PERSONEN_LESEN",
+            "BULK_VERWALTEN"
           ]
         },
         "service_provider_target_enum": {
@@ -1614,7 +1619,8 @@
             "CRON_DURCHFUEHREN",
             "PERSONEN_ANLEGEN",
             "IMPORT_DURCHFUEHREN",
-            "PERSONEN_LESEN"
+            "PERSONEN_LESEN",
+            "BULK_VERWALTEN"
           ]
         },
         "service_provider_target_enum": {
@@ -1880,7 +1886,8 @@
             "CRON_DURCHFUEHREN",
             "PERSONEN_ANLEGEN",
             "IMPORT_DURCHFUEHREN",
-            "PERSONEN_LESEN"
+            "PERSONEN_LESEN",
+            "BULK_VERWALTEN"
           ]
         },
         "service_provider_target_enum": {
@@ -2442,7 +2449,8 @@
             "CRON_DURCHFUEHREN",
             "PERSONEN_ANLEGEN",
             "IMPORT_DURCHFUEHREN",
-            "PERSONEN_LESEN"
+            "PERSONEN_LESEN",
+            "BULK_VERWALTEN"
           ]
         },
         "service_provider_target_enum": {
@@ -2759,7 +2767,8 @@
             "CRON_DURCHFUEHREN",
             "PERSONEN_ANLEGEN",
             "IMPORT_DURCHFUEHREN",
-            "PERSONEN_LESEN"
+            "PERSONEN_LESEN",
+            "BULK_VERWALTEN"
           ]
         },
         "service_provider_target_enum": {
@@ -3054,7 +3063,8 @@
             "CRON_DURCHFUEHREN",
             "PERSONEN_ANLEGEN",
             "IMPORT_DURCHFUEHREN",
-            "PERSONEN_LESEN"
+            "PERSONEN_LESEN",
+            "BULK_VERWALTEN"
           ]
         },
         "service_provider_target_enum": {
@@ -3483,7 +3493,8 @@
             "CRON_DURCHFUEHREN",
             "PERSONEN_ANLEGEN",
             "IMPORT_DURCHFUEHREN",
-            "PERSONEN_LESEN"
+            "PERSONEN_LESEN",
+            "BULK_VERWALTEN"
           ]
         },
         "service_provider_target_enum": {
@@ -3845,7 +3856,8 @@
             "CRON_DURCHFUEHREN",
             "PERSONEN_ANLEGEN",
             "IMPORT_DURCHFUEHREN",
-            "PERSONEN_LESEN"
+            "PERSONEN_LESEN",
+            "BULK_VERWALTEN"
           ]
         },
         "service_provider_target_enum": {
@@ -4185,7 +4197,8 @@
             "CRON_DURCHFUEHREN",
             "PERSONEN_ANLEGEN",
             "IMPORT_DURCHFUEHREN",
-            "PERSONEN_LESEN"
+            "PERSONEN_LESEN",
+            "BULK_VERWALTEN"
           ]
         },
         "service_provider_target_enum": {
@@ -4442,7 +4455,8 @@
             "CRON_DURCHFUEHREN",
             "PERSONEN_ANLEGEN",
             "IMPORT_DURCHFUEHREN",
-            "PERSONEN_LESEN"
+            "PERSONEN_LESEN",
+            "BULK_VERWALTEN"
           ]
         },
         "service_provider_target_enum": {
@@ -4507,7 +4521,8 @@
             "CRON_DURCHFUEHREN",
             "PERSONEN_ANLEGEN",
             "IMPORT_DURCHFUEHREN",
-            "PERSONEN_LESEN"
+            "PERSONEN_LESEN",
+            "BULK_VERWALTEN"
           ],
           "mappedType": "enum"
         }
@@ -4709,7 +4724,8 @@
             "CRON_DURCHFUEHREN",
             "PERSONEN_ANLEGEN",
             "IMPORT_DURCHFUEHREN",
-            "PERSONEN_LESEN"
+            "PERSONEN_LESEN",
+            "BULK_VERWALTEN"
           ]
         },
         "service_provider_target_enum": {
@@ -5044,7 +5060,8 @@
             "CRON_DURCHFUEHREN",
             "PERSONEN_ANLEGEN",
             "IMPORT_DURCHFUEHREN",
-            "PERSONEN_LESEN"
+            "PERSONEN_LESEN",
+            "BULK_VERWALTEN"
           ]
         },
         "service_provider_target_enum": {
@@ -5411,7 +5428,8 @@
             "CRON_DURCHFUEHREN",
             "PERSONEN_ANLEGEN",
             "IMPORT_DURCHFUEHREN",
-            "PERSONEN_LESEN"
+            "PERSONEN_LESEN",
+            "BULK_VERWALTEN"
           ]
         },
         "service_provider_target_enum": {
@@ -5665,7 +5683,8 @@
             "CRON_DURCHFUEHREN",
             "PERSONEN_ANLEGEN",
             "IMPORT_DURCHFUEHREN",
-            "PERSONEN_LESEN"
+            "PERSONEN_LESEN",
+            "BULK_VERWALTEN"
           ]
         },
         "service_provider_target_enum": {
@@ -5919,7 +5938,8 @@
             "CRON_DURCHFUEHREN",
             "PERSONEN_ANLEGEN",
             "IMPORT_DURCHFUEHREN",
-            "PERSONEN_LESEN"
+            "PERSONEN_LESEN",
+            "BULK_VERWALTEN"
           ]
         },
         "service_provider_target_enum": {
@@ -6219,7 +6239,8 @@
             "CRON_DURCHFUEHREN",
             "PERSONEN_ANLEGEN",
             "IMPORT_DURCHFUEHREN",
-            "PERSONEN_LESEN"
+            "PERSONEN_LESEN",
+            "BULK_VERWALTEN"
           ]
         },
         "service_provider_target_enum": {
@@ -6411,7 +6432,8 @@
         "CRON_DURCHFUEHREN",
         "PERSONEN_ANLEGEN",
         "IMPORT_DURCHFUEHREN",
-        "PERSONEN_LESEN"
+        "PERSONEN_LESEN",
+        "BULK_VERWALTEN"
       ]
     },
     "service_provider_target_enum": {

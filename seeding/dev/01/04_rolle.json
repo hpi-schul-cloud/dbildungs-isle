@@ -16,7 +16,8 @@
                 "PERSONEN_SOFORT_LOESCHEN",
                 "PERSON_SYNCHRONISIEREN",
                 "IMPORT_DURCHFUEHREN",
-                "PERSONEN_ANLEGEN"
+                "PERSONEN_ANLEGEN",
+                "BULK_VERWALTEN"
             ],
             "serviceProviderIds": [5, 8, 9, 10, 11]
         },
