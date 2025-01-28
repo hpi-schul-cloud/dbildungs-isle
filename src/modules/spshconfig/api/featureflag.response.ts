@@ -9,12 +9,7 @@ export class FeatureFlagResponse {
     public befristungBearbeitenEnabled: boolean;
 
     public constructor(featureFlagConfig: FeatureFlagConfig) {
-        this.rolleBearbeitenEnabled = this.toBoolean(featureFlagConfig.FEATURE_FLAG_ROLLE_BEARBEITEN);
-        this.befristungBearbeitenEnabled = this.toBoolean(featureFlagConfig.FEATURE_FLAG_BEFRISTUNG_BEARBEITEN);
-    }
-
-    private toBoolean(value: string): boolean {
-        //Auto defaults to false for everything which is not 'true'
-        return value === 'true';
+        this.rolleBearbeitenEnabled = featureFlagConfig.FEATURE_FLAG_ROLLE_BEARBEITEN;
+        this.befristungBearbeitenEnabled = featureFlagConfig.FEATURE_FLAG_BEFRISTUNG_BEARBEITEN;
     }
 }

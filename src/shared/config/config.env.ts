@@ -59,10 +59,8 @@ export default (): Config => ({
         STATUS_REDIRECT_URL: process.env['STATUS_REDIRECT_URL'],
     },
     FEATUREFLAG: {
-        FEATURE_FLAG_ROLLE_BEARBEITEN:
-            (process.env['FEATURE_FLAG_ROLLE_BEARBEITEN']?.toLowerCase() as 'true' | 'false') ?? 'false',
-        FEATURE_FLAG_BEFRISTUNG_BEARBEITEN:
-            (process.env['FEATURE_FLAG_BEFRISTUNG_BEARBEITEN']?.toLowerCase() as 'true' | 'false') ?? 'false',
+        FEATURE_FLAG_ROLLE_BEARBEITEN: envToOptionalBoolean('FEATURE_FLAG_ROLLE_BEARBEITEN'),
+        FEATURE_FLAG_BEFRISTUNG_BEARBEITEN: envToOptionalBoolean('FEATURE_FLAG_BEFRISTUNG_BEARBEITEN'),
     },
     HOST: {
         HOSTNAME: process.env['BACKEND_HOSTNAME'],

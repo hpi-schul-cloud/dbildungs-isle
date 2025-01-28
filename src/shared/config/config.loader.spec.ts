@@ -27,8 +27,8 @@ describe('configloader', () => {
                     STATUS_REDIRECT_URL: '/',
                 },
                 FEATUREFLAG: {
-                    FEATURE_FLAG_ROLLE_BEARBEITEN: 'true',
-                    FEATURE_FLAG_BEFRISTUNG_BEARBEITEN: 'true',
+                    FEATURE_FLAG_ROLLE_BEARBEITEN: true,
+                    FEATURE_FLAG_BEFRISTUNG_BEARBEITEN: true,
                 },
                 DB: {
                     CLIENT_URL: 'postgres://localhost:5432',
@@ -162,8 +162,8 @@ describe('configloader', () => {
                     STATUS_REDIRECT_URL: '/',
                 },
                 FEATUREFLAG: {
-                    FEATURE_FLAG_ROLLE_BEARBEITEN: 'true',
-                    FEATURE_FLAG_BEFRISTUNG_BEARBEITEN: 'true',
+                    FEATURE_FLAG_ROLLE_BEARBEITEN: true,
+                    FEATURE_FLAG_BEFRISTUNG_BEARBEITEN: true,
                 },
                 DB: {
                     CLIENT_URL: 'postgres://localhost:5432',

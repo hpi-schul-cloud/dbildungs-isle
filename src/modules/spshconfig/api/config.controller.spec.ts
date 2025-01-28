@@ -11,7 +11,7 @@ describe('ConfigController', () => {
     let configServiceMock: DeepMocked<ConfigService>;
 
     const featureFlagConfig: Partial<FeatureFlagConfig> = {
-        FEATURE_FLAG_ROLLE_BEARBEITEN: 'true',
+        FEATURE_FLAG_ROLLE_BEARBEITEN: true,
     };
 
     beforeEach(async () => {

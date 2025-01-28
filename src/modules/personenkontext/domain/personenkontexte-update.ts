@@ -91,7 +91,7 @@ export class PersonenkontexteUpdate {
                 pkBodyParam.organisationId,
                 pkBodyParam.rolleId,
             );
-            if (!pk) {
+            if (!pk || pk.befristung?.getTime() != pkBodyParam.befristung?.getTime()) {
                 const newPK: Personenkontext<false> = this.personenkontextFactory.createNew(
                     pkBodyParam.personId,
                     pkBodyParam.organisationId,
@@ -167,7 +167,8 @@ export class PersonenkontexteUpdate {
                     (pk: Personenkontext<true>) =>
                         pk.personId === existingPK.personId &&
                         pk.organisationId === existingPK.organisationId &&
-                        pk.rolleId === existingPK.rolleId,
+                        pk.rolleId === existingPK.rolleId &&
+                        pk.befristung === existingPK.befristung,
                 )
             ) {
                 modifiedPKs.push(existingPK);
@@ -180,7 +181,8 @@ export class PersonenkontexteUpdate {
                     (pk: Personenkontext<true>) =>
                         pk.personId === sentPK.personId &&
                         pk.organisationId === sentPK.organisationId &&
-                        pk.rolleId === sentPK.rolleId,
+                        pk.rolleId === sentPK.rolleId &&
+                        pk.befristung === sentPK.befristung,
                 )
             ) {
                 modifiedPKs.push(sentPK);
@@ -219,7 +221,8 @@ export class PersonenkontexteUpdate {
                     (pk: Personenkontext<true>) =>
                         pk.personId == existingPK.personId &&
                         pk.organisationId == existingPK.organisationId &&
-                        pk.rolleId == existingPK.rolleId,
+                        pk.rolleId == existingPK.rolleId &&
+                        pk.befristung?.getTime() == existingPK.befristung?.getTime(),
                 )
             ) {
                 try {
@@ -252,7 +255,8 @@ export class PersonenkontexteUpdate {
                     (existingPK: Personenkontext<true>) =>
                         existingPK.personId == sentPK.personId &&
                         existingPK.organisationId == sentPK.organisationId &&
-                        existingPK.rolleId == sentPK.rolleId,
+                        existingPK.rolleId == sentPK.rolleId &&
+                        existingPK.befristung?.getTime() == sentPK.befristung?.getTime(),
                 )
             ) {
                 try {

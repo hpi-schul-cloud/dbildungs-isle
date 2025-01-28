@@ -83,5 +83,9 @@
       "REGION_NAME": "test-region",
       "KEYCLOAK_GROUP": "VIDIS-service",
       "KEYCLOAK_ROLE": "VIDIS-user"
+  },
+  "FEATUREFLAG": {
+    "FEATURE_FLAG_ROLLE_BEARBEITEN": false,
+    "FEATURE_FLAG_BEFRISTUNG_BEARBEITEN": true
   }
 }

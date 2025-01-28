@@ -1,11 +1,11 @@
-import { IsBooleanString, IsNotEmpty } from 'class-validator';
+import { IsBoolean, IsNotEmpty } from 'class-validator';
 
 export class FeatureFlagConfig {
-    @IsBooleanString()
+    @IsBoolean()
     @IsNotEmpty()
-    public readonly FEATURE_FLAG_ROLLE_BEARBEITEN!: 'true' | 'false';
+    public readonly FEATURE_FLAG_ROLLE_BEARBEITEN!: boolean;
 
-    @IsBooleanString()
+    @IsBoolean()
     @IsNotEmpty()
-    public readonly FEATURE_FLAG_BEFRISTUNG_BEARBEITEN!: 'true' | 'false';
+    public readonly FEATURE_FLAG_BEFRISTUNG_BEARBEITEN!: boolean;
 }
