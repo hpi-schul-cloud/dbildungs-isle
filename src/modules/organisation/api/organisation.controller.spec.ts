@@ -46,6 +46,7 @@ describe('OrganisationController', () => {
     let organisationController: OrganisationController;
     let organisationServiceMock: DeepMocked<OrganisationService>;
     let organisationRepositoryMock: DeepMocked<OrganisationRepository>;
+    const permissionsMock: DeepMocked<PersonPermissions> = createMock<PersonPermissions>();
 
     beforeAll(async () => {
         module = await Test.createTestingModule({
@@ -81,6 +82,7 @@ describe('OrganisationController', () => {
 
     beforeEach(() => {
         jest.resetAllMocks();
+        permissionsMock.hasOrgVerwaltenRechtAtOrga.mockResolvedValue(true);
     });
 
     it('should be defined', () => {
@@ -88,7 +90,6 @@ describe('OrganisationController', () => {
     });
 
     describe('createOrganisation', () => {
-        const permissionsMock: PersonPermissions = createMock<PersonPermissions>();
         describe('when usecase returns a DTO', () => {
             it('should not throw an error', async () => {
                 const params: CreateOrganisationBodyParams = {
@@ -255,10 +256,43 @@ describe('OrganisationController', () => {
                 expect(organisationServiceMock.createOrganisation).toHaveBeenCalledTimes(1);
             });
         });
+
+        it('should throw HttpException if user lacks KLASSEN_VERWALTEN permission for KLASSE type', async () => {
+            const params: CreateOrganisationBodyParams = {
+                kennung: faker.lorem.word(),
+                name: faker.lorem.word(),
+                namensergaenzung: faker.lorem.word(),
+                kuerzel: faker.lorem.word(),
+                typ: OrganisationsTyp.KLASSE,
+                traegerschaft: Traegerschaft.SONSTIGE,
+                administriertVon: faker.string.uuid(),
+            };
+
+            permissionsMock.hasOrgVerwaltenRechtAtOrga.mockResolvedValueOnce(false);
+
+            await expect(organisationController.createOrganisation(permissionsMock, params)).rejects.toThrow(
+                HttpException,
+            );
+        });
+
+        it('should throw HttpException if user lacks SCHULEN_VERWALTEN permission for SCHULE type', async () => {
+            const params: CreateOrganisationBodyParams = {
+                kennung: faker.lorem.word(),
+                name: faker.lorem.word(),
+                namensergaenzung: faker.lorem.word(),
+                kuerzel: faker.lorem.word(),
+                typ: OrganisationsTyp.SCHULE,
+                traegerschaft: Traegerschaft.SONSTIGE,
+            };
+            permissionsMock.hasOrgVerwaltenRechtAtOrga.mockResolvedValueOnce(false);
+
+            await expect(organisationController.createOrganisation(permissionsMock, params)).rejects.toThrow(
+                HttpException,
+            );
+        });
     });
 
     describe('updateOrganisation', () => {
-        const permissionsMock: DeepMocked<PersonPermissions> = createMock<PersonPermissions>();
         describe('when usecase returns a DTO', () => {
             it('should not throw an error', async () => {
                 const params: OrganisationByIdParams = {
@@ -331,6 +365,53 @@ describe('OrganisationController', () => {
                 ).rejects.toThrow(new NotFoundException(`Organisation with ID ${organisationId} not found`));
                 expect(organisationRepositoryMock.findById).toHaveBeenCalledTimes(1);
             });
+        });
+        it('should throw HttpException if user lacks KLASSEN_VERWALTEN permission for KLASSE type', async () => {
+            const params: OrganisationByIdParams = {
+                organisationId: faker.string.uuid(),
+            };
+
+            const body: UpdateOrganisationBodyParams = {
+                kennung: faker.lorem.word(),
+                name: faker.lorem.word(),
+                namensergaenzung: faker.lorem.word(),
+                kuerzel: faker.lorem.word(),
+                typ: OrganisationsTyp.KLASSE,
+                traegerschaft: Traegerschaft.SONSTIGE,
+                administriertVon: faker.lorem.word(),
+                zugehoerigZu: faker.lorem.word(),
+            };
+            organisationRepositoryMock.findById.mockResolvedValueOnce(DoFactory.createOrganisation(true));
+
+            permissionsMock.hasOrgVerwaltenRechtAtOrga.mockResolvedValueOnce(false);
+
+            await expect(organisationController.updateOrganisation(params, body, permissionsMock)).rejects.toThrow(
+                HttpException,
+            );
+        });
+
+        it('should throw HttpException if user lacks SCHULEN_VERWALTEN permission for SCHULE type', async () => {
+            const params: OrganisationByIdParams = {
+                organisationId: faker.string.uuid(),
+            };
+
+            const body: UpdateOrganisationBodyParams = {
+                kennung: faker.lorem.word(),
+                name: faker.lorem.word(),
+                namensergaenzung: faker.lorem.word(),
+                kuerzel: faker.lorem.word(),
+                typ: OrganisationsTyp.SCHULE,
+                traegerschaft: Traegerschaft.SONSTIGE,
+                administriertVon: faker.lorem.word(),
+                zugehoerigZu: faker.lorem.word(),
+            };
+            organisationRepositoryMock.findById.mockResolvedValueOnce(DoFactory.createOrganisation(true));
+
+            permissionsMock.hasOrgVerwaltenRechtAtOrga.mockResolvedValueOnce(false);
+
+            await expect(organisationController.updateOrganisation(params, body, permissionsMock)).rejects.toThrow(
+                HttpException,
+            );
         });
     });
 
@@ -414,8 +495,6 @@ describe('OrganisationController', () => {
                     selectedOrganisationMap.size + 1,
                     3,
                 ];
-
-                const permissionsMock: DeepMocked<PersonPermissions> = createMock<PersonPermissions>();
 
                 organisationRepositoryMock.findAuthorized.mockResolvedValue(mockedRepoResponse);
 
@@ -726,7 +805,6 @@ describe('OrganisationController', () => {
     });
 
     describe('updateOrganisationName', () => {
-        const permissionsMock: PersonPermissions = createMock<PersonPermissions>();
         describe('when usecase succeeds', () => {
             it('should not throw an error', async () => {
                 const oeffentlich: Organisation<true> = Organisation.construct(
@@ -796,7 +874,6 @@ describe('OrganisationController', () => {
     });
 
     describe('updateOrganisationName', () => {
-        const permissionsMock: PersonPermissions = createMock<PersonPermissions>();
         describe('when usecase succeeds', () => {
             it('should not throw an error', async () => {
                 const oeffentlich: Organisation<true> = Organisation.construct(
@@ -867,13 +944,11 @@ describe('OrganisationController', () => {
 
     describe('enableForItsLearning', () => {
         let params: OrganisationByIdParams;
-        let permissionsMock: DeepMocked<PersonPermissions>;
 
         beforeAll(() => {
             params = {
                 organisationId: faker.string.uuid(),
             };
-            permissionsMock = createMock<PersonPermissions>();
         });
         describe('when enabling ITSLearning succeeds for organisation', () => {
             it('should not throw an error', async () => {

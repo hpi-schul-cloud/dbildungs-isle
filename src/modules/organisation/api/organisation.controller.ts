@@ -43,7 +43,7 @@ import { OrganisationResponse } from './organisation.response.js';
 import { Permissions } from '../../authentication/api/permissions.decorator.js';
 import { PersonPermissions } from '../../authentication/domain/person-permissions.js';
 import { OrganisationRootChildrenResponse } from './organisation.root-children.response.js';
-import { DomainError, EntityNotFoundError } from '../../../shared/error/index.js';
+import { DomainError, EntityNotFoundError, MissingPermissionsError } from '../../../shared/error/index.js';
 import { DbiamOrganisationError } from './dbiam-organisation.error.js';
 import { OrganisationExceptionFilter } from './organisation-exception-filter.js';
 import { OrganisationSpecificationError } from '../specification/error/organisation-specification.error.js';
@@ -89,6 +89,19 @@ export class OrganisationController {
         @Permissions() permissions: PersonPermissions,
         @Body() params: CreateOrganisationBodyParams,
     ): Promise<OrganisationResponse> {
+        const hasOrgVerwaltenRechtAtOrg: boolean = await permissions.hasOrgVerwaltenRechtAtOrga(
+            params.typ,
+            params.administriertVon,
+        );
+
+        if (!hasOrgVerwaltenRechtAtOrg) {
+            throw SchulConnexErrorMapper.mapSchulConnexErrorToHttpException(
+                SchulConnexErrorMapper.mapDomainErrorToSchulConnexError(
+                    new MissingPermissionsError('Not authorized to manage this organisation'),
+                ),
+            );
+        }
+
         const [oeffentlich]: [Organisation<true> | undefined, Organisation<true> | undefined] =
             await this.organisationRepository.findRootDirectChildren();
 
@@ -145,6 +158,19 @@ export class OrganisationController {
 
         if (!existingOrganisation) {
             throw new NotFoundException(`Organisation with ID ${params.organisationId} not found`);
+        }
+
+        const hasOrgVerwaltenRechtAtOrg: boolean = await permissions.hasOrgVerwaltenRechtAtOrga(
+            body.typ,
+            body.administriertVon,
+        );
+
+        if (!hasOrgVerwaltenRechtAtOrg) {
+            throw SchulConnexErrorMapper.mapSchulConnexErrorToHttpException(
+                SchulConnexErrorMapper.mapDomainErrorToSchulConnexError(
+                    new MissingPermissionsError('Not authorized to manage this organisation'),
+                ),
+            );
         }
 
         existingOrganisation.id = params.organisationId;

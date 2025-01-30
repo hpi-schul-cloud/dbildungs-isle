@@ -8,6 +8,7 @@ import { RollenSystemRecht } from '../../rolle/domain/rolle.enums.js';
 import { Rolle } from '../../rolle/domain/rolle.js';
 import { RolleRepo } from '../../rolle/repo/rolle.repo.js';
 import { IPersonPermissions } from '../../../shared/permissions/person-permissions.interface.js';
+import { OrganisationsTyp } from '../../organisation/domain/organisation.enums.js';
 
 export type PersonFields = Pick<
     Person<true>,
@@ -208,5 +209,19 @@ export class PersonPermissions implements IPersonPermissions {
 
     public get personFields(): PersonFields {
         return this.cachedPersonFields;
+    }
+
+    public async hasOrgVerwaltenRechtAtOrga(typ: OrganisationsTyp, administriertVon?: string): Promise<boolean> {
+        if (typ === OrganisationsTyp.KLASSE) {
+            const [oeffentlich]: [Organisation<true> | undefined, Organisation<true> | undefined] =
+                await this.organisationRepo.findRootDirectChildren();
+            return this.hasSystemrechtAtOrganisation(
+                administriertVon ?? oeffentlich?.id ?? this.organisationRepo.ROOT_ORGANISATION_ID,
+                RollenSystemRecht.KLASSEN_VERWALTEN,
+            );
+        } else if (typ === OrganisationsTyp.SCHULE) {
+            return this.hasSystemrechteAtRootOrganisation([RollenSystemRecht.SCHULEN_VERWALTEN]);
+        }
+        return false;
     }
 }

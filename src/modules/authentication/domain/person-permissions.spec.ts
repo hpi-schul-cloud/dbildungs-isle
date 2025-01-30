@@ -17,6 +17,7 @@ import { PersonenkontextFactory } from '../../personenkontext/domain/personenkon
 import { OrganisationRepository } from '../../organisation/persistence/organisation.repository.js';
 import { RollenSystemRecht } from '../../rolle/domain/rolle.enums.js';
 import { Organisation } from '../../organisation/domain/organisation.js';
+import { OrganisationsTyp } from '../../organisation/domain/organisation.enums.js';
 
 function createPerson(): Person<true> {
     return Person.construct(
@@ -494,6 +495,113 @@ describe('PersonPermissions', () => {
             const result: boolean = await personPermissions.canModifyPerson('2');
 
             expect(result).toBe(true);
+        });
+    });
+    describe('hasOrgVerwaltenRechtAtOrga', () => {
+        it('should return true if person has KLASSEN_VERWALTEN Recht at the administriertVon organisation', async () => {
+            const person: Person<true> = createPerson();
+            const oeffentlich: Organisation<true> = createMock<Organisation<true>>({ id: 'oeffentlichId' });
+            organisationRepoMock.findRootDirectChildren.mockResolvedValueOnce([oeffentlich, undefined]);
+            dbiamPersonenkontextRepoMock.hasSystemrechtAtOrganisation.mockResolvedValueOnce(true);
+
+            const personPermissions: PersonPermissions = new PersonPermissions(
+                dbiamPersonenkontextRepoMock,
+                organisationRepoMock,
+                rolleRepoMock,
+                person,
+            );
+
+            const result: boolean = await personPermissions.hasOrgVerwaltenRechtAtOrga(
+                OrganisationsTyp.KLASSE,
+                'oeffentlichId',
+            );
+
+            expect(result).toBe(true);
+            expect(dbiamPersonenkontextRepoMock.hasSystemrechtAtOrganisation).toHaveBeenCalledWith(
+                person.id,
+                'oeffentlichId',
+                RollenSystemRecht.KLASSEN_VERWALTEN,
+            );
+        });
+
+        it('should return true if person has KLASSEN_VERWALTEN Recht at the oeffentlich organisation', async () => {
+            const person: Person<true> = createPerson();
+            const oeffentlich: Organisation<true> = createMock<Organisation<true>>({ id: 'oeffentlichId' });
+            organisationRepoMock.findRootDirectChildren.mockResolvedValueOnce([oeffentlich, undefined]);
+            dbiamPersonenkontextRepoMock.hasSystemrechtAtOrganisation.mockResolvedValueOnce(true);
+
+            const personPermissions: PersonPermissions = new PersonPermissions(
+                dbiamPersonenkontextRepoMock,
+                organisationRepoMock,
+                rolleRepoMock,
+                person,
+            );
+
+            const result: boolean = await personPermissions.hasOrgVerwaltenRechtAtOrga(OrganisationsTyp.KLASSE);
+
+            expect(result).toBe(true);
+            expect(dbiamPersonenkontextRepoMock.hasSystemrechtAtOrganisation).toHaveBeenCalledWith(
+                person.id,
+                'oeffentlichId',
+                RollenSystemRecht.KLASSEN_VERWALTEN,
+            );
+        });
+
+        it('should return true if person has KLASSEN_VERWALTEN Recht at the root organisation', async () => {
+            const person: Person<true> = createPerson();
+            organisationRepoMock.findRootDirectChildren.mockResolvedValueOnce([undefined, undefined]);
+            dbiamPersonenkontextRepoMock.hasSystemrechtAtOrganisation.mockResolvedValueOnce(true);
+            const personPermissions: PersonPermissions = new PersonPermissions(
+                dbiamPersonenkontextRepoMock,
+                organisationRepoMock,
+                rolleRepoMock,
+                person,
+            );
+
+            const result: boolean = await personPermissions.hasOrgVerwaltenRechtAtOrga(OrganisationsTyp.KLASSE);
+
+            expect(result).toBe(true);
+            expect(dbiamPersonenkontextRepoMock.hasSystemrechtAtOrganisation).toHaveBeenCalledWith(
+                person.id,
+                organisationRepoMock.ROOT_ORGANISATION_ID,
+                RollenSystemRecht.KLASSEN_VERWALTEN,
+            );
+        });
+
+        it('should return true if person has SCHULEN_VERWALTEN Recht at the root organisation', async () => {
+            const person: Person<true> = createPerson();
+            dbiamPersonenkontextRepoMock.hasSystemrechtAtOrganisation.mockResolvedValueOnce(true);
+
+            const personPermissions: PersonPermissions = new PersonPermissions(
+                dbiamPersonenkontextRepoMock,
+                organisationRepoMock,
+                rolleRepoMock,
+                person,
+            );
+
+            const result: boolean = await personPermissions.hasOrgVerwaltenRechtAtOrga(OrganisationsTyp.SCHULE);
+
+            expect(result).toBe(true);
+            expect(dbiamPersonenkontextRepoMock.hasSystemrechtAtOrganisation).toHaveBeenCalledWith(
+                person.id,
+                organisationRepoMock.ROOT_ORGANISATION_ID,
+                RollenSystemRecht.SCHULEN_VERWALTEN,
+            );
+        });
+
+        it('should return false if organisation type is not KLASSE or SCHULE', async () => {
+            const person: Person<true> = createPerson();
+
+            const personPermissions: PersonPermissions = new PersonPermissions(
+                dbiamPersonenkontextRepoMock,
+                organisationRepoMock,
+                rolleRepoMock,
+                person,
+            );
+
+            const result: boolean = await personPermissions.hasOrgVerwaltenRechtAtOrga(OrganisationsTyp.SONSTIGE);
+
+            expect(result).toBe(false);
         });
     });
 });
