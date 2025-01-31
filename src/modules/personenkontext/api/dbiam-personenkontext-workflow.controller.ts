@@ -145,7 +145,7 @@ export class DbiamPersonenkontextWorkflowController {
         type: PersonenkontexteUpdateResponse,
     })
     @ApiBadRequestResponse({
-        description: 'The personenkontexte could not be updated, may due to unsatisfied specifications.',
+        description: 'The personenkontexte could not be updated, may be due to unsatisfied specifications.',
         type: DbiamPersonenkontexteUpdateError,
     })
     @ApiConflictResponse({ description: 'Changes are conflicting with current state of personenkontexte.' })

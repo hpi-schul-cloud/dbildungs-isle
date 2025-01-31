@@ -1,12 +1,18 @@
 /* eslint-disable max-classes-per-file */
+
 /* eslint-disable @typescript-eslint/no-use-before-define */
 
 export interface Specification<T> {
     isSatisfiedBy(t: T): Promise<boolean>;
+
     and(other: Specification<T>): Specification<T>;
+
     or(other: Specification<T>): Specification<T>;
+
     not(): Specification<T>;
+
     andNot(other: Specification<T>): Specification<T>;
+
     orNot(other: Specification<T>): Specification<T>;
 }
 
@@ -49,8 +55,8 @@ export class AndNotSpecification<T> extends CompositeSpecification<T> {
 
 export class AndSpecification<T> extends CompositeSpecification<T> {
     public constructor(
-        private readonly leftCondition: Specification<T>,
-        private readonly rightCondition: Specification<T>,
+        private readonly leftCondition: CompositeSpecification<T>,
+        private readonly rightCondition: CompositeSpecification<T>,
     ) {
         super();
     }

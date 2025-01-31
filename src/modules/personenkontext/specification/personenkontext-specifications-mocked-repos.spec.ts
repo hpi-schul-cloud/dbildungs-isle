@@ -223,7 +223,7 @@ describe('PersonenkontextSpecificationsMockedReposTest', () => {
             mapRollen.set(faker.string.uuid(), DoFactory.createRolle(true, { rollenart: RollenArt.LEHR }));
             rolleRepoMock.findByIds.mockResolvedValueOnce(mapRollen);
 
-            const result: boolean = await specification.checkRollenart([personenkontext]);
+            const result: boolean = await specification.isSatisfiedBy([personenkontext]);
 
             expect(result).toBe(true);
         });
@@ -245,8 +245,7 @@ describe('PersonenkontextSpecificationsMockedReposTest', () => {
             const newRollen: Map<string, Rolle<true>> = new Map();
             newRollen.set(faker.string.uuid(), DoFactory.createRolle(true, { rollenart: RollenArt.LEHR }));
             rolleRepoMock.findByIds.mockResolvedValueOnce(newRollen);
-
-            const result: boolean = await specification.checkRollenart([personenkontext]);
+            const result: boolean = await specification.isSatisfiedBy([personenkontext]);
 
             expect(result).toBe(true);
         });
@@ -269,7 +268,7 @@ describe('PersonenkontextSpecificationsMockedReposTest', () => {
             newRollen.set(faker.string.uuid(), DoFactory.createRolle(true, { rollenart: RollenArt.LERN }));
             rolleRepoMock.findByIds.mockResolvedValueOnce(newRollen);
 
-            const result: boolean = await specification.checkRollenart([personenkontext]);
+            const result: boolean = await specification.isSatisfiedBy([personenkontext]);
 
             expect(result).toBe(false);
         });
@@ -294,7 +293,7 @@ describe('PersonenkontextSpecificationsMockedReposTest', () => {
             newRollen.set(faker.string.uuid(), DoFactory.createRolle(true, { rollenart: RollenArt.LEHR }));
             rolleRepoMock.findByIds.mockResolvedValueOnce(newRollen);
 
-            const result: boolean = await specification.checkRollenart([personenkontext1, personenkontext2]);
+            const result: boolean = await specification.isSatisfiedBy([personenkontext1, personenkontext2]);
 
             expect(result).toBe(true);
         });
@@ -319,7 +318,7 @@ describe('PersonenkontextSpecificationsMockedReposTest', () => {
             newRollen.set(faker.string.uuid(), DoFactory.createRolle(true, { rollenart: RollenArt.LEHR }));
             rolleRepoMock.findByIds.mockResolvedValueOnce(newRollen);
 
-            const result: boolean = await specification.checkRollenart([personenkontext1, personenkontext2]);
+            const result: boolean = await specification.isSatisfiedBy([personenkontext1, personenkontext2]);
 
             expect(result).toBe(true);
         });
@@ -346,7 +345,7 @@ describe('PersonenkontextSpecificationsMockedReposTest', () => {
             newRollen.set(faker.string.uuid(), DoFactory.createRolle(true, { rollenart: RollenArt.LERN })); // Different role type
             rolleRepoMock.findByIds.mockResolvedValueOnce(newRollen);
 
-            const result: boolean = await specification.checkRollenart([personenkontext1, personenkontext2]);
+            const result: boolean = await specification.isSatisfiedBy([personenkontext1, personenkontext2]);
 
             expect(result).toBe(false); // Expecting false because of different role types
         });
@@ -374,7 +373,7 @@ describe('PersonenkontextSpecificationsMockedReposTest', () => {
             rolleRepoMock.findByIds.mockResolvedValueOnce(newRollen);
 
             // Expect the function to throw an error due to the undefined value in existingRollen
-            await expect(specification.checkRollenart([personenkontext1, personenkontext2])).rejects.toThrow(
+            await expect(specification.isSatisfiedBy([personenkontext1, personenkontext2])).rejects.toThrow(
                 'Expected existingRollen to contain valid roles, but found undefined.',
             );
         });

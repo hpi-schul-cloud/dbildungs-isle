@@ -1,4 +1,5 @@
-import { DeepMocked, createMock } from '@golevelup/ts-jest';
+// eslint-disable-next-line max-classes-per-file
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { DBiamPersonenkontextRepo } from '../persistence/dbiam-personenkontext.repo.js';
 import { Personenkontext } from './personenkontext.js';
@@ -11,6 +12,11 @@ import { DBiamPersonenkontextService } from './dbiam-personenkontext.service.js'
 import { DoFactory } from '../../../../test/utils/do-factory.js';
 import { RollenArt, RollenMerkmal } from '../../rolle/domain/rolle.enums.js';
 import { Rolle } from '../../rolle/domain/rolle.js';
+import { RolleModule } from '../../rolle/rolle.module.js';
+import { Module } from '@nestjs/common';
+import { OrganisationModule } from '../../organisation/organisation.module.js';
+import { PersonenkontextPersistenceModule } from '../persistence/PersonenkontextPersistenceModule.js';
+import { PersonenkontextSpecificationsModule } from '../specification/personenkontext-specification.module.js';
 
 describe('DBiamPersonenkontextService', () => {
     let module: TestingModule;
@@ -21,28 +27,56 @@ describe('DBiamPersonenkontextService', () => {
     let personenkontextFactory: PersonenkontextFactory;
 
     beforeAll(async () => {
-        module = await Test.createTestingModule({
+        @Module({
             providers: [
-                DBiamPersonenkontextService,
-                PersonenkontextFactory,
-                {
-                    provide: PersonRepository,
-                    useValue: createMock<PersonRepository>(),
-                },
                 {
                     provide: RolleRepo,
                     useValue: createMock<RolleRepo>(),
                 },
+            ],
+            exports: [RolleRepo],
+        })
+        class RolleTestModule {}
+
+        @Module({
+            providers: [
                 {
                     provide: OrganisationRepository,
                     useValue: createMock<OrganisationRepository>(),
                 },
+            ],
+            exports: [OrganisationRepository],
+        })
+        class OrganisationTestModule {}
+
+        @Module({
+            imports: [OrganisationModule, RolleModule],
+            providers: [
                 {
                     provide: DBiamPersonenkontextRepo,
                     useValue: createMock<DBiamPersonenkontextRepo>(),
                 },
+                {
+                    provide: PersonRepository,
+                    useValue: createMock<PersonRepository>(),
+                },
+                PersonenkontextFactory,
             ],
-        }).compile();
+            exports: [DBiamPersonenkontextRepo, PersonenkontextFactory, PersonRepository],
+        })
+        class PersonenkontextPersistenceTestModule {}
+
+        module = await Test.createTestingModule({
+            imports: [PersonenkontextSpecificationsModule, PersonenkontextPersistenceModule, RolleModule],
+            providers: [DBiamPersonenkontextService],
+        })
+            .overrideModule(RolleModule)
+            .useModule(RolleTestModule)
+            .overrideModule(OrganisationModule)
+            .useModule(OrganisationTestModule)
+            .overrideModule(PersonenkontextPersistenceModule)
+            .useModule(PersonenkontextPersistenceTestModule)
+            .compile();
         sut = module.get(DBiamPersonenkontextService);
         dbiamPersonenKontextRepoMock = module.get(DBiamPersonenkontextRepo);
         rolleRepoMock = module.get(RolleRepo);

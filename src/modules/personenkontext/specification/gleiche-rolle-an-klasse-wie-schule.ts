@@ -6,12 +6,14 @@ import { Rolle } from '../../rolle/domain/rolle.js';
 import { DBiamPersonenkontextRepo } from '../persistence/dbiam-personenkontext.repo.js';
 import { OrganisationRepository } from '../../organisation/persistence/organisation.repository.js';
 import { Organisation } from '../../organisation/domain/organisation.js';
+import { Injectable } from '@nestjs/common';
 
 /**
  * Only needs to be checked when referenced organisation is of type KLASSE.
  * Used to check, that a person already owns identical rolle at schule, when creating Personenkontext
  * for that person with a rolle on a klasse.
  */
+@Injectable()
 export class GleicheRolleAnKlasseWieSchule extends CompositeSpecification<Personenkontext<boolean>> {
     public constructor(
         private readonly organisationRepo: OrganisationRepository,
